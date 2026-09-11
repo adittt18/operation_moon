@@ -1154,11 +1154,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
 }
 [data-theme="light"] .status-chip .row span.label {
-  color: #0b2545;
+  color: #17365d !important;
   font-weight: 700;
 }
 [data-theme="light"] .status-chip .version {
-  color: #6482a4;
+  color: #2b6cb0 !important;
 }
 
 /* Search Results Popover & Notification Dropdown in Light Theme */
@@ -1177,11 +1177,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .search-result-body strong,
 [data-theme="light"] .notif-item-title,
 [data-theme="light"] .notif-title-row h4 {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .search-result-body span,
 [data-theme="light"] .notif-desc {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .notif-item:hover,
 [data-theme="light"] .search-result-item:hover {
@@ -1196,10 +1196,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 14px 35px rgba(25, 65, 130, 0.12);
 }
 [data-theme="light"] .toast-body strong {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .toast-body p {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
 
 /* Section Headings */
@@ -1207,12 +1207,12 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #2563eb;
 }
 [data-theme="light"] .section-heading h3 {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 800;
   letter-spacing: 0.8px;
 }
 [data-theme="light"] .section-heading p {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
   font-weight: 500;
 }
 
@@ -1235,12 +1235,12 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(185, 212, 245, 0.9);
 }
 [data-theme="light"] .dataset-title {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 700;
 }
 [data-theme="light"] .dataset-sub,
 [data-theme="light"] .dataset-desc {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .dataset-file {
   color: #2563eb;
@@ -1272,22 +1272,22 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 6px 22px rgba(25, 65, 130, 0.06);
 }
 [data-theme="light"] .processing-label {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 700;
 }
 [data-theme="light"] .processing-label svg {
   color: #2563eb;
 }
 [data-theme="light"] .slider-field .row {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 600;
 }
 [data-theme="light"] .slider-field .row b {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 700;
 }
 [data-theme="light"] .checkbox-field {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 600;
 }
 [data-theme="light"] .step-num {
@@ -1366,17 +1366,17 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(195, 218, 245, 0.85);
 }
 [data-theme="light"] .metric-title {
-  color: #405f83;
+  color: #234d80 !important;
   font-weight: 600;
 }
 [data-theme="light"] .metric-value {
-  color: #0a1c36;
+  color: #17365d !important;
 }
 [data-theme="light"] .metric-value .unit {
-  color: #6482a4;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .metric-target {
-  color: #6482a4;
+  color: #2b6cb0 !important;
 }
 
 /* Tabs & Viewer in Results */
@@ -1402,10 +1402,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .matches-view h4,
 [data-theme="light"] .checkerboard-view h4,
 [data-theme="light"] .homography-card h4 {
-  color: #0a1c36;
+  color: #17365d !important;
 }
 [data-theme="light"] .caption {
-  color: #405f83;
+  color: #234d80 !important;
 }
 [data-theme="light"] .homography-card {
   background: #ffffff;
@@ -1423,16 +1423,16 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1.5px dashed rgba(185, 212, 245, 0.9);
 }
 [data-theme="light"] .dropzone-header h4 {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .file-desc {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .file-name {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .placeholder-text {
-  color: #6482a4;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .sensor-tag {
   color: #1d4ed8;
@@ -1444,26 +1444,26 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(195, 218, 245, 0.85);
 }
 [data-theme="light"] .control-group label {
-  color: #1d4ed8;
+  color: #17365d !important;
   font-weight: 600;
 }
 [data-theme="light"] .checkbox-group label {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .btn-preset {
   background: #ffffff;
   border: 1px solid rgba(195, 218, 245, 0.85);
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .preset-title {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .preset-desc {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
 [data-theme="light"] .btn-secondary {
   background: #ffffff;
-  color: #1d4ed8;
+  color: #17365d !important;
   border: 1px solid rgba(185, 212, 245, 0.85);
 }
 [data-theme="light"] .btn-secondary:hover:not(:disabled) {
@@ -1505,36 +1505,40 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 2px 8px rgba(25, 65, 130, 0.04);
 }
 [data-theme="light"] .settings-row-text strong {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .settings-row-text span {
-  color: #4b6a8e;
+  color: #2b6cb0 !important;
 }
-[data-theme="light"] .settings-select {
-  background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
-  color: #1d4ed8;
-}
+[data-theme="light"] select,
+[data-theme="light"] option,
+[data-theme="light"] .settings-select,
 [data-theme="light"] .settings-select option {
-  background: #ffffff;
-  color: #1d4ed8;
+  background: #ffffff !important;
+  color: #17365d !important;
+  -webkit-text-fill-color: #17365d !important;
+  font-weight: 600;
 }
 
 /* 3D Moon Globe Overlay */
 [data-theme="light"] .site-info-overlay {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(195, 218, 245, 0.9);
-  color: #0a1c36;
+  color: #17365d !important;
   box-shadow: 0 14px 35px rgba(25, 65, 130, 0.15);
 }
 [data-theme="light"] .site-header h4 {
-  color: #1d4ed8;
+  color: #17365d !important;
 }
 [data-theme="light"] .site-desc {
-  color: #405f83;
+  color: #234d80 !important;
 }
 [data-theme="light"] .site-coords {
-  color: #1d4ed8;
+  color: #1d4ed8 !important;
+}
+[data-theme="light"] .footer-bar,
+[data-theme="light"] .footer-bar p {
+  color: #6482a4 !important;
 }
 
 
