@@ -512,41 +512,49 @@ export default function HeroScene() {
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
     camera.position.set(0, 0, 5.2);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    // Solid deep space background — visible in BOTH light and dark modes
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setClearColor(0x000000, 0);
+    // Deep space navy — rich and dark, works in both themes
+    renderer.setClearColor(0x02060f, 1);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Cinematic Lighting setup
-    scene.add(new THREE.AmbientLight(0x284774, 1.4));
+    // ── LIGHTING ─────────────────────────────────────────────────────────────
+    // Soft deep-space ambient (very dim, cool blue)
+    scene.add(new THREE.AmbientLight(0x0d1f3c, 2.2));
 
-    // Direct warm Sun light
-    const sunLight = new THREE.DirectionalLight(0xfff5e6, 3.4);
-    sunLight.position.set(5, 4, 6);
+    // Primary Sun — warm directional from top-right
+    const sunLight = new THREE.DirectionalLight(0xfff4dc, 4.5);
+    sunLight.position.set(6, 5, 4);
     scene.add(sunLight);
 
-    // Deep space blue fill & rim light
-    const rimLight = new THREE.DirectionalLight(0x60a5fa, 1.2);
-    rimLight.position.set(-5, 2, -2);
+    // Cold blue rim / back-fill (simulates Earth-reflected light)
+    const rimLight = new THREE.DirectionalLight(0x4a8fd4, 1.8);
+    rimLight.position.set(-4, 1, -3);
     scene.add(rimLight);
 
-    // Distant Starfield
+    // Subtle warm bounce from lunar surface below
+    const bounceLight = new THREE.DirectionalLight(0xd4a96a, 0.5);
+    bounceLight.position.set(0, -3, 2);
+    scene.add(bounceLight);
+
+    // ── STARFIELD ────────────────────────────────────────────────────────────
     const stars = makeStarfield();
     scene.add(stars);
 
-    // Earth in the background
+    // ── EARTH (fixed — no cursor interaction) ────────────────────────────────
     const { group: earthGroup, earth, clouds } = buildEarth();
     earthGroup.position.set(1.35, 0.85, -1.3);
     scene.add(earthGroup);
 
-    // Lunar ground terrain under the lander
+    // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
     const terrain = buildLunarTerrain();
     scene.add(terrain);
 
-    // Vikram Lander resting on the lunar surface
+    // ── LANDER ───────────────────────────────────────────────────────────────
     const {
       group: lander,
       sidePanels,
@@ -554,6 +562,7 @@ export default function HeroScene() {
       roverRamp,
     } = buildVikramLander();
 
+    // Lander stays at this position always — only rotation follows cursor
     const landerBase = { x: -0.72, y: -0.16, z: 0.7 };
     const landerBaseRot = { x: 0.08, y: 0.35 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
@@ -561,17 +570,11 @@ export default function HeroScene() {
     lander.scale.set(1.08, 1.08, 1.08);
     scene.add(lander);
 
-    // Interactive State for Solar Panels Deployment
+    // Panel deployment state
     let isDeployed = true;
 
-    // Smooth Cursor Parallax Tracking
-    const targetLander = {
-      rotX: landerBaseRot.x,
-      rotY: landerBaseRot.y,
-      posX: landerBase.x,
-      posY: landerBase.y,
-    };
-    const targetEarth = { posX: 1.35, posY: 0.85 };
+    // Target rotation for lander (cursor-driven tilt only — no position change)
+    const targetRot = { x: landerBaseRot.x, y: landerBaseRot.y };
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -580,46 +583,34 @@ export default function HeroScene() {
       const rect = container.getBoundingClientRect();
       const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      const clampedX = Math.max(-1, Math.min(1, nx));
-      const clampedY = Math.max(-1, Math.min(1, ny));
+      const cx = Math.max(-1, Math.min(1, nx));
+      const cy = Math.max(-1, Math.min(1, ny));
 
       mouse.x = nx;
       mouse.y = -ny;
 
-      // Parallax Motion
-      targetLander.rotY = landerBaseRot.y + clampedX * 0.38;
-      targetLander.rotX = landerBaseRot.x - clampedY * 0.22;
-      targetLander.posX = landerBase.x + clampedX * 0.18;
-      targetLander.posY = landerBase.y - clampedY * 0.12;
+      // Gentle tilt of lander with cursor — Earth & terrain are completely unaffected
+      targetRot.y = landerBaseRot.y + cx * 0.26;
+      targetRot.x = landerBaseRot.x - cy * 0.14;
 
-      targetEarth.posX = 1.35 + clampedX * 0.1;
-      targetEarth.posY = 0.85 - clampedY * 0.06;
-
-      // Hover cursor check
+      // Pointer cursor when hovering lander
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(lander.children, true);
-      container.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+      const hits = raycaster.intersectObjects(lander.children, true);
+      container.style.cursor = hits.length > 0 ? 'pointer' : 'default';
     };
 
     const onClick = (e) => {
       const rect = container.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(lander.children, true);
-      if (intersects.length > 0) {
-        isDeployed = !isDeployed;
-      }
+      const hits = raycaster.intersectObjects(lander.children, true);
+      if (hits.length > 0) isDeployed = !isDeployed;
     };
 
     const onPointerLeave = () => {
-      targetLander.rotY = landerBaseRot.y;
-      targetLander.rotX = landerBaseRot.x;
-      targetLander.posX = landerBase.x;
-      targetLander.posY = landerBase.y;
-      targetEarth.posX = 1.35;
-      targetEarth.posY = 0.85;
+      targetRot.y = landerBaseRot.y;
+      targetRot.x = landerBaseRot.x;
       container.style.cursor = 'default';
     };
 
@@ -627,7 +618,7 @@ export default function HeroScene() {
     container.addEventListener('click', onClick);
     container.addEventListener('mouseleave', onPointerLeave);
 
-    // Resize handler
+    // Resize
     const ro = new ResizeObserver((entries) => {
       const entry = entries[0];
       if (!entry) return;
@@ -640,41 +631,33 @@ export default function HeroScene() {
     });
     ro.observe(container);
 
-    // Animation Loop
+    // Animation loop
     let reqId;
     const clock = new THREE.Clock();
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
 
-      // Continuous slow planet rotation
+      // Earth & stars self-animate — cursor has ZERO effect on them
       earth.rotation.y += dt * 0.045;
       clouds.rotation.y += dt * 0.06;
-      stars.rotation.y += dt * 0.002;
+      stars.rotation.y += dt * 0.0015;
 
-      // Smooth interpolation for lander cursor tracking
-      lander.rotation.y += (targetLander.rotY - lander.rotation.y) * 0.06;
-      lander.rotation.x += (targetLander.rotX - lander.rotation.x) * 0.06;
-      lander.position.x += (targetLander.posX - lander.position.x) * 0.06;
-      lander.position.y += (targetLander.posY - lander.position.y) * 0.06;
+      // Lander: only rotation follows cursor, position is permanently fixed
+      lander.rotation.y += (targetRot.y - lander.rotation.y) * 0.07;
+      lander.rotation.x += (targetRot.x - lander.rotation.x) * 0.07;
 
-      // Smooth panel open/close animation
+      // Solar panel deploy animation
       sidePanels.forEach((p) => {
-        const targetRot = isDeployed ? p.openRotX : p.closedRotX;
-        p.hinge.rotation.x += (targetRot - p.hinge.rotation.x) * 0.08;
+        const t = isDeployed ? p.openRotX : p.closedRotX;
+        p.hinge.rotation.x += (t - p.hinge.rotation.x) * 0.08;
       });
-
       topWings.forEach((w) => {
-        const targetRot = isDeployed ? w.openRotZ : w.closedRotZ;
-        w.hinge.rotation.z += (targetRot - w.hinge.rotation.z) * 0.08;
+        const t = isDeployed ? w.openRotZ : w.closedRotZ;
+        w.hinge.rotation.z += (t - w.hinge.rotation.z) * 0.08;
       });
-
-      const targetRamp = isDeployed ? roverRamp.openRotX : roverRamp.closedRotX;
-      roverRamp.hinge.rotation.x += (targetRamp - roverRamp.hinge.rotation.x) * 0.08;
-
-      // Earth parallax motion
-      earthGroup.position.x += (targetEarth.posX - earthGroup.position.x) * 0.04;
-      earthGroup.position.y += (targetEarth.posY - earthGroup.position.y) * 0.04;
+      const tr = isDeployed ? roverRamp.openRotX : roverRamp.closedRotX;
+      roverRamp.hinge.rotation.x += (tr - roverRamp.hinge.rotation.x) * 0.08;
 
       renderer.render(scene, camera);
     };
