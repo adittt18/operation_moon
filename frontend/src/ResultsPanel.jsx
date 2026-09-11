@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
+
 export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
   const [activeTab, setActiveTab] = useState('slider'); // 'slider', 'sidebyside', 'matches', 'checkerboard'
   const [sliderPos, setSliderPos] = useState(50); // 0% to 100%
@@ -14,7 +17,14 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
     );
   }
 
-  const { metrics, compliance, targets, registered_image_url, match_map_url, blend_image_url, source_preprocessed_url, reference_preprocessed_url, sensor, homography } = result;
+  const { metrics, compliance, targets, sensor, homography } = result;
+  // Prefix result image paths with backend URL so they load from Render, not Vercel
+  const registered_image_url = `${API_BASE}${result.registered_image_url}`;
+  const match_map_url = `${API_BASE}${result.match_map_url}`;
+  const blend_image_url = `${API_BASE}${result.blend_image_url}`;
+  const source_preprocessed_url = `${API_BASE}${result.source_preprocessed_url}`;
+  const reference_preprocessed_url = `${API_BASE}${result.reference_preprocessed_url}`;
+
 
   const handleSliderMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();

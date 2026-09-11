@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Pause, Play, MapPin, X, Rocket } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
+
 function makeStarfield() {
   const count = 900;
   const positions = new Float32Array(count * 3);
@@ -79,7 +82,7 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     };
     const realMoonTexture = '/moon_1024.jpg';
     textureLoader.load(realMoonTexture, applyMoonTexture, undefined, () => {
-      textureLoader.load('/moon-texture', applyMoonTexture);
+      textureLoader.load(`${API_BASE}/moon-texture`, applyMoonTexture);
     });
     textureLoader.load('/moon_normal_1024.jpg', (tex) => {
       moonMaterial.normalMap = tex;
