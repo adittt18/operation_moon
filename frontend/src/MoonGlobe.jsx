@@ -6,10 +6,10 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 
 function makeStarfield() {
-  const count = 900;
+  const count = 1800;
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    const r = 20 + Math.random() * 40;
+    const r = 25 + Math.random() * 60;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(Math.random() * 2 - 1);
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -19,7 +19,7 @@ function makeStarfield() {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const mat = new THREE.PointsMaterial({
-    color: 0xdfe9ff, size: 0.05, sizeAttenuation: true, transparent: true, opacity: 0.8, depthWrite: false,
+    color: 0xdfe9ff, size: 0.055, sizeAttenuation: true, transparent: true, opacity: 0.85, depthWrite: false,
   });
   return new THREE.Points(geo, mat);
 }
@@ -35,7 +35,7 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
 
     const getContainerDims = () => {
       const w = container.clientWidth || (window.innerWidth < 768 ? window.innerWidth - 40 : 800);
-      const h = container.clientHeight || (window.innerWidth < 768 ? Math.min(window.innerHeight * 0.55, 380) : 550);
+      const h = container.clientHeight || (window.innerWidth < 768 ? Math.min(window.innerHeight * 0.55, 380) : 600);
       return { w, h };
     };
 
@@ -45,7 +45,7 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 1000);
     const updateCameraDistance = (w) => {
-      camera.position.set(0, 0, w < 480 ? 5.2 : w < 768 ? 4.6 : 4.0);
+      camera.position.set(0, 0, w < 480 ? 5.2 : w < 768 ? 4.8 : 4.4);
     };
     updateCameraDistance(initialW);
 
