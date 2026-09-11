@@ -1647,6 +1647,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .site-coords {
   color: #1d4ed8;
 }
+[data-theme="light"] .footer-bar p {
+  color: #5a7b9e;
+  font-weight: 500;
+}
 
 
 
