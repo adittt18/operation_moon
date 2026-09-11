@@ -1046,8 +1046,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .hero-title,
 [data-theme="light"] .hero-brand-prefix {
-  color: #061838 !important;
-  -webkit-text-fill-color: #061838 !important;
+  color: #17365d !important;
+  -webkit-text-fill-color: #17365d !important;
   font-weight: 800 !important;
 }
 [data-theme="light"] .hero-title .grad {
@@ -1059,8 +1059,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: inline-block;
 }
 [data-theme="light"] .hero-subtitle {
-  color: #061838 !important;
-  -webkit-text-fill-color: #061838 !important;
+  color: #17365d !important;
+  -webkit-text-fill-color: #17365d !important;
   font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {
