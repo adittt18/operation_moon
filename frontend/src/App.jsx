@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+
+// In production this is set to the Render backend URL via VITE_API_BASE_URL env var.
+// In local dev it falls back to '' (empty string) so Vite's proxy handles routing.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import HeroBanner from './components/HeroBanner';
@@ -38,16 +43,17 @@ export default function App() {
   const [subpixelRefine, setSubpixelRefine] = useState(true);
 
   useEffect(() => {
-    fetch('/health')
+    fetch(`${API_BASE}/health`)
       .then(readJsonResponse)
       .then(() => setApiOnline(true))
       .catch(() => setApiOnline(false));
 
-    fetch('/imaging-sites')
+    fetch(`${API_BASE}/imaging-sites`)
       .then(readJsonResponse)
       .then((data) => setSites(data.sites || []))
       .catch((err) => console.error('Failed to load sites:', err));
   }, []);
+
 
   const handleRegistrationComplete = (data) => {
     setRegistrationResult(data);
@@ -63,7 +69,7 @@ export default function App() {
       formData.append('clip_limit', clipLimit);
       formData.append('ransac_thresh', ransacThresh);
       formData.append('subpixel_refine', subpixelRefine);
-      const res = await fetch('/register-sample', { method: 'POST', body: formData });
+      const res = await fetch(`${API_BASE}/register-sample`, { method: 'POST', body: formData });
       const data = await readJsonResponse(res);
       setRegistrationResult(data);
       setCurrentTab('results');
