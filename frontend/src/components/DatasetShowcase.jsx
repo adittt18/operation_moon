@@ -107,7 +107,7 @@ export function OneClickDatasets({ selectedId, onSelect, disabled }) {
     <div className="dataset-block">
       <div className="section-heading">
         <Zap className="icon" strokeWidth={2.4} fill="currentColor" />
-        <h3>One-Click Preloaded Demonstration Datasets</h3>
+        <h3>ONE-CLICK PRELOADED DEMONSTRATION DATASETS:</h3>
         <p>Quick access to preloaded datasets for instant testing and demonstration of the pipeline.</p>
       </div>
       <div className="dataset-grid">
