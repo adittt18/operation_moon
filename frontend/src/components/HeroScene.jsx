@@ -476,7 +476,7 @@ export default function HeroScene() {
 
     // Earth in the background
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(1.7, 0.92, -1.4);
+    earthGroup.position.set(1.35, 0.85, -1.3);
     scene.add(earthGroup);
 
     // Lunar ground terrain under the lander
@@ -485,10 +485,11 @@ export default function HeroScene() {
 
     // Vikram Lander resting on the lunar surface
     const lander = buildVikramLander();
-    const landerBase = { x: 0.12, y: -0.18, z: 0.7 };
+    const landerBase = { x: -0.72, y: -0.16, z: 0.7 };
     const landerBaseRot = { x: 0.08, y: 0.35 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
+    lander.scale.set(1.08, 1.08, 1.08);
     scene.add(lander);
 
     // Smooth Cursor Parallax Tracking
@@ -498,7 +499,7 @@ export default function HeroScene() {
       posX: landerBase.x,
       posY: landerBase.y,
     };
-    const targetEarth = { posX: 1.7, posY: 0.92 };
+    const targetEarth = { posX: 1.35, posY: 0.85 };
 
     const onPointerMove = (e) => {
       const rect = container.getBoundingClientRect();
@@ -514,8 +515,8 @@ export default function HeroScene() {
       targetLander.posY = landerBase.y - clampedY * 0.12;
 
       // Earth parallax depth
-      targetEarth.posX = 1.7 + clampedX * 0.1;
-      targetEarth.posY = 0.92 - clampedY * 0.06;
+      targetEarth.posX = 1.35 + clampedX * 0.1;
+      targetEarth.posY = 0.85 - clampedY * 0.06;
     };
 
     const onPointerLeave = () => {
@@ -523,8 +524,8 @@ export default function HeroScene() {
       targetLander.rotX = landerBaseRot.x;
       targetLander.posX = landerBase.x;
       targetLander.posY = landerBase.y;
-      targetEarth.posX = 1.7;
-      targetEarth.posY = 0.92;
+      targetEarth.posX = 1.35;
+      targetEarth.posY = 0.85;
     };
 
     window.addEventListener('mousemove', onPointerMove);
