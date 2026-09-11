@@ -72,24 +72,31 @@ function OrgThumb({ org }) {
 
 function IsroBadge() {
   return (
-    <svg viewBox="0 0 40 40" width="100%" height="100%">
-      <path
-        d="M20 6 L23.2 17.2 L34.5 17.6 L25.4 24.6 L28.8 35.4 L20 28.6 L11.2 35.4 L14.6 24.6 L5.5 17.6 L16.8 17.2 Z"
-        fill="#f97316"
-      />
-    </svg>
+    <img
+      src="/isro_logo.png"
+      alt="ISRO"
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        display: 'block',
+      }}
+    />
   );
 }
 
 function NasaBadge() {
   return (
-    <svg viewBox="0 0 40 40" width="100%" height="100%">
-      <circle cx="20" cy="20" r="18" fill="#0b3d91" />
-      <path d="M4 24 Q20 34 36 20" stroke="#fff" strokeWidth="1.6" fill="none" />
-      <text x="20" y="24" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="9" fill="#fff">
-        NASA
-      </text>
-    </svg>
+    <img
+      src="/nasa_logo.png"
+      alt="NASA"
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        display: 'block',
+      }}
+    />
   );
 }
 
