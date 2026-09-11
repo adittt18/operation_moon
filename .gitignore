@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+results_test/
+node_modules/
+.DS_Store
+powershell.cmd
