@@ -172,9 +172,9 @@ export default function App() {
                 clipLimit={clipLimit} setClipLimit={setClipLimit}
                 ransacThresh={ransacThresh} setRansacThresh={setRansacThresh}
                 subpixelRefine={subpixelRefine} setSubpixelRefine={setSubpixelRefine}
-                onRun={() => handleSampleSelect(selectedDataset)}
+                onRun={() => handleSampleSelect(selectedDataset || 'ohrc')}
                 isProcessing={isProcessing}
-                canRun={!!selectedDataset}
+                canRun={!isProcessing}
                 activeStep={registrationResult ? 4 : 1}
                 tag={selectedDataset ? `Chandrayaan-2 → LRO` : null}
               />
