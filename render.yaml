@@ -11,3 +11,4 @@ services:
       - key: ALLOWED_ORIGINS
         value: "*"
     healthCheckPath: /health
+
