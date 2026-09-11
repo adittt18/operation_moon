@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { readJsonResponse } from './api';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
+
 export default function UploadForm({ onRegistrationComplete, onSampleSelect, isProcessing, currentStep }) {
   const [sourceFile, setSourceFile] = useState(null);
   const [referenceFile, setReferenceFile] = useState(null);
@@ -44,7 +47,7 @@ export default function UploadForm({ onRegistrationComplete, onSampleSelect, isP
     formData.append('subpixel_refine', subpixelRefine);
 
     try {
-      const response = await fetch('/register', {
+      const response = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         body: formData,
       });
