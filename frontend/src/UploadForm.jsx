@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { readJsonResponse } from './api';
 import ChandrayaanLoader from './components/ChandrayaanLoader';
+import {
+  Satellite,
+  Compass,
+  FileText,
+  Zap,
+  Play,
+  AlertTriangle,
+  SlidersHorizontal,
+} from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
-
-
 
 export default function UploadForm({
   onRegistrationComplete,
@@ -80,14 +87,17 @@ export default function UploadForm({
       </div>
 
       {errorMsg && (
-        <div className="alert-box error">
-          <span>⚠️ {errorMsg}</span>
+        <div className="alert-box error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertTriangle size={16} color="var(--accent-red)" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Preset Quick Load Buttons */}
       <div className="quick-presets">
-        <label className="section-label">⚡ One-Click Preloaded Demonstration Datasets:</label>
+        <label className="section-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Zap size={14} color="var(--accent-orange)" /> One-Click Preloaded Demonstration Datasets:
+        </label>
         <div className="preset-grid">
           <button
             type="button"
@@ -126,7 +136,9 @@ export default function UploadForm({
           {/* Source Input */}
           <div className="file-dropzone">
             <div className="dropzone-header">
-              <span className="drop-icon">🛰️</span>
+              <span className="drop-icon-box">
+                <Satellite size={20} color="var(--accent-blue-soft)" />
+              </span>
               <h4>Chandrayaan-2 Source Image</h4>
             </div>
             <p className="file-desc">Supports PNG, TIFF, FITS (.fit), GDAL (.img)</p>
@@ -139,7 +151,10 @@ export default function UploadForm({
             />
             {sourceFile ? (
               <div className="file-meta">
-                <span className="file-name">📄 {sourceFile.name}</span>
+                <span className="file-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={14} color="var(--accent-blue-soft)" />
+                  {sourceFile.name}
+                </span>
                 <span className="sensor-tag">Sensor: {detectedSensor}</span>
               </div>
             ) : (
@@ -150,7 +165,9 @@ export default function UploadForm({
           {/* Reference Input */}
           <div className="file-dropzone">
             <div className="dropzone-header">
-              <span className="drop-icon">🌑</span>
+              <span className="drop-icon-box">
+                <Compass size={20} color="var(--accent-blue-soft)" />
+              </span>
               <h4>NASA LRO NAC Reference</h4>
             </div>
             <p className="file-desc">Reference benchmark base frame (PNG/TIFF)</p>
@@ -163,7 +180,10 @@ export default function UploadForm({
             />
             {referenceFile ? (
               <div className="file-meta">
-                <span className="file-name">📄 {referenceFile.name}</span>
+                <span className="file-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={14} color="var(--accent-blue-soft)" />
+                  {referenceFile.name}
+                </span>
                 <span className="sensor-tag">Sensor: LRO NAC Reference</span>
               </div>
             ) : (
@@ -215,7 +235,7 @@ export default function UploadForm({
         <div className="action-row">
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-primary btn-run"
             disabled={isProcessing || !sourceFile || !referenceFile}
           >
             {isProcessing ? (
@@ -223,7 +243,11 @@ export default function UploadForm({
                 <ChandrayaanLoader size="sm" /> Running Pipeline...
               </span>
             ) : (
-              '🚀 Execute Sub-Pixel Registration'
+              <>
+                <Play size={13} strokeWidth={2.4} fill="currentColor" />
+                <span>Execute Sub-Pixel Registration</span>
+                <span className="btn-arrow">→</span>
+              </>
             )}
           </button>
         </div>

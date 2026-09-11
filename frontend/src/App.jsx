@@ -32,7 +32,7 @@ export default function App() {
       desc: 'Pixel-Moon multi-modal registration engine is online.',
       time: 'Just now',
       unread: true,
-      icon: '🛰️',
+      type: 'satellite',
     },
   ]);
   const [activeToast, setActiveToast] = useState(null);
@@ -86,7 +86,7 @@ export default function App() {
       desc: `Registration for ${data.sensor || 'Chandrayaan-2'} succeeded with RMSE: ${rmse}.`,
       time: 'Just now',
       unread: true,
-      icon: '🎉',
+      type: 'success',
       actionLabel: 'Open Results',
       targetTab: 'results',
     });
@@ -111,7 +111,7 @@ export default function App() {
         desc: `Pair "${sampleId.toUpperCase()}" aligned at sub-pixel precision (RMSE: ${rmse}).`,
         time: 'Just now',
         unread: true,
-        icon: '🌕',
+        type: 'success',
         actionLabel: 'Open Results',
         targetTab: 'results',
       });
@@ -122,7 +122,7 @@ export default function App() {
         desc: err.message || 'Pipeline could not complete registration.',
         time: 'Just now',
         unread: true,
-        icon: '⚠️',
+        type: 'error',
       });
       alert(`Error: ${err.message}`);
     } finally {
