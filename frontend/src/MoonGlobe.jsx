@@ -33,20 +33,46 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     const container = mountRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 800;
-    const height = container.clientHeight || 550;
+    const getContainerDims = () => {
+      const w = container.clientWidth || (window.innerWidth < 768 ? window.innerWidth - 40 : 800);
+      const h = container.clientHeight || (window.innerWidth < 768 ? Math.min(window.innerHeight * 0.55, 380) : 550);
+      return { w, h };
+    };
+
+    const { w: initialW, h: initialH } = getContainerDims();
 
     // 1. Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 4.0);
+    const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 1000);
+    const updateCameraDistance = (w) => {
+      camera.position.set(0, 0, w < 480 ? 5.2 : w < 768 ? 4.6 : 4.0);
+    };
+    updateCameraDistance(initialW);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(initialW, initialH);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
+
+    // Dynamic resize handler
+    const handleResize = () => {
+      if (!container) return;
+      const { w, h } = getContainerDims();
+      if (w === 0 || h === 0) return;
+      camera.aspect = w / h;
+      updateCameraDistance(w);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => handleResize());
+      resizeObserver.observe(container);
+    }
+    window.addEventListener('resize', handleResize);
 
     // 2. Lighting — soft hemisphere fill + a hard "sun" for real crater shadow relief
     const hemiLight = new THREE.HemisphereLight(0x5a6b8c, 0x0a0c14, 0.65);
@@ -238,6 +264,8 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
 
     return () => {
       cancelAnimationFrame(reqId);
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', handleResize);
       dom.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
