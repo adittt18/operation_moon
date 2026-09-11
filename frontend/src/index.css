@@ -400,7 +400,7 @@ p { margin: 0; }
 .hero-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 .hero-pill {
   display: flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: 999px;
-  background: rgba(18, 38, 68, 0.6); border: 1px solid rgba(120, 178, 255, 0.25);
+  background: transparent; border: 1px solid rgba(147, 197, 253, 0.35);
   font-size: 13px; font-weight: 600; color: #bfe0fb; white-space: nowrap;
 }
 .hero-pill svg { width: 15px; height: 15px; color: #60a5fa; }
