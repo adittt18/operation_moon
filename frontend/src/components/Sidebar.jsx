@@ -23,7 +23,6 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
           <h1>Pixel-Moon</h1>
           <span>Lunar Image Registration</span>
         </div>
-        <div className="sidebar-notch" />
       </div>
 
       <nav className="sidebar-nav">
