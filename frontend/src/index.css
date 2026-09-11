@@ -137,12 +137,10 @@ p { margin: 0; }
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  border-top-left-radius: 28px;
 }
 [data-theme="light"] .app-main-column {
   background: var(--bg-page);
   background-image: none;
-  border-top-left-radius: 0;
 }
 
 
