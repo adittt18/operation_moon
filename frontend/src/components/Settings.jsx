@@ -3,26 +3,31 @@ import {
   Sun,
   Moon,
   Volume2,
+  VolumeX,
+  Radio,
   Activity,
   Download,
   Trash2,
   CheckCircle2,
+  Sliders,
+  Sparkles,
 } from 'lucide-react';
-import { playNotificationSound } from '../audio';
+import { playNotificationSound, SOUND_PRESETS, getSavedSoundSettings } from '../audio';
 import { readJsonResponse } from '../api';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 export default function Settings({ theme, onToggleTheme, apiOnline }) {
+  const initialSoundSettings = getSavedSoundSettings();
+
   // Sound toggle
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    try {
-      const v = localStorage.getItem('pixelmoon-sound');
-      return v !== null ? JSON.parse(v) : true;
-    } catch {
-      return true;
-    }
-  });
+  const [soundEnabled, setSoundEnabled] = useState(initialSoundSettings.enabled);
+
+  // Sound preset selection (5 space options)
+  const [soundPreset, setSoundPreset] = useState(initialSoundSettings.preset);
+
+  // Sound volume adjuster (0.0 to 1.0)
+  const [volume, setVolume] = useState(initialSoundSettings.volume);
 
   // Auto-rotate 3D globe toggle
   const [globeAutoRotate, setGlobeAutoRotate] = useState(() => {
@@ -66,6 +71,18 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
 
   useEffect(() => {
     try {
+      localStorage.setItem('pixelmoon-sound-preset', soundPreset);
+    } catch {}
+  }, [soundPreset]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pixelmoon-volume', volume.toString());
+    } catch {}
+  }, [volume]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem('pixelmoon-globe-autorotate', JSON.stringify(globeAutoRotate));
     } catch {}
   }, [globeAutoRotate]);
@@ -83,7 +100,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
   }, [subpixelMode]);
 
   const handleTestSound = () => {
-    playNotificationSound();
+    playNotificationSound(soundPreset, volume);
   };
 
   const handlePingBackend = async () => {
@@ -105,6 +122,8 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
     try {
       localStorage.removeItem('pixelmoon-theme');
       localStorage.removeItem('pixelmoon-sound');
+      localStorage.removeItem('pixelmoon-sound-preset');
+      localStorage.removeItem('pixelmoon-volume');
       localStorage.removeItem('pixelmoon-globe-autorotate');
       localStorage.removeItem('pixelmoon-detector');
       localStorage.removeItem('pixelmoon-subpixel');
@@ -118,17 +137,22 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
   const handleExportReport = () => {
     const reportData = {
       app: 'Pixel-Moon Lunar Image Registration Console',
-      organization: 'ISRO / DOS',
+      organization: 'ISRO / Department of Space',
       team: 'Team Code_Chaos',
-      problemStatement: 'SIH 2024 - PS 26166',
+      division: 'Lunar Science & Planetary Data Systems',
       timestamp: new Date().toISOString(),
       theme,
       pipeline: {
         featureDetector: defaultDetector.toUpperCase(),
         matcher: 'FLANN (KDTree Index)',
-        homography: 'RANSAC (0.75 ratio + 1.8px reprojection threshold)',
+        homography: 'RANSAC Projective Transform',
         subpixelRefinement: subpixelMode ? 'cv2.cornerSubPix (0.1px target)' : 'Standard integer px',
         spatialCoverageGrid: '4x4 uniform tiling (16 bins)',
+      },
+      soundConfig: {
+        enabled: soundEnabled,
+        preset: soundPreset,
+        volume: `${Math.round(volume * 100)}%`,
       },
       backendStatus: apiOnline ? 'ONLINE' : 'OFFLINE',
       apiEndpoint: API_BASE || window.location.origin,
@@ -149,7 +173,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
         <span className="badge isro-badge">ISRO · Team CODE_CHAOS</span>
         <h2>System Settings &amp; Preferences</h2>
         <p className="subtitle">
-          Configure visual appearance, audio feedback, registration engine defaults, and system diagnostics for Pixel-Moon.
+          Configure visual appearance, space telemetry soundscapes, algorithm defaults, and mission diagnostics for Pixel-Moon.
         </p>
       </div>
 
@@ -166,21 +190,13 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
           </button>
         </div>
 
-        {/* Audio Alerts */}
+        {/* Space Audio Alerts Toggle */}
         <div className="settings-row">
           <div className="settings-row-text">
-            <strong>Space Chime Audio Alerts</strong>
-            <span>Play synthesized chime upon registration completion</span>
+            <strong>Space Sound Feedback</strong>
+            <span>Audio notification chime upon registration completion</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={handleTestSound}
-              type="button"
-              title="Test space chime sound"
-            >
-              <Volume2 size={14} /> Test
-            </button>
             <label className="switch" title="Toggle audio chime">
               <input
                 type="checkbox"
@@ -189,6 +205,58 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
               />
               <span className="track" />
             </label>
+          </div>
+        </div>
+
+        {/* Space Sound Preset Selection */}
+        <div className="settings-row">
+          <div className="settings-row-text">
+            <strong>Space Telemetry Tone</strong>
+            <span>Select from 5 synthesized space notification sounds</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <select
+              className="settings-select"
+              value={soundPreset}
+              onChange={(e) => setSoundPreset(e.target.value)}
+              disabled={!soundEnabled}
+            >
+              {SOUND_PRESETS.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.name}
+                </option>
+              ))}
+            </select>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={handleTestSound}
+              disabled={!soundEnabled}
+              type="button"
+              title="Test selected sound"
+            >
+              <Volume2 size={14} /> Test
+            </button>
+          </div>
+        </div>
+
+        {/* Volume Adjuster */}
+        <div className="settings-row">
+          <div className="settings-row-text">
+            <strong>Audio Volume ({Math.round(volume * 100)}%)</strong>
+            <span>Adjust volume output level for space chime playback</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '160px' }}>
+            {volume === 0 ? <VolumeX size={15} color="var(--text-muted)" /> : <Volume2 size={15} color="var(--accent-blue-soft)" />}
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              disabled={!soundEnabled}
+              style={{ width: '110px' }}
+            />
           </div>
         </div>
 
@@ -302,14 +370,14 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
             <strong>Pipeline Core Stack</strong>
             <span>OpenCV 4.x + NumPy + SciPy + Three.js + React 18</span>
           </div>
-          <span className="dataset-sensor-pill">SIH v1.0.0</span>
+          <span className="dataset-sensor-pill">v1.0.0</span>
         </div>
 
-        {/* Team Details */}
+        {/* Organization / Mission */}
         <div className="settings-row">
           <div className="settings-row-text">
-            <strong>ISRO / SIH Track</strong>
-            <span>Team Code_Chaos · Problem Statement 26166</span>
+            <strong>Indian Space Research Organisation</strong>
+            <span>Team Code_Chaos · Lunar Science &amp; Image Processing Division</span>
           </div>
           <span className="dataset-sensor-pill">ISRO / DOS</span>
         </div>

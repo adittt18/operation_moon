@@ -1,34 +1,33 @@
-﻿import React from 'react';
+import React from 'react';
 
 export default function ChandrayaanLoader({ size = 'md', label = '' }) {
-  const pixelSize = size === 'sm' ? 24 : size === 'lg' ? 84 : 48;
-  const scale = pixelSize / 48;
+  const isSm = size === 'sm';
+  const isLg = size === 'lg';
+  const width = isSm ? 44 : isLg ? 160 : 88;
+  const height = isSm ? 28 : isLg ? 100 : 54;
 
   return (
-    <div className={`chandrayaan-loader-wrap size-${size}`}>
-      <div
-        className="chandrayaan-stage"
-        style={{ width: pixelSize, height: pixelSize }}
-      >
-        {/* Orbit Ring */}
-        <div className="lunar-orbit-ring" />
+    <div className={`chandrayaan-topview-loader size-${size}`}>
+      <div className="topview-orbit-stage" style={{ width, height }}>
+        {/* Top-view Elliptical Orbit Track */}
+        <div className="topview-orbit-ellipse" />
 
         {/* Central Moon Sphere */}
-        <div className="lunar-center-moon">
-          <div className="moon-crater c1" />
-          <div className="moon-crater c2" />
-          <div className="moon-crater c3" />
-          <div className="moon-shadow" />
+        <div className="topview-moon">
+          <div className="topview-crater c1" />
+          <div className="topview-crater c2" />
+          <div className="topview-crater c3" />
         </div>
 
-        {/* Rotating Orbit Container */}
-        <div className="chandrayaan-orbit-carrier">
-          {/* Chandrayaan Spacecraft */}
-          <div className="chandrayaan-craft">
-            <div className="craft-panel left" />
-            <div className="craft-body" />
-            <div className="craft-panel right" />
-            <div className="craft-dish" />
+        {/* Rotating Carrier on Elliptical Path */}
+        <div className="topview-satellite-carrier">
+          {/* Top-View Chandrayaan Spacecraft */}
+          <div className="topview-satellite">
+            <div className="sat-panel left" />
+            <div className="sat-core">
+              <div className="sat-dish-dot" />
+            </div>
+            <div className="sat-panel right" />
           </div>
         </div>
       </div>
@@ -45,18 +44,19 @@ export function RegistrationLoadingModal({ isProcessing, sensor = 'Chandrayaan-2
       <div className="loading-modal-card glass-card">
         <ChandrayaanLoader size="lg" />
         <div className="loading-modal-content">
-          <span className="loading-badge">CHANDRAYAAN-2 · PIPELINE RUNNING</span>
+          <span className="loading-badge">CHANDRAYAAN-2 · PIPELINE ORCHESTRATION</span>
           <h3>Sub-Pixel Lunar Image Registration</h3>
           <p className="loading-sub">
-            Harmonizing sensor scales, detecting 4×4 SIFT features, computing FLANN KDTree matches &amp; refining homography with cornerSubPix...
+            Executing CLAHE illumination normalization, multi-scale grid SIFT extraction, FLANN tie-point matching, and cornerSubPix sub-pixel refinement...
           </p>
 
           <div className="orbiting-status-pill">
             <span className="pulse-dot" />
-            <span>Aligning with NASA LRO NAC Reference</span>
+            <span>Targeting &lt; 1.0 px RMSE with NASA LRO NAC Reference</span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

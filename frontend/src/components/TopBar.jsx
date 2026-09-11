@@ -1,5 +1,19 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Sun, Moon, Trash2, ArrowRight, X, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Search,
+  Bell,
+  Sun,
+  Moon,
+  Trash2,
+  ArrowRight,
+  X,
+  Sparkles,
+  Satellite,
+  CheckCircle2,
+  AlertCircle,
+  Radio,
+  Compass,
+} from 'lucide-react';
 
 const SEARCH_ENTRIES = [
   {
@@ -98,6 +112,19 @@ const SEARCH_ENTRIES = [
     },
   },
 ];
+
+function renderNotificationIcon(type) {
+  if (type === 'success' || type === 'pass') {
+    return <CheckCircle2 size={16} color="var(--accent-green)" />;
+  }
+  if (type === 'error' || type === 'warning') {
+    return <AlertCircle size={16} color="var(--accent-red)" />;
+  }
+  if (type === 'site') {
+    return <Compass size={16} color="var(--accent-orange)" />;
+  }
+  return <Satellite size={16} color="var(--accent-blue-soft)" />;
+}
 
 export default function TopBar({
   theme,
@@ -236,7 +263,7 @@ export default function TopBar({
             <div className="notif-dropdown glass-card page-fade">
               <div className="notif-header">
                 <div className="notif-title-row">
-                  <h4>Notifications</h4>
+                  <h4>Mission Notifications</h4>
                   {unreadCount > 0 && <span className="unread-pill">{unreadCount} new</span>}
                 </div>
                 {notifications.length > 0 && (
@@ -254,9 +281,11 @@ export default function TopBar({
               <div className="notif-list">
                 {notifications.length === 0 ? (
                   <div className="notif-empty">
-                    <span className="notif-empty-icon">🛰️</span>
+                    <span className="notif-empty-icon">
+                      <Satellite size={24} color="var(--accent-blue-soft)" />
+                    </span>
                     <p>No notifications yet</p>
-                    <span>Run a registration to receive live pipeline alerts &amp; metric results here.</span>
+                    <span>Run a registration to receive live pipeline telemetry &amp; metric results here.</span>
                   </div>
                 ) : (
                   notifications.map((n) => (
@@ -269,7 +298,9 @@ export default function TopBar({
                       }}
                     >
                       <div className="notif-icon-col">
-                        <span className="notif-icon-badge">{n.icon || '🌕'}</span>
+                        <span className="notif-icon-badge">
+                          {renderNotificationIcon(n.type || n.icon)}
+                        </span>
                       </div>
                       <div className="notif-body">
                         <div className="notif-row">
@@ -325,7 +356,9 @@ export function ToastBanner({ toast, onClose, onAction }) {
   return (
     <div className="floating-toast-container page-fade">
       <div className="toast-card glass-card">
-        <span className="toast-icon">{toast.icon || '🎉'}</span>
+        <span className="toast-icon">
+          {renderNotificationIcon(toast.type || toast.icon)}
+        </span>
         <div className="toast-body">
           <strong>{toast.title}</strong>
           <p>{toast.desc}</p>

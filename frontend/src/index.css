@@ -317,7 +317,9 @@ p { margin: 0; }
 
 .hero-scene-wrap { position: relative; width: 46%; min-height: 420px; overflow: hidden; }
 .hero-scene-wrap::before {
-  display: none;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 140px;
+  background: linear-gradient(90deg, #050d1c 0%, rgba(5, 13, 28, 0.75) 45%, transparent 100%);
+  z-index: 3; pointer-events: none;
 }
 .hero-scene-canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: default; }
 .hero-scene-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -461,21 +463,62 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .stepper-tag { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
 .stepper-tag svg { width: 13px; height: 13px; }
 
-/* ===== BUTTONS ===== */
+/* ===== BUTTONS (REFINED MISSION CONTROL STYLE - SCREENSHOT 4) ===== */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px; border-radius: 12px;
-  border: 1px solid transparent; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
-  font-family: var(--font-main); white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; border-radius: 999px;
+  border: 1px solid transparent; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-main); white-space: nowrap; user-select: none;
 }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background: var(--grad-btn); color: #fff; box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35); }
-.btn-primary:hover:not(:disabled) { background: var(--grad-btn-hover); transform: translateY(-1px); }
-.btn-secondary { background: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-subtle); }
-.btn-secondary:hover:not(:disabled) { background: var(--glass-bg-strong); }
-.btn-accent { background: rgba(139, 92, 246, 0.15); color: var(--accent-violet); border: 1px solid rgba(139, 92, 246, 0.35); }
-.btn-accent:hover:not(:disabled) { background: rgba(139, 92, 246, 0.25); }
-.btn-sm { padding: 7px 14px; font-size: 12.5px; border-radius: 9px; }
-.btn-run { padding: 13px 26px; border-radius: 14px; flex-shrink: 0; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(180deg, #1d3d6e 0%, #102444 100%);
+  color: #f1f6ff;
+  border: 1px solid rgba(120, 178, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 8, 24, 0.4);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #275294 0%, #16325c 100%);
+  border-color: rgba(147, 197, 253, 0.65);
+  box-shadow: 0 6px 18px rgba(0, 12, 32, 0.5);
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn-secondary {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--glass-bg-strong);
+  border-color: rgba(96, 165, 250, 0.4);
+  transform: translateY(-1px);
+}
+.btn-accent {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-violet);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 999px;
+}
+.btn-accent:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.25);
+}
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 999px; }
+.btn-run {
+  padding: 10px 24px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.btn-arrow { font-size: 14px; opacity: 0.85; margin-left: 2px; }
+.btn-run:hover .btn-arrow { opacity: 1; transform: translateX(2px); }
 
 .quick-presets { display: flex; flex-direction: column; gap: 12px; margin-bottom: 6px; }
 .section-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.6px; color: var(--text-secondary); text-transform: uppercase; }
@@ -851,63 +894,84 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .toast-btn { flex-shrink: 0; font-size: 11.5px; padding: 6px 12px; }
 .toast-close { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 12px; }
 
-/* ===== CHANDRAYAAN ORBITING MOON LOADER ===== */
-.chandrayaan-loader-wrap {
+/* ===== TOP-VIEW CHANDRAYAAN ORBITING MOON LOADER (SCREENSHOT 1) ===== */
+.chandrayaan-topview-loader {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; position: relative;
 }
-.chandrayaan-stage {
-  position: relative; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.lunar-orbit-ring {
-  position: absolute; inset: -20%; border-radius: 50%;
-  border: 1px dashed rgba(96, 165, 250, 0.45);
-  transform: rotateX(60deg); pointer-events: none;
-}
-.lunar-center-moon {
-  width: 55%; height: 55%; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #e2e8f0 0%, #94a3b8 55%, #334155 100%);
-  position: relative; overflow: hidden; box-shadow: 0 0 12px rgba(147, 197, 253, 0.35);
-  flex-shrink: 0;
-}
-.moon-crater { position: absolute; border-radius: 50%; background: rgba(51, 65, 85, 0.35); }
-.moon-crater.c1 { width: 22%; height: 22%; top: 22%; left: 28%; }
-.moon-crater.c2 { width: 16%; height: 16%; top: 56%; left: 22%; }
-.moon-crater.c3 { width: 26%; height: 26%; top: 38%; right: 18%; }
-.moon-shadow { position: absolute; inset: 0; background: linear-gradient(90deg, transparent 35%, rgba(15, 23, 42, 0.55) 100%); }
-
-.chandrayaan-orbit-carrier {
-  position: absolute; inset: -24%; border-radius: 50%;
-  animation: orbitMoon 2s linear infinite;
-  display: flex; align-items: center; justify-content: flex-start;
-}
-@keyframes orbitMoon {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.topview-orbit-stage {
+  position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 
-.chandrayaan-craft {
+/* Elliptical dashed orbit track */
+.topview-orbit-ellipse {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+  pointer-events: none;
+}
+
+/* Central Moon Sphere */
+.topview-moon {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #cbd5e1 0%, #94a3b8 50%, #475569 100%);
+  box-shadow: 0 0 14px rgba(148, 163, 184, 0.35);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.topview-crater {
+  position: absolute; border-radius: 50%; background: rgba(51, 65, 85, 0.45);
+}
+.topview-crater.c1 { width: 22%; height: 22%; top: 22%; left: 32%; }
+.topview-crater.c2 { width: 18%; height: 18%; top: 54%; left: 24%; }
+.topview-crater.c3 { width: 28%; height: 28%; top: 40%; right: 20%; }
+
+/* Elliptical orbital motion */
+.topview-satellite-carrier {
+  position: absolute; inset: 0; border-radius: 50%;
+  animation: orbitEllipse 2.8s linear infinite;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+@keyframes orbitEllipse {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Top-View Satellite Craft */
+.topview-satellite {
   display: flex; align-items: center; justify-content: center;
-  position: relative; transform: rotate(90deg); flex-shrink: 0;
+  position: relative; transform: translateY(-50%) rotate(180deg);
 }
-.craft-body {
-  width: 7px; height: 8px; background: #f59e0b; border-radius: 1px;
-  box-shadow: 0 0 5px #fbbf24;
+.sat-core {
+  background: #f59e0b; border-radius: 2px;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.85);
+  position: relative; display: flex; align-items: flex-end; justify-content: center;
 }
-.craft-panel {
-  width: 5px; height: 3px; background: #2563eb; border: 0.5px solid #60a5fa;
+.sat-dish-dot {
+  width: 3px; height: 3px; border-radius: 50%; background: #ffffff;
+  position: absolute; bottom: -2px; box-shadow: 0 0 4px #ffffff;
 }
-.craft-panel.left { margin-right: 1px; }
-.craft-panel.right { margin-left: 1px; }
-.craft-dish {
-  position: absolute; top: -3px; width: 3px; height: 3px; border-radius: 50%; background: #f8fafc;
+.sat-panel {
+  background: #2563eb; border: 0.8px solid #93c5fd; border-radius: 1px;
 }
+.sat-panel.left { margin-right: 1.5px; }
+.sat-panel.right { margin-left: 1.5px; }
 
-.size-sm .chandrayaan-stage { width: 22px; height: 22px; }
-.size-sm .craft-body { width: 4px; height: 5px; }
-.size-sm .craft-panel { width: 3px; height: 2px; }
-.size-lg .chandrayaan-stage { width: 88px; height: 88px; }
-.size-lg .craft-body { width: 14px; height: 16px; }
-.size-lg .craft-panel { width: 11px; height: 7px; }
+/* Sizes */
+.size-sm .topview-moon { width: 16px; height: 16px; }
+.size-sm .sat-core { width: 6px; height: 6px; }
+.size-sm .sat-panel { width: 4.5px; height: 3px; }
+
+.size-md .topview-moon { width: 34px; height: 34px; }
+.size-md .sat-core { width: 12px; height: 12px; }
+.size-md .sat-panel { width: 9px; height: 6px; }
+
+.size-lg .topview-moon { width: 64px; height: 64px; }
+.size-lg .sat-core { width: 22px; height: 22px; border-radius: 3px; }
+.size-lg .sat-panel { width: 18px; height: 12px; border-radius: 2px; }
+.size-lg .sat-dish-dot { width: 5px; height: 5px; bottom: -3px; }
 
 /* Fullscreen Pipeline Loading Modal */
 .loading-modal-backdrop {

@@ -60,9 +60,13 @@ export default function ProcessingBar({
           disabled={!canRun || isProcessing}
         >
           {isProcessing ? (
-            <span className="btn-loading"><ChandrayaanLoader size="sm" /> Running...</span>
+            <span className="btn-loading"><ChandrayaanLoader size="sm" /> Running Pipeline...</span>
           ) : (
-            <>Run Registration <Play size={14} strokeWidth={2.6} fill="currentColor" /></>
+            <>
+              <Play size={13} strokeWidth={2.4} fill="currentColor" />
+              <span>Run Registration</span>
+              <span className="btn-arrow">→</span>
+            </>
           )}
         </button>
       </div>
