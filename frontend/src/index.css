@@ -132,6 +132,87 @@ p { margin: 0; }
 .pixel-moon-app { display: flex; height: 100vh; width: 100%; overflow: hidden; }
 .app-main-column {
   flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  color: #cae2f9;
+}
+
+/* Right-side unified text color (#cae2f9 / image screenshot color) */
+.app-main-column h1:not(.logo-text),
+.app-main-column h2,
+.app-main-column h3,
+.app-main-column h4,
+.app-main-column h5,
+.app-main-column h6,
+.app-main-column p,
+.app-main-column span:not(.dot):not(.pulse-dot):not(.user-chip-avatar),
+.app-main-column strong,
+.app-main-column b,
+.app-main-column label,
+.app-main-column input,
+.app-main-column select,
+.app-main-column textarea,
+.app-main-column li,
+.app-main-column .hero-title,
+.app-main-column .hero-subtitle,
+.app-main-column .hero-desc,
+.app-main-column .hero-pill,
+.app-main-column .hero-status-badge .txt strong,
+.app-main-column .hero-status-badge .txt span,
+.app-main-column .hero-vertical-text span,
+.app-main-column .section-heading h3,
+.app-main-column .section-heading p,
+.app-main-column .dataset-title,
+.app-main-column .dataset-desc,
+.app-main-column .dataset-tag,
+.app-main-column .dataset-badge,
+.app-main-column .processing-label,
+.app-main-column .slider-field .row span,
+.app-main-column .slider-field .row b,
+.app-main-column .step-pill span.step-label,
+.app-main-column .card-header h2,
+.app-main-column .card-header p,
+.app-main-column .dropzone-header h4,
+.app-main-column .dropzone-sub,
+.app-main-column .file-name,
+.app-main-column .file-meta,
+.app-main-column .metric-value,
+.app-main-column .metric-label,
+.app-main-column .metric-sub,
+.app-main-column .tab-btn,
+.app-main-column .curtain-tag,
+.app-main-column .homography-card h4,
+.app-main-column .matrix-cell,
+.app-main-column .globe-controls-bar h3,
+.app-main-column .site-info-overlay h4,
+.app-main-column .site-coords,
+.app-main-column .site-desc,
+.app-main-column .docs-panel h3,
+.app-main-column .docs-panel h4,
+.app-main-column .docs-panel p,
+.app-main-column .docs-panel li,
+.app-main-column .docs-panel strong,
+.app-main-column .settings-section h3,
+.app-main-column .settings-row-text strong,
+.app-main-column .settings-row-text p,
+.app-main-column .settings-select,
+.app-main-column .footer-bar p,
+.app-main-column .user-chip span.name,
+.app-main-column .status-chip .row span.label,
+.app-main-column .status-chip .version,
+.app-main-column .topbar-search input,
+.notif-panel h4,
+.notif-item-title,
+.notif-item-desc,
+.notif-item-time,
+.notif-empty p,
+.toast-body strong,
+.toast-body p,
+.loading-modal-card h3,
+.loading-modal-card p {
+  color: #cae2f9 !important;
+}
+
+.topbar-search input::placeholder {
+  color: rgba(202, 226, 249, 0.6) !important;
 }
 
 /* ===== SIDEBAR ===== */
