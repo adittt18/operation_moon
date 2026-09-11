@@ -5,7 +5,7 @@ export default function TopBar({ theme, onToggleTheme, apiOnline, teamName = 'Te
   return (
     <div className="topbar">
       <div className="topbar-mobile-brand">
-        <span className="mobile-brand-icon">🌙</span>
+        <img src="/isro_logo.png" alt="ISRO" className="mobile-brand-logo-img" />
         <span className="mobile-brand-title">Pixel-Moon</span>
       </div>
 

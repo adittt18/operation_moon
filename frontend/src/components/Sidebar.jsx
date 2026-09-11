@@ -79,19 +79,17 @@ export function MobileNav({ currentTab, onNavigate, hasResult }) {
 
 function IsroMark() {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="19" stroke="#3b82f6" strokeOpacity="0.35" strokeWidth="1.2" />
-      <path
-        d="M20 6 L23.2 17.2 L34.5 17.6 L25.4 24.6 L28.8 35.4 L20 28.6 L11.2 35.4 L14.6 24.6 L5.5 17.6 L16.8 17.2 Z"
-        fill="url(#isroGrad)"
-      />
-      <defs>
-        <linearGradient id="isroGrad" x1="5" y1="6" x2="35" y2="35" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#f97316" />
-          <stop offset="1" stopColor="#fb923c" />
-        </linearGradient>
-      </defs>
-    </svg>
+    <img
+      src="/isro_logo.png"
+      alt="ISRO"
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        display: 'block',
+      }}
+    />
   );
 }
+
 
