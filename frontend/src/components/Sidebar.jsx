@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { id: 'upload', label: 'Upload & Register', icon: UploadCloud },
   { id: 'results', label: 'Analysis & Metrics', icon: BarChart3, requiresResult: true },
   { id: 'globe', label: '3D Moon Globe', icon: Globe2 },
-  { id: 'docs', label: 'Architecture', icon: FileText },
+  { id: 'docs', label: 'PRD & Architecture', icon: FileText },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
 
