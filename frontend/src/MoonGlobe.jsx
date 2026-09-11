@@ -181,11 +181,49 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
       }
     };
 
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const deltaX = e.touches[0].clientX - prevMousePos.x;
+      const deltaY = e.touches[0].clientY - prevMousePos.y;
+      moonMesh.rotation.y += deltaX * 0.006;
+      moonMesh.rotation.x += deltaY * 0.006;
+      prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    };
+
+    const onTouchEnd = (e) => {
+      isDragging = false;
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(markers, true);
+        if (intersects.length > 0) {
+          const clickedSite = intersects[0].object.userData || intersects[0].object.parent?.userData;
+          if (clickedSite) {
+            setActiveSiteInfo(clickedSite);
+            if (onSiteSelect) onSiteSelect(clickedSite);
+          }
+        }
+      }
+    };
+
     const dom = renderer.domElement;
     dom.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     dom.addEventListener('click', onClick);
+    dom.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
 
     // 6. Animation loop
     let reqId;
@@ -204,6 +242,9 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       dom.removeEventListener('click', onClick);
+      dom.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
       renderer.dispose();
     };
   }, [sites, autoRotate]);

@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { id: 'upload', label: 'Upload & Register', icon: UploadCloud },
   { id: 'results', label: 'Analysis & Metrics', icon: BarChart3, requiresResult: true },
   { id: 'globe', label: '3D Moon Globe', icon: Globe2 },
-  { id: 'docs', label: 'PRD & Architecture', icon: FileText },
+  { id: 'docs', label: 'Architecture', icon: FileText },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
 
@@ -53,6 +53,30 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
   );
 }
 
+export function MobileNav({ currentTab, onNavigate, hasResult }) {
+  return (
+    <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+      {NAV_ITEMS.map(({ id, label, icon: Icon, requiresResult }) => {
+        const disabled = requiresResult && !hasResult;
+        const shortLabel = id === 'upload' ? 'Upload' : id === 'results' ? 'Results' : id === 'globe' ? 'Globe' : label;
+        return (
+          <button
+            key={id}
+            className={`mobile-nav-btn ${currentTab === id ? 'active' : ''}`}
+            onClick={() => onNavigate(id)}
+            disabled={disabled}
+            type="button"
+            title={disabled ? 'Run a registration to view results' : label}
+          >
+            <Icon size={19} strokeWidth={currentTab === id ? 2.4 : 1.8} />
+            <span className="mobile-nav-label">{shortLabel}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
 function IsroMark() {
   return (
     <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -70,3 +94,4 @@ function IsroMark() {
     </svg>
   );
 }
+

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // In local dev it falls back to '' (empty string) so Vite's proxy handles routing.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
-import Sidebar from './components/Sidebar';
+import Sidebar, { MobileNav } from './components/Sidebar';
 import TopBar from './components/TopBar';
 import HeroBanner from './components/HeroBanner';
 import { OneClickDatasets, AdditionalDatasets } from './components/DatasetShowcase';
@@ -142,7 +142,7 @@ export default function App() {
 
           {currentTab === 'docs' && (
             <div className="docs-panel glass-card page-fade">
-              <h3>Pixel-Moon Technical Architecture &amp; PRD Summary</h3>
+              <h3>Pixel-Moon Technical Architecture</h3>
               <div className="docs-grid">
                 <div className="doc-section">
                   <h4>Evaluation Criteria</h4>
@@ -179,6 +179,12 @@ export default function App() {
           </footer>
         </main>
       </div>
+
+      <MobileNav
+        currentTab={currentTab}
+        onNavigate={setCurrentTab}
+        hasResult={!!registrationResult}
+      />
     </div>
   );
 }

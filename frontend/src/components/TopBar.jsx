@@ -4,6 +4,11 @@ import { Search, Bell, ChevronDown, Sun, Moon } from 'lucide-react';
 export default function TopBar({ theme, onToggleTheme, apiOnline, teamName = 'Team Code_Chaos', initials = 'TC' }) {
   return (
     <div className="topbar">
+      <div className="topbar-mobile-brand">
+        <span className="mobile-brand-icon">🌙</span>
+        <span className="mobile-brand-title">Pixel-Moon</span>
+      </div>
+
       <div className="topbar-search">
         <Search strokeWidth={2} />
         <input type="text" placeholder="Search lunar image, mission data..." />
