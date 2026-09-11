@@ -20,7 +20,7 @@
   --sidebar-bg: linear-gradient(190deg, #0d2038 0%, #071426 55%, #030a15 100%);
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-text: #90a4c0;
-  --sidebar-text-active: #cae2f9;
+  --sidebar-text-active: #f3f7ff;
   --sidebar-active-bg: linear-gradient(90deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.08));
   --sidebar-active-border: #3b82f6;
 
@@ -32,10 +32,10 @@
   --shadow-soft: 0 20px 45px rgba(0, 8, 20, 0.45);
 
   /* text */
-  --text-primary: #cae2f9;
-  --text-secondary: #a4c4e8;
-  --text-muted: #7393ba;
-  --text-faint: #55739c;
+  --text-primary: #f3f7ff;
+  --text-secondary: #a9bcd6;
+  --text-muted: #7288a6;
+  --text-faint: #56698a;
 
   /* brand accents */
   --accent-blue: #3b82f6;
@@ -134,160 +134,7 @@ p { margin: 0; }
   flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
 }
 
-/* Right-side unified text color (#cae2f9) strictly for DARK THEME */
-[data-theme="dark"] .app-main-column,
-:root:not([data-theme="light"]) .app-main-column,
-[data-theme="dark"] .app-main-column h1:not(.logo-text),
-:root:not([data-theme="light"]) .app-main-column h1:not(.logo-text),
-[data-theme="dark"] .app-main-column h2,
-:root:not([data-theme="light"]) .app-main-column h2,
-[data-theme="dark"] .app-main-column h3,
-:root:not([data-theme="light"]) .app-main-column h3,
-[data-theme="dark"] .app-main-column h4,
-:root:not([data-theme="light"]) .app-main-column h4,
-[data-theme="dark"] .app-main-column h5,
-:root:not([data-theme="light"]) .app-main-column h5,
-[data-theme="dark"] .app-main-column h6,
-:root:not([data-theme="light"]) .app-main-column h6,
-[data-theme="dark"] .app-main-column p,
-:root:not([data-theme="light"]) .app-main-column p,
-[data-theme="dark"] .app-main-column span:not(.dot):not(.pulse-dot):not(.user-chip-avatar),
-:root:not([data-theme="light"]) .app-main-column span:not(.dot):not(.pulse-dot):not(.user-chip-avatar),
-[data-theme="dark"] .app-main-column strong,
-:root:not([data-theme="light"]) .app-main-column strong,
-[data-theme="dark"] .app-main-column b,
-:root:not([data-theme="light"]) .app-main-column b,
-[data-theme="dark"] .app-main-column label,
-:root:not([data-theme="light"]) .app-main-column label,
-[data-theme="dark"] .app-main-column input,
-:root:not([data-theme="light"]) .app-main-column input,
-[data-theme="dark"] .app-main-column select,
-:root:not([data-theme="light"]) .app-main-column select,
-[data-theme="dark"] .app-main-column textarea,
-:root:not([data-theme="light"]) .app-main-column textarea,
-[data-theme="dark"] .app-main-column li,
-:root:not([data-theme="light"]) .app-main-column li,
-[data-theme="dark"] .app-main-column .hero-title,
-:root:not([data-theme="light"]) .app-main-column .hero-title,
-[data-theme="dark"] .app-main-column .hero-subtitle,
-:root:not([data-theme="light"]) .app-main-column .hero-subtitle,
-[data-theme="dark"] .app-main-column .hero-desc,
-:root:not([data-theme="light"]) .app-main-column .hero-desc,
-[data-theme="dark"] .app-main-column .hero-pill,
-:root:not([data-theme="light"]) .app-main-column .hero-pill,
-[data-theme="dark"] .app-main-column .hero-status-badge .txt strong,
-:root:not([data-theme="light"]) .app-main-column .hero-status-badge .txt strong,
-[data-theme="dark"] .app-main-column .hero-status-badge .txt span,
-:root:not([data-theme="light"]) .app-main-column .hero-status-badge .txt span,
-[data-theme="dark"] .app-main-column .hero-vertical-text span,
-:root:not([data-theme="light"]) .app-main-column .hero-vertical-text span,
-[data-theme="dark"] .app-main-column .section-heading h3,
-:root:not([data-theme="light"]) .app-main-column .section-heading h3,
-[data-theme="dark"] .app-main-column .section-heading p,
-:root:not([data-theme="light"]) .app-main-column .section-heading p,
-[data-theme="dark"] .app-main-column .dataset-title,
-:root:not([data-theme="light"]) .app-main-column .dataset-title,
-[data-theme="dark"] .app-main-column .dataset-desc,
-:root:not([data-theme="light"]) .app-main-column .dataset-desc,
-[data-theme="dark"] .app-main-column .dataset-tag,
-:root:not([data-theme="light"]) .app-main-column .dataset-tag,
-[data-theme="dark"] .app-main-column .dataset-badge,
-:root:not([data-theme="light"]) .app-main-column .dataset-badge,
-[data-theme="dark"] .app-main-column .processing-label,
-:root:not([data-theme="light"]) .app-main-column .processing-label,
-[data-theme="dark"] .app-main-column .slider-field .row span,
-:root:not([data-theme="light"]) .app-main-column .slider-field .row span,
-[data-theme="dark"] .app-main-column .slider-field .row b,
-:root:not([data-theme="light"]) .app-main-column .slider-field .row b,
-[data-theme="dark"] .app-main-column .step-pill span.step-label,
-:root:not([data-theme="light"]) .app-main-column .step-pill span.step-label,
-[data-theme="dark"] .app-main-column .card-header h2,
-:root:not([data-theme="light"]) .app-main-column .card-header h2,
-[data-theme="dark"] .app-main-column .card-header p,
-:root:not([data-theme="light"]) .app-main-column .card-header p,
-[data-theme="dark"] .app-main-column .dropzone-header h4,
-:root:not([data-theme="light"]) .app-main-column .dropzone-header h4,
-[data-theme="dark"] .app-main-column .dropzone-sub,
-:root:not([data-theme="light"]) .app-main-column .dropzone-sub,
-[data-theme="dark"] .app-main-column .file-name,
-:root:not([data-theme="light"]) .app-main-column .file-name,
-[data-theme="dark"] .app-main-column .file-meta,
-:root:not([data-theme="light"]) .app-main-column .file-meta,
-[data-theme="dark"] .app-main-column .metric-value,
-:root:not([data-theme="light"]) .app-main-column .metric-value,
-[data-theme="dark"] .app-main-column .metric-label,
-:root:not([data-theme="light"]) .app-main-column .metric-label,
-[data-theme="dark"] .app-main-column .metric-sub,
-:root:not([data-theme="light"]) .app-main-column .metric-sub,
-[data-theme="dark"] .app-main-column .tab-btn,
-:root:not([data-theme="light"]) .app-main-column .tab-btn,
-[data-theme="dark"] .app-main-column .curtain-tag,
-:root:not([data-theme="light"]) .app-main-column .curtain-tag,
-[data-theme="dark"] .app-main-column .homography-card h4,
-:root:not([data-theme="light"]) .app-main-column .homography-card h4,
-[data-theme="dark"] .app-main-column .matrix-cell,
-:root:not([data-theme="light"]) .app-main-column .matrix-cell,
-[data-theme="dark"] .app-main-column .globe-controls-bar h3,
-:root:not([data-theme="light"]) .app-main-column .globe-controls-bar h3,
-[data-theme="dark"] .app-main-column .site-info-overlay h4,
-:root:not([data-theme="light"]) .app-main-column .site-info-overlay h4,
-[data-theme="dark"] .app-main-column .site-coords,
-:root:not([data-theme="light"]) .app-main-column .site-coords,
-[data-theme="dark"] .app-main-column .site-desc,
-:root:not([data-theme="light"]) .app-main-column .site-desc,
-[data-theme="dark"] .app-main-column .docs-panel h3,
-:root:not([data-theme="light"]) .app-main-column .docs-panel h3,
-[data-theme="dark"] .app-main-column .docs-panel h4,
-:root:not([data-theme="light"]) .app-main-column .docs-panel h4,
-[data-theme="dark"] .app-main-column .docs-panel p,
-:root:not([data-theme="light"]) .app-main-column .docs-panel p,
-[data-theme="dark"] .app-main-column .docs-panel li,
-:root:not([data-theme="light"]) .app-main-column .docs-panel li,
-[data-theme="dark"] .app-main-column .docs-panel strong,
-:root:not([data-theme="light"]) .app-main-column .docs-panel strong,
-[data-theme="dark"] .app-main-column .settings-section h3,
-:root:not([data-theme="light"]) .app-main-column .settings-section h3,
-[data-theme="dark"] .app-main-column .settings-row-text strong,
-:root:not([data-theme="light"]) .app-main-column .settings-row-text strong,
-[data-theme="dark"] .app-main-column .settings-row-text p,
-:root:not([data-theme="light"]) .app-main-column .settings-row-text p,
-[data-theme="dark"] .app-main-column .settings-select,
-:root:not([data-theme="light"]) .app-main-column .settings-select,
-[data-theme="dark"] .app-main-column .footer-bar p,
-:root:not([data-theme="light"]) .app-main-column .footer-bar p,
-[data-theme="dark"] .app-main-column .user-chip span.name,
-:root:not([data-theme="light"]) .app-main-column .user-chip span.name,
-[data-theme="dark"] .app-main-column .status-chip .row span.label,
-:root:not([data-theme="light"]) .app-main-column .status-chip .row span.label,
-[data-theme="dark"] .app-main-column .status-chip .version,
-:root:not([data-theme="light"]) .app-main-column .status-chip .version,
-[data-theme="dark"] .app-main-column .topbar-search input,
-:root:not([data-theme="light"]) .app-main-column .topbar-search input,
-[data-theme="dark"] .notif-panel h4,
-:root:not([data-theme="light"]) .notif-panel h4,
-[data-theme="dark"] .notif-item-title,
-:root:not([data-theme="light"]) .notif-item-title,
-[data-theme="dark"] .notif-item-desc,
-:root:not([data-theme="light"]) .notif-item-desc,
-[data-theme="dark"] .notif-item-time,
-:root:not([data-theme="light"]) .notif-item-time,
-[data-theme="dark"] .notif-empty p,
-:root:not([data-theme="light"]) .notif-empty p,
-[data-theme="dark"] .toast-body strong,
-:root:not([data-theme="light"]) .toast-body strong,
-[data-theme="dark"] .toast-body p,
-:root:not([data-theme="light"]) .toast-body p,
-[data-theme="dark"] .loading-modal-card h3,
-:root:not([data-theme="light"]) .loading-modal-card h3,
-[data-theme="dark"] .loading-modal-card p,
-:root:not([data-theme="light"]) .loading-modal-card p {
-  color: #cae2f9 !important;
-}
 
-[data-theme="dark"] .topbar-search input::placeholder,
-:root:not([data-theme="light"]) .topbar-search input::placeholder {
-  color: rgba(202, 226, 249, 0.6) !important;
-}
 
 /* ===== SIDEBAR ===== */
 .sidebar {
@@ -1316,14 +1163,14 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   font-weight: 500;
 }
 [data-theme="light"] .hero-pill {
-  background: linear-gradient(180deg, #1d3d6e 0%, #102444 100%) !important;
-  border: 1px solid rgba(120, 178, 255, 0.4) !important;
-  color: #f1f6ff !important;
+  background: linear-gradient(180deg, #2a5ea6 0%, #1a4276 100%) !important;
+  border: 1px solid rgba(130, 185, 255, 0.45) !important;
+  color: #ffffff !important;
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(0, 8, 24, 0.25) !important;
+  box-shadow: 0 3px 10px rgba(25, 65, 130, 0.18) !important;
 }
 [data-theme="light"] .hero-pill svg {
-  color: #60a5fa !important;
+  color: #93c5fd !important;
 }
 [data-theme="light"] .hero-scene-wrap::before {
   background: linear-gradient(90deg, rgba(240, 247, 255, 0.95) 0%, rgba(240, 247, 255, 0.4) 45%, transparent 100%);
@@ -1570,17 +1417,17 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .btn-primary,
 [data-theme="light"] .btn-run {
-  background: linear-gradient(180deg, #1d3d6e 0%, #102444 100%) !important;
-  color: #f1f6ff !important;
-  border: 1px solid rgba(120, 178, 255, 0.4) !important;
-  box-shadow: 0 4px 14px rgba(0, 8, 24, 0.4) !important;
+  background: linear-gradient(180deg, #2a5ea6 0%, #1a4276 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(130, 185, 255, 0.45) !important;
+  box-shadow: 0 4px 14px rgba(25, 65, 130, 0.22) !important;
   font-weight: 700;
 }
 [data-theme="light"] .btn-primary:hover:not(:disabled),
 [data-theme="light"] .btn-run:hover:not(:disabled) {
-  background: linear-gradient(180deg, #275294 0%, #16325c 100%) !important;
-  border-color: rgba(147, 197, 253, 0.65) !important;
-  box-shadow: 0 6px 18px rgba(0, 12, 32, 0.5) !important;
+  background: linear-gradient(180deg, #326ebd 0%, #204f8c 100%) !important;
+  border-color: rgba(147, 197, 253, 0.75) !important;
+  box-shadow: 0 6px 18px rgba(25, 65, 130, 0.3) !important;
   color: #ffffff !important;
 }
 [data-theme="light"] .btn-accent {
@@ -1661,10 +1508,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #1d4ed8;
 }
 [data-theme="light"] .tab-btn.active {
-  background: linear-gradient(180deg, #1d3d6e 0%, #102444 100%) !important;
+  background: linear-gradient(180deg, #2a5ea6 0%, #1a4276 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(120, 178, 255, 0.4) !important;
-  box-shadow: 0 3px 10px rgba(0, 8, 24, 0.35) !important;
+  border: 1px solid rgba(130, 185, 255, 0.45) !important;
+  box-shadow: 0 3px 10px rgba(25, 65, 130, 0.2) !important;
 }
 [data-theme="light"] .side-panel h4,
 [data-theme="light"] .matches-view h4,
