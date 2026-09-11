@@ -78,6 +78,7 @@ function IsroBadge() {
       style={{
         width: '100%',
         height: '100%',
+        maxHeight: '48px',
         objectFit: 'contain',
         display: 'block',
       }}
@@ -93,6 +94,7 @@ function NasaBadge() {
       style={{
         width: '100%',
         height: '100%',
+        maxHeight: '48px',
         objectFit: 'contain',
         display: 'block',
       }}

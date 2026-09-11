@@ -278,12 +278,12 @@ export default function HeroScene() {
     scene.add(stars);
 
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(1.55, 0.85, -1.4);
+    earthGroup.position.set(1.65, 0.95, -1.5);
     scene.add(earthGroup);
 
     const lander = buildLander();
-    const landerBase = { x: -0.85, y: -0.62, z: 0.5 };
-    const landerBaseRot = { x: 0.1, y: 0.55 };
+    const landerBase = { x: 0.1, y: 0.05, z: 0.6 };
+    const landerBaseRot = { x: 0.15, y: 0.45 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
     scene.add(lander);
