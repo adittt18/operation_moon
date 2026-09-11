@@ -1059,8 +1059,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: inline-block;
 }
 [data-theme="light"] .hero-subtitle {
-  color: #17365d !important;
-  -webkit-text-fill-color: #17365d !important;
+  color: #234d80 !important;
+  -webkit-text-fill-color: #234d80 !important;
   font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {
