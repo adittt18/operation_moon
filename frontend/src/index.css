@@ -1154,7 +1154,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
 }
 [data-theme="light"] .status-chip .row span.label {
-  color: #0b2545;
+  color: #17365d !important;
   font-weight: 700;
 }
 [data-theme="light"] .status-chip .version {
@@ -1366,14 +1366,14 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(195, 218, 245, 0.85);
 }
 [data-theme="light"] .metric-title {
-  color: #405f83;
+  color: #17365d !important;
   font-weight: 600;
 }
 [data-theme="light"] .metric-value {
-  color: #0a1c36;
+  color: #17365d !important;
 }
 [data-theme="light"] .metric-value .unit {
-  color: #6482a4;
+  color: #2b6cb0;
 }
 [data-theme="light"] .metric-target {
   color: #6482a4;
@@ -1402,7 +1402,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .matches-view h4,
 [data-theme="light"] .checkerboard-view h4,
 [data-theme="light"] .homography-card h4 {
-  color: #0a1c36;
+  color: #17365d !important;
 }
 [data-theme="light"] .caption {
   color: #405f83;
