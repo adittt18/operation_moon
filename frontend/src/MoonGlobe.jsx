@@ -5,23 +5,101 @@ import { Pause, Play, MapPin, X, Rocket } from 'lucide-react';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 
-function makeStarfield() {
-  const count = 1800;
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    const r = 25 + Math.random() * 60;
+function makePhotorealisticSpace() {
+  const group = new THREE.Group();
+
+  // 1. Deep Field Stars with Realistic Spectral Classes (O, B, A, F, G, K, M)
+  const starCount = 3600;
+  const positions = new Float32Array(starCount * 3);
+  const colors = new Float32Array(starCount * 3);
+
+  const starPalettes = [
+    [0.78, 0.88, 1.0],   // Class O/B - Brilliant Blue-White
+    [0.92, 0.96, 1.0],   // Class A - Crisp Pure White
+    [1.0, 1.0, 1.0],     // Pure White
+    [1.0, 0.95, 0.84],   // Class F/G - Warm Solar Yellow
+    [1.0, 0.82, 0.62],   // Class K - Soft Amber
+    [1.0, 0.65, 0.50],   // Class M - Distant Red Giant
+  ];
+
+  for (let i = 0; i < starCount; i++) {
+    const r = 35 + Math.random() * 85;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(Math.random() * 2 - 1);
+
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
     positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
     positions[i * 3 + 2] = r * Math.cos(phi);
+
+    // Realistic power-law brightness distribution (mostly faint pinpricks, a few prominent beacons)
+    const baseColor = starPalettes[Math.floor(Math.random() * starPalettes.length)];
+    const mag = Math.pow(Math.random(), 2.8);
+    const lum = 0.3 + mag * 0.7;
+
+    colors[i * 3] = baseColor[0] * lum;
+    colors[i * 3 + 1] = baseColor[1] * lum;
+    colors[i * 3 + 2] = baseColor[2] * lum;
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const mat = new THREE.PointsMaterial({
-    color: 0xdfe9ff, size: 0.055, sizeAttenuation: true, transparent: true, opacity: 0.85, depthWrite: false,
+
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  starGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const starMat = new THREE.PointsMaterial({
+    size: 0.052,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.95,
+    vertexColors: true,
+    depthWrite: false,
   });
-  return new THREE.Points(geo, mat);
+  group.add(new THREE.Points(starGeo, starMat));
+
+  // 2. Realistic Milky Way Galactic Dust Band (Deep Cosmic Backplane)
+  const nebulaCount = 1800;
+  const nebPos = new Float32Array(nebulaCount * 3);
+  const nebColors = new Float32Array(nebulaCount * 3);
+
+  for (let i = 0; i < nebulaCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 70 + Math.random() * 50;
+    const bandSpread = (Math.random() - 0.5) * 22;
+
+    // Tilted galactic plane distribution
+    const x = dist * Math.cos(angle);
+    const y = dist * Math.sin(angle) * 0.42 + bandSpread;
+    const z = dist * Math.sin(angle) * 0.88;
+
+    nebPos[i * 3] = x;
+    nebPos[i * 3 + 1] = y;
+    nebPos[i * 3 + 2] = z;
+
+    // Cosmic interstellar dust tones (deep indigo, subtle violet, faint cyan-stardust)
+    const tint = Math.random();
+    if (tint < 0.45) {
+      nebColors[i * 3] = 0.18; nebColors[i * 3 + 1] = 0.32; nebColors[i * 3 + 2] = 0.65;
+    } else if (tint < 0.8) {
+      nebColors[i * 3] = 0.28; nebColors[i * 3 + 1] = 0.22; nebColors[i * 3 + 2] = 0.52;
+    } else {
+      nebColors[i * 3] = 0.38; nebColors[i * 3 + 1] = 0.42; nebColors[i * 3 + 2] = 0.62;
+    }
+  }
+
+  const nebGeo = new THREE.BufferGeometry();
+  nebGeo.setAttribute('position', new THREE.BufferAttribute(nebPos, 3));
+  nebGeo.setAttribute('color', new THREE.BufferAttribute(nebColors, 3));
+  const nebMat = new THREE.PointsMaterial({
+    size: 0.22,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.32,
+    vertexColors: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  group.add(new THREE.Points(nebGeo, nebMat));
+
+  return group;
 }
 
 export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
@@ -74,19 +152,22 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     }
     window.addEventListener('resize', handleResize);
 
-    // 2. Lighting — soft hemisphere fill + a hard "sun" for real crater shadow relief
-    const hemiLight = new THREE.HemisphereLight(0x5a6b8c, 0x0a0c14, 0.65);
-    scene.add(hemiLight);
+    // 2. Photorealistic Space Lighting (Collimated Sun + Earthshine reflection + Deep Void)
+    const ambientCosmic = new THREE.HemisphereLight(0x182438, 0x010307, 0.38);
+    scene.add(ambientCosmic);
 
-    const sunLight = new THREE.DirectionalLight(0xfff6e8, 2.9);
-    sunLight.position.set(5, 3, 5);
+    // Hard, brilliant Sun lighting for authentic lunar relief and crater shadows
+    const sunLight = new THREE.DirectionalLight(0xfff8ee, 3.2);
+    sunLight.position.set(6, 2.5, 4.5);
     scene.add(sunLight);
 
-    const rimLight = new THREE.DirectionalLight(0x4f7fdb, 0.5);
-    rimLight.position.set(-4, -2, -4);
-    scene.add(rimLight);
+    // Authentic Earthshine: subtle cool bluish illumination on the night side
+    const earthshineLight = new THREE.DirectionalLight(0x224a78, 0.48);
+    earthshineLight.position.set(-6, -1.8, -4.5);
+    scene.add(earthshineLight);
 
-    scene.add(makeStarfield());
+    // Add photorealistic deep space background
+    scene.add(makePhotorealisticSpace());
 
     // 3. Moon sphere with the real equirectangular lunar texture, plus a
     // normal map + roughness map derived from that same imagery so craters

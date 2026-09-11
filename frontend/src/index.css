@@ -20,7 +20,7 @@
   --sidebar-bg: linear-gradient(190deg, #0d2038 0%, #071426 55%, #030a15 100%);
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-text: #90a4c0;
-  --sidebar-text-active: #f3f7ff;
+  --sidebar-text-active: #cae2f9;
   --sidebar-active-bg: linear-gradient(90deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.08));
   --sidebar-active-border: #3b82f6;
 
@@ -32,10 +32,10 @@
   --shadow-soft: 0 20px 45px rgba(0, 8, 20, 0.45);
 
   /* text */
-  --text-primary: #f3f7ff;
-  --text-secondary: #a9bcd6;
-  --text-muted: #7288a6;
-  --text-faint: #56698a;
+  --text-primary: #cae2f9;
+  --text-secondary: #a4c4e8;
+  --text-muted: #7393ba;
+  --text-faint: #55739c;
 
   /* brand accents */
   --accent-blue: #3b82f6;
@@ -294,7 +294,7 @@ p { margin: 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: themeSpinIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: themeSpinIn 0.85s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .theme-toggle .theme-icon {
   width: 17px;
@@ -782,7 +782,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .globe-toggles { display: flex; gap: 8px; }
 .globe-canvas-container {
   height: min(75vh, 650px); min-height: 520px;
-  background: radial-gradient(ellipse at 50% 50%, #0d1e38 0%, #061122 45%, #02050c 100%);
+  background: radial-gradient(circle at 50% 50%, #030713 0%, #020409 45%, #000103 100%);
   border: 1px solid var(--border-subtle); border-radius: 18px; overflow: hidden; position: relative; width: 100%; box-sizing: border-box;
   touch-action: none;
 }
