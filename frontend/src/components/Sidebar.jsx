@@ -43,7 +43,9 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
 
       <div className="sidebar-terrain" aria-hidden="true" />
       <div className="sidebar-footer">
-        <IsroMark />
+        <div className="sidebar-footer-logo">
+          <IsroMark size={24} />
+        </div>
         <div className="sidebar-footer-text">
           <strong>ISRO /</strong>
           TEAM CODE_CHAOS
@@ -77,16 +79,19 @@ export function MobileNav({ currentTab, onNavigate, hasResult }) {
   );
 }
 
-function IsroMark() {
+function IsroMark({ size = 30 }) {
   return (
     <img
       src="/isro_logo.png"
       alt="ISRO"
       style={{
-        width: '100%',
-        height: '100%',
+        width: size,
+        height: size,
+        maxWidth: size,
+        maxHeight: size,
         objectFit: 'contain',
         display: 'block',
+        flexShrink: 0,
       }}
     />
   );
