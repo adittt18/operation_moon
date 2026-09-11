@@ -6,3 +6,4 @@
   "outputDirectory": "dist",
   "installCommand": "npm install"
 }
+
