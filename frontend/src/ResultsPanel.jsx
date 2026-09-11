@@ -27,8 +27,10 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
 
 
   const handleSliderMove = (e) => {
+    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+    if (clientX === undefined) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
     setSliderPos((x / rect.width) * 100);
   };
 
@@ -162,7 +164,13 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
         <div className="viewer-stage">
           {/* Tab 1: Interactive Curtain Slider */}
           {activeTab === 'slider' && (
-            <div className="curtain-slider-container" onMouseMove={handleSliderMove}>
+            <div
+              className="curtain-slider-container"
+              onMouseMove={handleSliderMove}
+              onTouchMove={handleSliderMove}
+              onTouchStart={handleSliderMove}
+              onClick={handleSliderMove}
+            >
               <div className="image-underlay">
                 <img src={reference_preprocessed_url} alt="Reference LRO NAC" />
                 <span className="curtain-tag tag-right">NASA LRO NAC (Reference)</span>
