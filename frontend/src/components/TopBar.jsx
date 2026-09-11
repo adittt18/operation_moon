@@ -324,13 +324,19 @@ export default function TopBar({
         </div>
 
         <button
-          className="theme-toggle"
+          className={`theme-toggle theme-${theme}`}
           type="button"
           onClick={onToggleTheme}
           aria-label="Toggle light / dark theme"
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          {theme === 'dark' ? <Sun strokeWidth={2} /> : <Moon strokeWidth={2} />}
+          <span className="theme-toggle-inner" key={theme}>
+            {theme === 'dark' ? (
+              <Sun className="theme-icon sun-icon" strokeWidth={2} />
+            ) : (
+              <Moon className="theme-icon moon-icon" strokeWidth={2} />
+            )}
+          </span>
         </button>
 
         {/* Team Chip with dropdown chevron matching reference */}
