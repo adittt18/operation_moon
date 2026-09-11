@@ -6,7 +6,14 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 
 
-export default function UploadForm({ onRegistrationComplete, onSampleSelect, isProcessing, currentStep }) {
+export default function UploadForm({
+  onRegistrationComplete,
+  onSampleSelect,
+  isProcessing,
+  currentStep,
+  onStartProcessing,
+  onProcessingError,
+}) {
   const [sourceFile, setSourceFile] = useState(null);
   const [referenceFile, setReferenceFile] = useState(null);
   const [detectedSensor, setDetectedSensor] = useState('AUTO');
@@ -40,6 +47,7 @@ export default function UploadForm({ onRegistrationComplete, onSampleSelect, isP
       return;
     }
     setErrorMsg('');
+    if (onStartProcessing) onStartProcessing();
 
     const formData = new FormData();
     formData.append('source_image', sourceFile);
@@ -57,6 +65,7 @@ export default function UploadForm({ onRegistrationComplete, onSampleSelect, isP
       onRegistrationComplete(data);
     } catch (err) {
       setErrorMsg(err.message || 'An error occurred during image registration.');
+      if (onProcessingError) onProcessingError(err);
     }
   };
 

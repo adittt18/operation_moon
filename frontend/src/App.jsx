@@ -148,6 +148,14 @@ export default function App() {
           onSelectNotification={(n) => {
             if (n.targetTab) setCurrentTab(n.targetTab);
           }}
+          onNavigate={setCurrentTab}
+          onSelectDataset={(id) => {
+            setSelectedDataset(id);
+            handleSampleSelect(id);
+          }}
+          onSelectSite={(site) => {
+            handleGlobeSiteSelect(site);
+          }}
         />
 
         <main className="main-viewport">
@@ -179,6 +187,8 @@ export default function App() {
                 onRegistrationComplete={handleRegistrationComplete}
                 onSampleSelect={handleSampleSelect}
                 isProcessing={isProcessing}
+                onStartProcessing={() => setIsProcessing(true)}
+                onProcessingError={() => setIsProcessing(false)}
               />
             </div>
           )}

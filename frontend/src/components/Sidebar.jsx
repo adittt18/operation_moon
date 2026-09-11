@@ -44,7 +44,7 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
       <div className="sidebar-terrain" aria-hidden="true" />
       <div className="sidebar-footer">
         <div className="sidebar-footer-logo">
-          <IsroMark size={24} />
+          <IsroMark size={32} />
         </div>
         <div className="sidebar-footer-text">
           <strong>ISRO /</strong>
@@ -79,7 +79,7 @@ export function MobileNav({ currentTab, onNavigate, hasResult }) {
   );
 }
 
-function IsroMark({ size = 30 }) {
+function IsroMark({ size = 44 }) {
   return (
     <img
       src="/isro_logo.png"
