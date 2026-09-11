@@ -1195,20 +1195,25 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* Topbar */
 [data-theme="light"] .topbar { background: transparent; }
 [data-theme="light"] .topbar-search {
-  background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.9);
-  box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
-  color: #1e50a2;
+  background: #e2edf9;
+  border: 1px solid rgba(165, 198, 236, 0.95);
+  box-shadow: 0 2px 8px rgba(30, 70, 140, 0.07);
+  color: #1a4488;
+}
+[data-theme="light"] .topbar-search:focus-within {
+  background: #d8e8f6;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 [data-theme="light"] .topbar-search svg {
   color: #2563eb;
   opacity: 1;
 }
 [data-theme="light"] .topbar-search input {
-  color: #1e50a2;
+  color: #1a4488;
 }
 [data-theme="light"] .topbar-search input::placeholder {
-  color: #7b97b8;
+  color: #6383a8;
 }
 [data-theme="light"] .icon-btn {
   background: #ffffff;
