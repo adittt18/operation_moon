@@ -1047,8 +1047,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .hero-title,
 [data-theme="light"] .hero-brand-prefix {
-  color: #1b3d6d !important;
-  -webkit-text-fill-color: #1b3d6d !important;
+  color: #1e4494 !important;
+  -webkit-text-fill-color: #1e4494 !important;
   font-weight: 800 !important;
 }
 [data-theme="light"] .hero-title .grad {
@@ -1060,8 +1060,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: inline-block;
 }
 [data-theme="light"] .hero-subtitle {
-  color: #204b82 !important;
-  -webkit-text-fill-color: #204b82 !important;
+  color: #2357a4 !important;
+  -webkit-text-fill-color: #2357a4 !important;
   font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {
@@ -1154,7 +1154,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
 }
 [data-theme="light"] .status-chip .row span.label {
-  color: #1b3d6d !important;
+  color: #1e4494 !important;
   font-weight: 700;
 }
 [data-theme="light"] .status-chip .version {
@@ -1343,7 +1343,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .results-header h2,
 [data-theme="light"] .docs-panel h3,
 [data-theme="light"] .globe-controls-bar h3 {
-  color: #1b3d6d !important;
+  color: #1e4494 !important;
 }
 [data-theme="light"] .card-header .subtitle {
   color: #2b6cb0 !important;
@@ -1366,11 +1366,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(195, 218, 245, 0.85);
 }
 [data-theme="light"] .metric-title {
-  color: #204b82 !important;
+  color: #2357a4 !important;
   font-weight: 600;
 }
 [data-theme="light"] .metric-value {
-  color: #1b3d6d !important;
+  color: #1e4494 !important;
 }
 [data-theme="light"] .metric-value .unit {
   color: #2b6cb0;
@@ -1402,7 +1402,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .matches-view h4,
 [data-theme="light"] .checkerboard-view h4,
 [data-theme="light"] .homography-card h4 {
-  color: #1b3d6d !important;
+  color: #1e4494 !important;
 }
 [data-theme="light"] .caption {
   color: #405f83;
