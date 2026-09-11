@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 import Sidebar, { MobileNav } from './components/Sidebar';
-import TopBar from './components/TopBar';
+import TopBar, { ToastBanner } from './components/TopBar';
 import HeroBanner from './components/HeroBanner';
 import { OneClickDatasets, AdditionalDatasets } from './components/DatasetShowcase';
 import ProcessingBar from './components/ProcessingBar';
@@ -13,6 +13,8 @@ import SettingsPage from './components/Settings';
 import UploadForm from './UploadForm';
 import ResultsPanel from './ResultsPanel';
 import MoonGlobe from './MoonGlobe';
+import { RegistrationLoadingModal } from './components/ChandrayaanLoader';
+import { playNotificationSound } from './audio';
 import { readJsonResponse } from './api';
 
 export default function App() {
@@ -21,6 +23,25 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [sites, setSites] = useState([]);
   const [apiOnline, setApiOnline] = useState(true);
+
+  // Notification center
+  const [notifications, setNotifications] = useState([
+    {
+      id: 'init-1',
+      title: 'ISRO Chandrayaan-2 Ready',
+      desc: 'Pixel-Moon multi-modal registration engine is online.',
+      time: 'Just now',
+      unread: true,
+      icon: '🛰️',
+    },
+  ]);
+  const [activeToast, setActiveToast] = useState(null);
+
+  const addNotification = (notif) => {
+    setNotifications((prev) => [notif, ...prev]);
+    setActiveToast(notif);
+    playNotificationSound();
+  };
 
   // Theme — persisted, applied to <html data-theme="...">; index.html sets an
   // initial value before paint so there's no flash of the wrong theme.
@@ -54,11 +75,21 @@ export default function App() {
       .catch((err) => console.error('Failed to load sites:', err));
   }, []);
 
-
   const handleRegistrationComplete = (data) => {
     setRegistrationResult(data);
     setIsProcessing(false);
     setCurrentTab('results');
+    const rmse = data.metrics?.rmse ? `${data.metrics.rmse}px` : '< 1.0px';
+    addNotification({
+      id: 'notif-' + Date.now(),
+      title: 'Registration Completed!',
+      desc: `Registration for ${data.sensor || 'Chandrayaan-2'} succeeded with RMSE: ${rmse}.`,
+      time: 'Just now',
+      unread: true,
+      icon: '🎉',
+      actionLabel: 'Open Results',
+      targetTab: 'results',
+    });
   };
 
   const handleSampleSelect = async (sampleId) => {
@@ -73,7 +104,26 @@ export default function App() {
       const data = await readJsonResponse(res);
       setRegistrationResult(data);
       setCurrentTab('results');
+      const rmse = data.metrics?.rmse ? `${data.metrics.rmse}px` : '< 1.0px';
+      addNotification({
+        id: 'notif-' + Date.now(),
+        title: 'Registration Succeeded!',
+        desc: `Pair "${sampleId.toUpperCase()}" aligned at sub-pixel precision (RMSE: ${rmse}).`,
+        time: 'Just now',
+        unread: true,
+        icon: '🌕',
+        actionLabel: 'Open Results',
+        targetTab: 'results',
+      });
     } catch (err) {
+      addNotification({
+        id: 'notif-' + Date.now(),
+        title: 'Registration Issue',
+        desc: err.message || 'Pipeline could not complete registration.',
+        time: 'Just now',
+        unread: true,
+        icon: '⚠️',
+      });
       alert(`Error: ${err.message}`);
     } finally {
       setIsProcessing(false);
@@ -89,7 +139,16 @@ export default function App() {
       <Sidebar currentTab={currentTab} onNavigate={setCurrentTab} hasResult={!!registrationResult} />
 
       <div className="app-main-column">
-        <TopBar theme={theme} onToggleTheme={toggleTheme} apiOnline={apiOnline} />
+        <TopBar
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          apiOnline={apiOnline}
+          notifications={notifications}
+          onClearNotifications={() => setNotifications([])}
+          onSelectNotification={(n) => {
+            if (n.targetTab) setCurrentTab(n.targetTab);
+          }}
+        />
 
         <main className="main-viewport">
           {currentTab === 'home' && (
@@ -185,6 +244,18 @@ export default function App() {
         onNavigate={setCurrentTab}
         hasResult={!!registrationResult}
       />
+
+      {/* Floating Toast Notification Banner */}
+      <ToastBanner
+        toast={activeToast}
+        onClose={() => setActiveToast(null)}
+        onAction={(t) => {
+          if (t.targetTab) setCurrentTab(t.targetTab);
+        }}
+      />
+
+      {/* Chandrayaan Orbiting Moon Fullscreen Pipeline Loading Modal */}
+      <RegistrationLoadingModal isProcessing={isProcessing} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { SlidersHorizontal, Play, Link2, ChevronRight } from 'lucide-react';
+import ChandrayaanLoader from './ChandrayaanLoader';
 
 const STEPS = ['Upload', 'Align', 'Register', 'Evaluate'];
 
@@ -59,7 +60,7 @@ export default function ProcessingBar({
           disabled={!canRun || isProcessing}
         >
           {isProcessing ? (
-            <span className="btn-loading"><span className="spinner" /> Running...</span>
+            <span className="btn-loading"><ChandrayaanLoader size="sm" /> Running...</span>
           ) : (
             <>Run Registration <Play size={14} strokeWidth={2.6} fill="currentColor" /></>
           )}

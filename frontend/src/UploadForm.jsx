@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { readJsonResponse } from './api';
+import ChandrayaanLoader from './components/ChandrayaanLoader';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 
 
 export default function UploadForm({ onRegistrationComplete, onSampleSelect, isProcessing, currentStep }) {
@@ -209,7 +211,7 @@ export default function UploadForm({ onRegistrationComplete, onSampleSelect, isP
           >
             {isProcessing ? (
               <span className="btn-loading">
-                <span className="spinner"></span> Running Pipeline...
+                <ChandrayaanLoader size="sm" /> Running Pipeline...
               </span>
             ) : (
               '🚀 Execute Sub-Pixel Registration'
