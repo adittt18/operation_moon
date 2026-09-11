@@ -1044,8 +1044,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   letter-spacing: 2px;
   text-transform: uppercase;
 }
-[data-theme="light"] .hero-title {
-  color: #07152b !important;
+[data-theme="light"] .hero-title,
+[data-theme="light"] .hero-brand-prefix {
+  color: #061838 !important;
+  -webkit-text-fill-color: #061838 !important;
   font-weight: 800 !important;
 }
 [data-theme="light"] .hero-title .grad {
@@ -1057,7 +1059,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: inline-block;
 }
 [data-theme="light"] .hero-subtitle {
-  color: #07152b !important;
+  color: #061838 !important;
+  -webkit-text-fill-color: #061838 !important;
   font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {

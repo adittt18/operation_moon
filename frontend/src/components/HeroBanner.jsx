@@ -15,7 +15,7 @@ export default function HeroBanner() {
       <div className="hero-copy">
         <span className="hero-eyebrow">Welcome to</span>
         <h1 className="hero-title">
-          Pixel-<span className="grad">Moon</span>
+          <span className="hero-brand-prefix">Pixel-</span><span className="grad">Moon</span>
         </h1>
         <p className="hero-subtitle">Multi-Modal Lunar Image Registration Pipeline</p>
         <p className="hero-desc">
