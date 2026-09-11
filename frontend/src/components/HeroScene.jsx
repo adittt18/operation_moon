@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 /* ---------------------------------------------------------------------
@@ -7,19 +7,18 @@ import * as THREE from 'three';
  * ------------------------------------------------------------------- */
 
 function makeStarfield() {
-  const count = 600;
+  const count = 750;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
 
   for (let i = 0; i < count; i++) {
-    const r = 16 + Math.random() * 22;
+    const r = 16 + Math.random() * 24;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(Math.random() * 2 - 1);
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
     positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
     positions[i * 3 + 2] = -Math.abs(r * Math.cos(phi)) - 2;
 
-    // Subtle blue/white color variation
     const tint = 0.8 + Math.random() * 0.2;
     colors[i * 3] = tint * 0.9;
     colors[i * 3 + 1] = tint * 0.95;
@@ -32,35 +31,14 @@ function makeStarfield() {
     size: 0.045,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.9,
     vertexColors: true,
     depthWrite: false,
   });
   return new THREE.Points(geo, mat);
 }
 
-// Crumpled gold multi-layer-insulation foil with faceted lighting
-function makeFoilGeometry(w, h, d, seg, noise) {
-  const geo = new THREE.BoxGeometry(w, h, d, seg, seg, seg);
-  const pos = geo.attributes.position;
-  const v = new THREE.Vector3();
-  for (let i = 0; i < pos.count; i++) {
-    v.fromBufferAttribute(pos, i);
-    const n =
-      Math.sin(v.x * 24 + v.y * 12) *
-      Math.cos(v.y * 18 - v.z * 14) *
-      Math.sin(v.z * 20 + v.x * 8);
-    const amt = n * noise;
-    v.x += amt;
-    v.y += amt * 0.7;
-    v.z += amt;
-    pos.setXYZ(i, v.x, v.y, v.z);
-  }
-  geo.computeVertexNormals();
-  return geo;
-}
-
-// Photovoltaic solar array texture for the lander body panels
+// Photovoltaic solar array texture for the lander body & deployable wings
 function makeSolarArrayTexture() {
   const c = document.createElement('canvas');
   c.width = 256;
@@ -68,7 +46,7 @@ function makeSolarArrayTexture() {
   const ctx = c.getContext('2d');
 
   // Dark crystalline space navy
-  ctx.fillStyle = '#0a162a';
+  ctx.fillStyle = '#081426';
   ctx.fillRect(0, 0, c.width, c.height);
 
   // Solar cell grid
@@ -83,18 +61,18 @@ function makeSolarArrayTexture() {
       const x = pad + col * (cellW + pad);
       const y = pad + r * (cellH + pad);
 
-      ctx.fillStyle = '#0d2242';
+      ctx.fillStyle = '#0f2444';
       ctx.fillRect(x, y, cellW, cellH);
 
       // Micro busbars
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.5)';
+      ctx.strokeStyle = 'rgba(147, 197, 253, 0.55)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x + cellW / 2, y);
       ctx.lineTo(x + cellW / 2, y + cellH);
       ctx.stroke();
 
-      ctx.strokeStyle = 'rgba(96, 165, 250, 0.25)';
+      ctx.strokeStyle = 'rgba(96, 165, 250, 0.3)';
       ctx.beginPath();
       ctx.moveTo(x, y + cellH / 2);
       ctx.lineTo(x + cellW, y + cellH / 2);
@@ -103,7 +81,7 @@ function makeSolarArrayTexture() {
   }
 
   // Gold border frame
-  ctx.strokeStyle = '#d49b38';
+  ctx.strokeStyle = '#eab308';
   ctx.lineWidth = 4;
   ctx.strokeRect(0, 0, c.width, c.height);
 
@@ -112,43 +90,43 @@ function makeSolarArrayTexture() {
   return tex;
 }
 
-// Builds the detailed Vikram Lander matching Screenshot 1
+// Builds the detailed interactive Vikram Lander with deployable panels
 function buildVikramLander() {
   const group = new THREE.Group();
 
   // Materials
   const goldMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe8ad38,
-    metalness: 0.88,
-    roughness: 0.25,
+    color: 0xedb338,
+    metalness: 0.9,
+    roughness: 0.22,
     flatShading: true,
   });
 
   const darkGoldMaterial = new THREE.MeshStandardMaterial({
     color: 0xa46e1e,
-    metalness: 0.82,
-    roughness: 0.35,
+    metalness: 0.84,
+    roughness: 0.32,
     flatShading: true,
   });
 
   const chromeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xdde3ec,
-    metalness: 0.92,
-    roughness: 0.18,
+    color: 0xe2e8f0,
+    metalness: 0.94,
+    roughness: 0.15,
   });
 
   const solarTex = makeSolarArrayTexture();
   const solarPanelMaterial = new THREE.MeshStandardMaterial({
     map: solarTex,
-    metalness: 0.45,
-    roughness: 0.35,
+    metalness: 0.55,
+    roughness: 0.28,
     bumpScale: 0.02,
   });
 
   const engineMaterial = new THREE.MeshStandardMaterial({
-    color: 0x24272c,
-    metalness: 0.9,
-    roughness: 0.4,
+    color: 0x1e2229,
+    metalness: 0.92,
+    roughness: 0.38,
   });
 
   // 1. Main Core: Octagonal / Pyramidal Gold Foil superstructure
@@ -159,40 +137,94 @@ function buildVikramLander() {
   coreBody.position.y = 0.05;
   group.add(coreBody);
 
-  // 2. 4 Side Slanted Solar Panels (matching screenshot 1)
+  // 2. 4 Side Slanted Solar Panels with Hinges for Interactive Open/Close
   const panelAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+  const sidePanels = [];
+
   panelAngles.forEach((angle) => {
-    const panelGroup = new THREE.Group();
+    const hingeGroup = new THREE.Group();
+    hingeGroup.position.set(0, 0.24, 0); // top pivot point
+
     const panelMesh = new THREE.Mesh(
       new THREE.BoxGeometry(0.36, 0.42, 0.015),
       solarPanelMaterial
     );
-    panelMesh.position.z = 0.47;
-    panelMesh.rotation.x = -0.28; // Tilted outwards like Vikram lander body
-    panelGroup.add(panelMesh);
+    panelMesh.position.set(0, -0.21, 0.47);
+    hingeGroup.add(panelMesh);
 
     // Gold edge struts
     const edgeStrutL = new THREE.Mesh(
       new THREE.CylinderGeometry(0.008, 0.008, 0.44, 4),
       goldMaterial
     );
-    edgeStrutL.position.set(-0.18, 0, 0.47);
-    edgeStrutL.rotation.x = -0.28;
-    panelGroup.add(edgeStrutL);
+    edgeStrutL.position.set(-0.18, -0.21, 0.47);
+    hingeGroup.add(edgeStrutL);
 
     const edgeStrutR = new THREE.Mesh(
       new THREE.CylinderGeometry(0.008, 0.008, 0.44, 4),
       goldMaterial
     );
-    edgeStrutR.position.set(0.18, 0, 0.47);
-    edgeStrutR.rotation.x = -0.28;
-    panelGroup.add(edgeStrutR);
+    edgeStrutR.position.set(0.18, -0.21, 0.47);
+    hingeGroup.add(edgeStrutR);
 
-    panelGroup.rotation.y = angle;
-    group.add(panelGroup);
+    // Initial deployed angle
+    hingeGroup.rotation.x = -0.28;
+
+    const radialGroup = new THREE.Group();
+    radialGroup.rotation.y = angle;
+    radialGroup.add(hingeGroup);
+    group.add(radialGroup);
+
+    sidePanels.push({
+      hinge: hingeGroup,
+      openRotX: -0.45,
+      closedRotX: -0.06,
+    });
   });
 
-  // 3. 4 Spherical Gold Propellant Tanks (prominent on Vikram top corners)
+  // 3. Deployable Top Solar Wings (Unfurl upwards on click)
+  const topWings = [];
+  [-1, 1].forEach((dir) => {
+    const wingHinge = new THREE.Group();
+    wingHinge.position.set(dir * 0.22, 0.32, 0);
+
+    const wingMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.012, 0.22),
+      solarPanelMaterial
+    );
+    wingMesh.position.set(dir * 0.14, 0, 0);
+    wingHinge.add(wingMesh);
+
+    wingHinge.rotation.z = dir * 0.15; // default partially extended
+    group.add(wingHinge);
+
+    topWings.push({
+      hinge: wingHinge,
+      dir,
+      openRotZ: dir * 0.45,
+      closedRotZ: 0,
+    });
+  });
+
+  // 4. Pragyan Rover Deployment Ramp
+  const rampHinge = new THREE.Group();
+  rampHinge.position.set(0, -0.16, 0.48);
+  const rampMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.26, 0.01, 0.38),
+    darkGoldMaterial
+  );
+  rampMesh.position.set(0, -0.08, 0.18);
+  rampHinge.add(rampMesh);
+  rampHinge.rotation.x = 0.42; // default lowered on ground
+  group.add(rampHinge);
+
+  const roverRamp = {
+    hinge: rampHinge,
+    openRotX: 0.48,
+    closedRotX: -0.75,
+  };
+
+  // 5. 4 Spherical Gold Propellant Tanks
   const tankAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
   tankAngles.forEach((ang) => {
     const tank = new THREE.Mesh(
@@ -202,7 +234,6 @@ function buildVikramLander() {
     tank.position.set(Math.cos(ang) * 0.36, 0.28, Math.sin(ang) * 0.36);
     group.add(tank);
 
-    // Tank mounting brackets
     const bracket = new THREE.Mesh(
       new THREE.CylinderGeometry(0.01, 0.01, 0.12, 6),
       darkGoldMaterial
@@ -211,7 +242,7 @@ function buildVikramLander() {
     group.add(bracket);
   });
 
-  // 4. Upper Instrument Deck & Central Top Dome
+  // 6. Upper Instrument Deck & Central Top Dome
   const topDeck = new THREE.Mesh(
     new THREE.CylinderGeometry(0.24, 0.28, 0.08, 8),
     darkGoldMaterial
@@ -226,7 +257,7 @@ function buildVikramLander() {
   topDome.position.y = 0.35;
   group.add(topDome);
 
-  // Top communication antenna mast & dish
+  // Top communication antenna mast & steerable dish
   const mast = new THREE.Mesh(
     new THREE.CylinderGeometry(0.01, 0.01, 0.22, 6),
     chromeMaterial
@@ -235,19 +266,18 @@ function buildVikramLander() {
   group.add(mast);
 
   const topDish = new THREE.Mesh(
-    new THREE.ConeGeometry(0.08, 0.04, 16, 1, true),
-    new THREE.MeshStandardMaterial({ color: 0xeff3f8, metalness: 0.6, roughness: 0.3, side: THREE.DoubleSide })
+    new THREE.ConeGeometry(0.085, 0.045, 16, 1, true),
+    new THREE.MeshStandardMaterial({ color: 0xf1f5f9, metalness: 0.7, roughness: 0.25, side: THREE.DoubleSide })
   );
   topDish.position.y = 0.58;
-  topDish.rotation.x = Math.PI;
+  topDish.rotation.x = Math.PI * 0.95;
   group.add(topDish);
 
-  // 5. Landing Gear Assembly (4 outward angled legs with footpads on ground)
+  // 7. Landing Gear Assembly (4 outward angled legs with footpads)
   const legAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
   legAngles.forEach((ang) => {
     const legGroup = new THREE.Group();
 
-    // Primary strut
     const mainStrut = new THREE.Mesh(
       new THREE.CylinderGeometry(0.02, 0.024, 0.62, 8),
       goldMaterial
@@ -255,39 +285,46 @@ function buildVikramLander() {
     mainStrut.position.set(0, -0.31, 0);
     legGroup.add(mainStrut);
 
-    // Diagonal support braces
     const diagonalBrace1 = new THREE.Mesh(
       new THREE.CylinderGeometry(0.01, 0.01, 0.42, 6),
-      darkGoldMaterial
+      chromeMaterial
     );
-    diagonalBrace1.position.set(0.09, -0.22, 0);
-    diagonalBrace1.rotation.z = -0.4;
+    diagonalBrace1.position.set(-0.12, -0.22, 0);
+    diagonalBrace1.rotation.z = 0.55;
     legGroup.add(diagonalBrace1);
 
-    // Circular Landing Footpad
-    const footpad = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.075, 0.085, 0.025, 12),
+    const diagonalBrace2 = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.01, 0.01, 0.42, 6),
+      chromeMaterial
+    );
+    diagonalBrace2.position.set(0.12, -0.22, 0);
+    diagonalBrace2.rotation.z = -0.55;
+    legGroup.add(diagonalBrace2);
+
+    // Wide circular landing footpad
+    const footPad = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.075, 0.085, 0.025, 16),
       goldMaterial
     );
-    footpad.position.set(0, -0.62, 0);
-    legGroup.add(footpad);
+    footPad.position.set(0, -0.62, 0);
+    legGroup.add(footPad);
 
-    legGroup.position.set(Math.cos(ang) * 0.42, -0.06, Math.sin(ang) * 0.42);
-    legGroup.rotation.z = Math.cos(ang) * 0.62;
-    legGroup.rotation.x = -Math.sin(ang) * 0.62;
+    legGroup.rotation.z = 0.48;
+    legGroup.position.set(Math.cos(ang) * 0.48, -0.06, Math.sin(ang) * 0.48);
+    legGroup.rotation.y = -ang + Math.PI / 4;
     group.add(legGroup);
   });
 
-  // 6. Bottom Main Rocket Thruster Engines (4 liquid apogee engines)
-  const thrusterOffsets = [
+  // 8. 4 Main Liquid Rocket Thruster Nozzles at base
+  const thrusterPositions = [
     [-0.14, -0.14],
     [0.14, -0.14],
     [-0.14, 0.14],
     [0.14, 0.14],
   ];
-  thrusterOffsets.forEach(([tx, tz]) => {
+  thrusterPositions.forEach(([tx, tz]) => {
     const nozzle = new THREE.Mesh(
-      new THREE.ConeGeometry(0.045, 0.09, 12),
+      new THREE.ConeGeometry(0.055, 0.14, 12, 1, true),
       engineMaterial
     );
     nozzle.position.set(tx, -0.24, tz);
@@ -295,28 +332,23 @@ function buildVikramLander() {
     group.add(nozzle);
   });
 
-  // Scale overall lander
-  group.scale.setScalar(2.1);
-  return group;
+  return { group, sidePanels, topWings, roverRamp };
 }
 
-// Builds the photorealistic Earth with atmosphere glow
+// Builds the high-detail Earth globe with rotating clouds & atmospheric glow
 function buildEarth() {
   const group = new THREE.Group();
+  const radius = 1.05;
   const loader = new THREE.TextureLoader();
-  const radius = 0.95;
 
   const earthMat = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    specular: 0x333333,
-    shininess: 8,
+    roughness: 0.6,
+    metalness: 0.1,
+    shininess: 18,
   });
   loader.load('/earth_atmos_2048.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     earthMat.map = tex;
-    earthMat.needsUpdate = true;
-  });
-  loader.load('/earth_specular_2048.jpg', (tex) => {
     earthMat.specularMap = tex;
     earthMat.needsUpdate = true;
   });
@@ -325,7 +357,7 @@ function buildEarth() {
 
   const cloudMat = new THREE.MeshLambertMaterial({
     transparent: true,
-    opacity: 0.78,
+    opacity: 0.8,
     depthWrite: false,
   });
   loader.load('/earth_clouds_1024.png', (tex) => {
@@ -368,30 +400,37 @@ function buildEarth() {
   return { group, earth, clouds };
 }
 
-// Builds the 3D realistic lunar surface ground with boulders
+// Builds the photorealistic 3D cratered lunar surface ground with rocks
 function buildLunarTerrain() {
   const group = new THREE.Group();
   const loader = new THREE.TextureLoader();
 
-  const terrainGeo = new THREE.PlaneGeometry(16, 8, 36, 24);
+  const terrainGeo = new THREE.PlaneGeometry(18, 10, 48, 36);
   const pos = terrainGeo.attributes.position;
 
-  // Gentle rolling crater hills & rocks
+  // Realistic rolling lunar crater hills & valleys
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
     const y = pos.getY(i);
-    const z =
-      Math.sin(x * 0.7) * 0.28 +
-      Math.cos(y * 1.1) * 0.18 +
-      Math.sin(x * 2.2 + y * 1.8) * 0.08;
-    pos.setZ(i, z);
+    const craterDist1 = Math.hypot(x + 1.2, y - 0.4);
+    const crater1 = Math.sin(craterDist1 * 1.8) * 0.18 * Math.exp(-craterDist1 * 0.4);
+
+    const craterDist2 = Math.hypot(x - 2.4, y + 1.2);
+    const crater2 = Math.sin(craterDist2 * 2.2) * 0.14 * Math.exp(-craterDist2 * 0.5);
+
+    const rolling =
+      Math.sin(x * 0.6) * 0.24 +
+      Math.cos(y * 0.9) * 0.16 +
+      Math.sin(x * 1.8 + y * 1.4) * 0.06;
+
+    pos.setZ(i, rolling + crater1 + crater2);
   }
   terrainGeo.computeVertexNormals();
 
   const terrainMat = new THREE.MeshStandardMaterial({
-    color: 0x788698,
-    roughness: 0.88,
-    metalness: 0.12,
+    color: 0x8898a8,
+    roughness: 0.92,
+    metalness: 0.08,
     flatShading: true,
   });
 
@@ -399,29 +438,53 @@ function buildLunarTerrain() {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.wrapS = THREE.RepeatWrapping;
     tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(3, 2);
+    tex.repeat.set(4, 2.5);
     terrainMat.map = tex;
     terrainMat.needsUpdate = true;
   });
 
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2.35;
-  terrain.position.set(1.5, -1.25, -0.8);
+  terrain.position.set(0.6, -1.25, -0.8);
   group.add(terrain);
+
+  // Soft ambient contact shadow under lander touchdown point
+  const shadowCanvas = document.createElement('canvas');
+  shadowCanvas.width = 128;
+  shadowCanvas.height = 128;
+  const sCtx = shadowCanvas.getContext('2d');
+  const grad = sCtx.createRadialGradient(64, 64, 10, 64, 64, 60);
+  grad.addColorStop(0, 'rgba(0, 5, 14, 0.7)');
+  grad.addColorStop(0.6, 'rgba(0, 5, 14, 0.35)');
+  grad.addColorStop(1, 'transparent');
+  sCtx.fillStyle = grad;
+  sCtx.fillRect(0, 0, 128, 128);
+
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+  const shadowMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.6, 1.6),
+    new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity: 0.75, depthWrite: false })
+  );
+  shadowMesh.rotation.x = -Math.PI / 2.35;
+  shadowMesh.position.set(-0.72, -0.68, 0.5);
+  group.add(shadowMesh);
 
   // Scattered 3D lunar boulders around the landing zone
   const rockGeo = new THREE.DodecahedronGeometry(0.08, 1);
-  const rockMat = new THREE.MeshStandardMaterial({ color: 0x627184, roughness: 0.95 });
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0x6e7e92, roughness: 0.95 });
   const rockCoords = [
     [0.8, -1.0, 0.4],
-    [-0.4, -1.05, 0.2],
+    [-0.3, -1.05, 0.2],
     [1.4, -0.95, -0.1],
     [2.1, -1.1, 0.5],
+    [-1.6, -1.0, 0.3],
     [0.1, -1.15, 0.7],
+    [-0.9, -0.85, 0.9],
+    [1.8, -0.9, 0.2],
   ];
   rockCoords.forEach(([rx, ry, rz], idx) => {
     const rock = new THREE.Mesh(rockGeo, rockMat);
-    const s = 0.6 + (idx % 3) * 0.35;
+    const s = 0.55 + (idx % 3) * 0.4;
     rock.scale.set(s, s * 0.7, s);
     rock.position.set(rx, ry, rz);
     rock.rotation.set(idx * 0.8, idx * 1.2, 0);
@@ -443,7 +506,7 @@ export default function HeroScene() {
     if (!container) return;
 
     let width = container.clientWidth || 600;
-    let height = container.clientHeight || 420;
+    let height = container.clientHeight || 440;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
@@ -484,13 +547,22 @@ export default function HeroScene() {
     scene.add(terrain);
 
     // Vikram Lander resting on the lunar surface
-    const lander = buildVikramLander();
+    const {
+      group: lander,
+      sidePanels,
+      topWings,
+      roverRamp,
+    } = buildVikramLander();
+
     const landerBase = { x: -0.72, y: -0.16, z: 0.7 };
     const landerBaseRot = { x: 0.08, y: 0.35 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
     lander.scale.set(1.08, 1.08, 1.08);
     scene.add(lander);
+
+    // Interactive State for Solar Panels Deployment
+    let isDeployed = true;
 
     // Smooth Cursor Parallax Tracking
     const targetLander = {
@@ -501,6 +573,9 @@ export default function HeroScene() {
     };
     const targetEarth = { posX: 1.35, posY: 0.85 };
 
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
     const onPointerMove = (e) => {
       const rect = container.getBoundingClientRect();
       const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -508,15 +583,34 @@ export default function HeroScene() {
       const clampedX = Math.max(-1, Math.min(1, nx));
       const clampedY = Math.max(-1, Math.min(1, ny));
 
-      // Lander tilts and tracks smoothly
+      mouse.x = nx;
+      mouse.y = -ny;
+
+      // Parallax Motion
       targetLander.rotY = landerBaseRot.y + clampedX * 0.38;
       targetLander.rotX = landerBaseRot.x - clampedY * 0.22;
       targetLander.posX = landerBase.x + clampedX * 0.18;
       targetLander.posY = landerBase.y - clampedY * 0.12;
 
-      // Earth parallax depth
       targetEarth.posX = 1.35 + clampedX * 0.1;
       targetEarth.posY = 0.85 - clampedY * 0.06;
+
+      // Hover cursor check
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(lander.children, true);
+      container.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+    };
+
+    const onClick = (e) => {
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(lander.children, true);
+      if (intersects.length > 0) {
+        isDeployed = !isDeployed;
+      }
     };
 
     const onPointerLeave = () => {
@@ -526,9 +620,11 @@ export default function HeroScene() {
       targetLander.posY = landerBase.y;
       targetEarth.posX = 1.35;
       targetEarth.posY = 0.85;
+      container.style.cursor = 'default';
     };
 
     window.addEventListener('mousemove', onPointerMove);
+    container.addEventListener('click', onClick);
     container.addEventListener('mouseleave', onPointerLeave);
 
     // Resize handler
@@ -562,6 +658,20 @@ export default function HeroScene() {
       lander.position.x += (targetLander.posX - lander.position.x) * 0.06;
       lander.position.y += (targetLander.posY - lander.position.y) * 0.06;
 
+      // Smooth panel open/close animation
+      sidePanels.forEach((p) => {
+        const targetRot = isDeployed ? p.openRotX : p.closedRotX;
+        p.hinge.rotation.x += (targetRot - p.hinge.rotation.x) * 0.08;
+      });
+
+      topWings.forEach((w) => {
+        const targetRot = isDeployed ? w.openRotZ : w.closedRotZ;
+        w.hinge.rotation.z += (targetRot - w.hinge.rotation.z) * 0.08;
+      });
+
+      const targetRamp = isDeployed ? roverRamp.openRotX : roverRamp.closedRotX;
+      roverRamp.hinge.rotation.x += (targetRamp - roverRamp.hinge.rotation.x) * 0.08;
+
       // Earth parallax motion
       earthGroup.position.x += (targetEarth.posX - earthGroup.position.x) * 0.04;
       earthGroup.position.y += (targetEarth.posY - earthGroup.position.y) * 0.04;
@@ -574,6 +684,7 @@ export default function HeroScene() {
       cancelAnimationFrame(reqId);
       ro.disconnect();
       window.removeEventListener('mousemove', onPointerMove);
+      container.removeEventListener('click', onClick);
       container.removeEventListener('mouseleave', onPointerLeave);
       renderer.dispose();
       scene.traverse((obj) => {
@@ -589,6 +700,11 @@ export default function HeroScene() {
     };
   }, []);
 
-  return <div className="hero-scene-canvas" ref={mountRef} aria-hidden="true" />;
+  return (
+    <div
+      className="hero-scene-canvas"
+      ref={mountRef}
+      title="Click Chandrayaan to deploy/close solar panels"
+    />
+  );
 }
-
