@@ -894,29 +894,39 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 .image-fit-toggle {
   display: inline-flex; align-items: center; gap: 3px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  padding: 3px 4px; border-radius: 10px;
-  backdrop-filter: blur(8px);
+  background: #eaf2fd;
+  border: 1px solid #bfdbfe;
+  padding: 3px 5px; border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 .fit-toggle-label {
-  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  font-size: 11px; font-weight: 700; color: #205493;
   text-transform: uppercase; letter-spacing: 0.5px;
   padding: 0 6px 0 4px; user-select: none;
 }
 .fit-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 7px;
-  border: none; background: transparent; color: var(--text-secondary);
+  font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px;
+  border: 1px solid transparent; background: transparent;
+  color: #205493 !important; /* Lighter Navy Blue Text */
   cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap; user-select: none;
 }
+.fit-btn svg {
+  color: #205493 !important; /* Lighter Navy Blue Icon */
+}
 .fit-btn:hover {
-  color: #fff; background: rgba(255, 255, 255, 0.08);
+  color: #1d4ed8 !important;
+  background: rgba(32, 84, 147, 0.08);
 }
 .fit-btn.active {
-  background: #2563eb; color: #ffffff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  background: #ffffff !important;
+  color: #1a4980 !important; /* Lighter Navy Blue Active Text */
+  border-color: #93c5fd !important;
+  box-shadow: 0 2px 6px rgba(32, 84, 147, 0.16) !important;
+}
+.fit-btn.active svg {
+  color: #1a4980 !important;
 }
 .tab-btn {
   display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px;
@@ -2244,20 +2254,31 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 [data-theme="light"] .image-fit-toggle {
-  background: rgba(241, 245, 249, 0.95);
-  border-color: rgba(203, 213, 225, 0.85);
+  background: #f0f6ff;
+  border-color: #b6d4f9;
+  box-shadow: 0 2px 8px rgba(32, 84, 147, 0.08);
+}
+[data-theme="light"] .fit-toggle-label {
+  color: #205493;
 }
 [data-theme="light"] .fit-btn {
-  color: #475569;
+  color: #205493 !important; /* Lighter Navy Blue Text */
+}
+[data-theme="light"] .fit-btn svg {
+  color: #205493 !important;
 }
 [data-theme="light"] .fit-btn:hover {
-  color: #0f172a;
-  background: rgba(0, 0, 0, 0.06);
+  color: #1d4ed8 !important;
+  background: rgba(32, 84, 147, 0.08);
 }
 [data-theme="light"] .fit-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  background: #ffffff !important;
+  color: #1a4980 !important; /* Lighter Navy Blue Active Text */
+  border-color: #93c5fd !important;
+  box-shadow: 0 2px 6px rgba(32, 84, 147, 0.14) !important;
+}
+[data-theme="light"] .fit-btn.active svg {
+  color: #1a4980 !important;
 }
 
 [data-theme="light"] .loading-modal-backdrop {
