@@ -69,7 +69,7 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
           <SidebarMoonMark size={32} />
         </div>
         <div className="sidebar-footer-text">
-          <strong>ISRO /</strong>
+          <strong>HackerVilla</strong>
           TEAM CODE_CHAOS
         </div>
       </div>
