@@ -1,4 +1,260 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+
+/**
+ * 3D Photorealistic Moon & Satellite Loader:
+ * - Real 3D Moon sphere rotating on its axis in the opposite direction (counter-clockwise)
+ * - Fixed circular orbit perimeter around the Moon
+ * - 3D Chandrayaan satellite placed on the orbit, revolving smoothly along the perimeter of the orbit (clockwise)
+ */
+function ThreeDChandrayaanLoader({ dim = 150 }) {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    const container = mountRef.current;
+    if (!container) return;
+
+    const width = dim;
+    const height = dim;
+
+    // 1. Scene & Camera (Top-view with subtle inclination to see full 3D sphericity and true circular orbit)
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    // Camera overhead slightly inclined: circular orbit looks clean and spherical depth of moon is clear
+    camera.position.set(0, 4.4, 0.1);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.innerHTML = '';
+    container.appendChild(renderer.domElement);
+
+    // 2. Cosmic Space Lighting
+    const ambientLight = new THREE.AmbientLight(0x0a1628, 0.55);
+    scene.add(ambientLight);
+
+    // Collimated directional sunlight casting realistic lunar crater relief
+    const sunLight = new THREE.DirectionalLight(0xfff6ea, 2.4);
+    sunLight.position.set(4.8, 1.8, 3.2);
+    scene.add(sunLight);
+
+    // Subtle cyan backlight for orbit visibility
+    const backRim = new THREE.DirectionalLight(0x38bdf8, 0.4);
+    backRim.position.set(-3.5, 1.0, -3.5);
+    scene.add(backRim);
+
+    // 3. Central 3D Moon Sphere
+    const moonRadius = 1.08;
+    const moonGeo = new THREE.SphereGeometry(moonRadius, 48, 48);
+    const moonMat = new THREE.MeshStandardMaterial({
+      color: 0xd2d5da,
+      roughness: 0.95,
+      metalness: 0.0,
+    });
+
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('/moon_1024.jpg', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      moonMat.map = tex;
+      moonMat.needsUpdate = true;
+    });
+
+    const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+    scene.add(moonMesh);
+
+    // 4. Circular Orbit (The Fixed Perimeter of the Lunar Orbit)
+    const orbitRadius = 1.54; // Low lunar orbit, skimming just above the surface
+    const orbitPts = [];
+    const segs = 96;
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      orbitPts.push(new THREE.Vector3(Math.cos(a) * orbitRadius, 0, Math.sin(a) * orbitRadius));
+    }
+    const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPts);
+    const orbitMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.88,
+    });
+    const orbitLine = new THREE.Line(orbitGeo, orbitMat);
+    scene.add(orbitLine);
+
+    // Glowing subtle halo along the orbit line
+    const ringGeo = new THREE.RingGeometry(orbitRadius - 0.024, orbitRadius + 0.024, 64);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide,
+    });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.rotation.x = Math.PI / 2;
+    scene.add(ringMesh);
+
+    // 5. 3D Chandrayaan Satellite (Placed strictly ON the perimeter of the orbit)
+    const satGroup = new THREE.Group();
+
+    // Golden MLI Thermal Blanket Bus Body
+    const goldMat = new THREE.MeshStandardMaterial({
+      color: 0xedb338,
+      metalness: 0.88,
+      roughness: 0.22,
+    });
+    const bodyGeo = new THREE.BoxGeometry(0.24, 0.16, 0.20);
+    const bodyMesh = new THREE.Mesh(bodyGeo, goldMat);
+    satGroup.add(bodyMesh);
+
+    // Solar Panel Arrays (Left and Right Wings)
+    const solarMat = new THREE.MeshStandardMaterial({
+      color: 0x0e2a58,
+      metalness: 0.55,
+      roughness: 0.25,
+    });
+    const frameMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      metalness: 0.85,
+      roughness: 0.25,
+    });
+
+    [-1, 1].forEach((dir) => {
+      const panelGroup = new THREE.Group();
+      panelGroup.position.set(dir * 0.28, 0, 0);
+
+      const panelMesh = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.016, 0.18), solarMat);
+      panelGroup.add(panelMesh);
+
+      const rimMesh = new THREE.Mesh(new THREE.BoxGeometry(0.33, 0.02, 0.19), frameMat);
+      panelGroup.add(rimMesh);
+
+      satGroup.add(panelGroup);
+    });
+
+    // Parabolic High-Gain Antenna Dish pointing outward to space
+    const dishMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      metalness: 0.8,
+      roughness: 0.2,
+    });
+    const dishGeo = new THREE.CylinderGeometry(0.09, 0.02, 0.04, 16);
+    const dishMesh = new THREE.Mesh(dishGeo, dishMat);
+    dishMesh.position.set(0, 0.12, -0.06);
+    dishMesh.rotation.x = -0.4;
+    satGroup.add(dishMesh);
+
+    // Optical Science Aperture pointing down toward the Moon
+    const lensMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+    const lensGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.04, 12);
+    const lensMesh = new THREE.Mesh(lensGeo, lensMat);
+    lensMesh.position.set(0, -0.09, 0);
+    satGroup.add(lensMesh);
+
+    // Pulsing Cyan Beacon
+    const beaconMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const beaconGeo = new THREE.SphereGeometry(0.022, 8, 8);
+    const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+    beaconMesh.position.set(0, 0.11, 0.08);
+    satGroup.add(beaconMesh);
+
+    scene.add(satGroup);
+
+    // 6. Animation Loop
+    let animId;
+    let orbitAngle = 0;
+
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+
+      // (a) 3D Moon rotates on its axis COUNTER-CLOCKWISE (opposite direction)
+      moonMesh.rotation.y -= 0.006;
+
+      // (b) Satellite revolves along the PERIMETER of the orbit circle CLOCKWISE
+      orbitAngle += 0.018;
+
+      // Position satellite strictly on the orbit perimeter
+      satGroup.position.set(
+        Math.cos(orbitAngle) * orbitRadius,
+        0,
+        Math.sin(orbitAngle) * orbitRadius
+      );
+
+      // Orient satellite tangent to the orbit perimeter (forward-facing in flight direction)
+      satGroup.rotation.y = -orbitAngle + Math.PI / 2;
+
+      // Subtle pulse on beacon
+      const t = Date.now() * 0.005;
+      beaconMesh.scale.setScalar(0.8 + 0.4 * Math.sin(t));
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      renderer.dispose();
+      moonGeo.dispose();
+      moonMat.dispose();
+      orbitGeo.dispose();
+      orbitMat.dispose();
+      ringGeo.dispose();
+      ringMat.dispose();
+      bodyGeo.dispose();
+      goldMat.dispose();
+      solarMat.dispose();
+      frameMat.dispose();
+      dishGeo.dispose();
+      dishMat.dispose();
+      lensGeo.dispose();
+      lensMat.dispose();
+      beaconGeo.dispose();
+      beaconMat.dispose();
+      if (container && renderer.domElement && container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
+    };
+  }, [dim]);
+
+  return (
+    <div
+      ref={mountRef}
+      style={{
+        width: dim,
+        height: dim,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'visible',
+      }}
+    />
+  );
+}
+
+/**
+ * Fallback lightweight SVG loader for miniature button states (size="sm")
+ */
+function TinySvgLoader({ dim = 26 }) {
+  return (
+    <svg viewBox="0 0 100 100" width={dim} height={dim} aria-hidden="true">
+      <circle cx="50" cy="50" r="32" fill="none" stroke="#38bdf8" strokeWidth="3" opacity="0.85" />
+      <circle cx="50" cy="50" r="20" fill="#94a3b8" />
+      <g>
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0 50 50"
+          to="360 50 50"
+          dur="2.5s"
+          repeatCount="indefinite"
+        />
+        <rect x="47" y="15" width="6" height="6" rx="1" fill="#f59e0b" />
+        <rect x="41" y="16.5" width="5" height="3" fill="#1e3a8a" />
+        <rect x="54" y="16.5" width="5" height="3" fill="#1e3a8a" />
+      </g>
+    </svg>
+  );
+}
 
 export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isSm = size === 'sm';
@@ -6,183 +262,21 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isModal = size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  // Modal size for clean floating upload loader is 120px; sm is 26px; lg is 130px; md is 76px
-  const dim = isSm ? 26 : isSpinner ? 64 : isModal ? 120 : isLg ? 130 : isXl ? 180 : 76;
+  // Modal size for clean floating upload loader is 150px; lg is 150px; md is 90px; sm is 26px
+  const dim = isSm ? 26 : isSpinner ? 70 : isModal ? 150 : isLg ? 150 : isXl ? 180 : 90;
+
+  if (isSm) {
+    return (
+      <div className={`chandrayaan-mature-loader size-${size}`} style={{ width: dim, height: dim }}>
+        <TinySvgLoader dim={dim} />
+        {label && <span className="loader-label">{label}</span>}
+      </div>
+    );
+  }
 
   return (
     <div className={`chandrayaan-mature-loader size-${size}`} style={{ width: dim, height: dim }}>
-      <svg
-        viewBox="0 0 280 280"
-        width={dim}
-        height={dim}
-        className="mature-loader-svg"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          {/* Authentic Golden MLI Thermal Insulation Foil Gradients */}
-          <linearGradient id={`goldFoilTop-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="40%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#d97706" />
-          </linearGradient>
-
-          <linearGradient id={`goldFoilFront-${size}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="60%" stopColor="#d97706" />
-            <stop offset="100%" stopColor="#854d0e" />
-          </linearGradient>
-
-          {/* High-Efficiency Space Photovoltaic Solar Cells */}
-          <linearGradient id={`solarCell-${size}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#1e40af" />
-            <stop offset="45%" stopColor="#2563eb" />
-            <stop offset="100%" stopColor="#172554" />
-          </linearGradient>
-
-          {/* High-Gain Parabolic Dish Reflector */}
-          <radialGradient id={`dishGrad-${size}`} cx="35%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="50%" stopColor="#cbd5e1" />
-            <stop offset="100%" stopColor="#475569" />
-          </radialGradient>
-
-          {/* Orbit Soft Glow */}
-          <filter id={`orbitGlow-${size}`} x="-15%" y="-15%" width="130%" height="130%">
-            <feDropShadow dx="0" dy="0" stdDeviation="2.2" floodColor="#38bdf8" floodOpacity="0.55" />
-          </filter>
-        </defs>
-
-        {/* 1. Circular Orbit Track - ROTATING CLOCKWISE around the Moon */}
-        <g className="mature-orbit-rotating-track">
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0 140 140"
-            to="360 140 140"
-            dur="4.6s"
-            repeatCount="indefinite"
-          />
-          {/* Thick circular trajectory line */}
-          <circle
-            cx="140"
-            cy="140"
-            r="72"
-            fill="none"
-            stroke="#38bdf8"
-            strokeWidth="2.8"
-            strokeOpacity="0.85"
-            strokeDasharray="18 6 6 6"
-            filter={`url(#orbitGlow-${size})`}
-          />
-          {/* Orbital telemetry guide nodes that rotate clockwise */}
-          <circle cx="140" cy="68" r="1.6" fill="#38bdf8" />
-          <circle cx="212" cy="140" r="1.6" fill="#38bdf8" />
-          <circle cx="140" cy="212" r="1.6" fill="#38bdf8" />
-          <circle cx="68" cy="140" r="1.6" fill="#38bdf8" />
-        </g>
-
-        {/* 2. Central Moon: Rotated 90 Degrees Anti-Clockwise */}
-        <g className="mature-moon">
-          <image
-            href="/real_moon.png?v=rot90"
-            x="86"
-            y="86"
-            width="108"
-            height="108"
-            preserveAspectRatio="xMidYMid meet"
-          />
-          {/* Subtle atmospheric boundary rim */}
-          <circle
-            cx="140"
-            cy="140"
-            r="54"
-            fill="none"
-            stroke="rgba(56, 189, 248, 0.28)"
-            strokeWidth="1.2"
-          />
-        </g>
-
-        {/* 3. Orbiting 3D Chandrayaan Satellite (Revolving strictly ONLY ON the orbit circle R=72) */}
-        <g className="mature-satellite-orbit-carrier">
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0 140 140"
-            to="360 140 140"
-            dur="4.6s"
-            repeatCount="indefinite"
-          />
-          {/* Positioned strictly ON the orbit circle r=72 at (140, 68) with 3D scaling */}
-          <g transform="translate(140, 68) scale(1.18)">
-            
-            {/* Parabolic High-Gain Dish Antenna (HGA) mounted on articulated mast facing space */}
-            <line x1="0" y1="-8" x2="-2.5" y2="-14" stroke="#94a3b8" strokeWidth="1.4" strokeLinecap="round" />
-            <ellipse cx="-2.5" cy="-14" rx="5.8" ry="3.4" transform="rotate(-20 -2.5 -14)" fill={`url(#dishGrad-${size})`} stroke="#64748b" strokeWidth="0.8" />
-            <circle cx="-2.5" cy="-14" r="1.1" fill="#f8fafc" />
-
-            {/* LEFT SOLAR WING: Firmly mounted on bus, aligned on orbit */}
-            <g className="sat-wing-left">
-              <rect x="-9.5" y="-2" width="1.5" height="4" rx="0.4" fill="#94a3b8" />
-              {/* Solar Panel Chassis with Golden Frame */}
-              <rect x="-34" y="-8.5" width="24.5" height="17" rx="1.2" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
-              {/* Photovoltaic Solar Cells (Deep Blue Silicon) */}
-              <rect x="-32.5" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="-32.5" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="-24.5" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="-24.5" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="-16.5" y="-7.5" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="-16.5" y="0.8" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              {/* Center Busbar */}
-              <line x1="-33" y1="0" x2="-10.5" y2="0" stroke="rgba(147,197,253,0.8)" strokeWidth="0.6" />
-            </g>
-
-            {/* RIGHT SOLAR WING: Firmly mounted on bus, aligned on orbit */}
-            <g className="sat-wing-right">
-              <rect x="8" y="-2" width="1.5" height="4" rx="0.4" fill="#94a3b8" />
-              {/* Solar Panel Chassis with Golden Frame */}
-              <rect x="9.5" y="-8.5" width="24.5" height="17" rx="1.2" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
-              {/* Photovoltaic Solar Cells (Deep Blue Silicon) */}
-              <rect x="11" y="-7.5" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="11" y="0.8" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="18" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="18" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="26" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              <rect x="26" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
-              {/* Center Busbar */}
-              <line x1="10.5" y1="0" x2="33" y2="0" stroke="rgba(147,197,253,0.8)" strokeWidth="0.6" />
-            </g>
-
-            {/* Central 3D Satellite Bus Body (Golden MLI Thermal Blanket with 3D Depth) */}
-            <rect x="-8.5" y="-8.5" width="17" height="17" rx="2" fill={`url(#goldFoilFront-${size})`} stroke="#78350f" strokeWidth="0.8" />
-            {/* Top 3D Bevel Plate */}
-            <polygon points="-8.5,-8.5 8.5,-8.5 6.5,-5.5 -6.5,-5.5" fill={`url(#goldFoilTop-${size})`} />
-            {/* MLI Quilted Structural Seams */}
-            <line x1="-8" y1="-1" x2="8" y2="-1" stroke="rgba(120,53,15,0.4)" strokeWidth="0.6" />
-            <line x1="-2" y1="-8" x2="-2" y2="8" stroke="rgba(120,53,15,0.4)" strokeWidth="0.6" />
-            <line x1="3" y1="-8" x2="3" y2="8" stroke="rgba(120,53,15,0.4)" strokeWidth="0.6" />
-
-            {/* Attitude Control Reaction Thruster Pods (4 corners) */}
-            <circle cx="-8.5" cy="-8.5" r="1.3" fill="#475569" stroke="#94a3b8" strokeWidth="0.4" />
-            <circle cx="8.5" cy="-8.5" r="1.3" fill="#475569" stroke="#94a3b8" strokeWidth="0.4" />
-            <circle cx="-8.5" cy="8.5" r="1.3" fill="#475569" stroke="#94a3b8" strokeWidth="0.4" />
-            <circle cx="8.5" cy="8.5" r="1.3" fill="#475569" stroke="#94a3b8" strokeWidth="0.4" />
-
-            {/* Optical Science Payload: OHRC & TMC-2 Lenses (Facing down toward Moon) */}
-            <circle cx="-2.8" cy="5.8" r="2.8" fill="#0f172a" stroke="#94a3b8" strokeWidth="0.6" />
-            <circle cx="-2.8" cy="5.8" r="1.9" fill="#0284c7" />
-            <circle cx="-3.4" cy="5.2" r="0.6" fill="#ffffff" fillOpacity="0.9" />
-
-            <circle cx="3" cy="5.8" r="2.1" fill="#0f172a" stroke="#94a3b8" strokeWidth="0.5" />
-            <circle cx="3" cy="5.8" r="1.4" fill="#0369a1" />
-
-            {/* Real-time Sub-Pixel Optical Science Beacon */}
-            <circle cx="0.1" cy="9.2" r="1.1" fill="#38bdf8">
-              <animate attributeName="opacity" values="1; 0.2; 1" dur="1s" repeatCount="indefinite" />
-            </circle>
-          </g>
-        </g>
-      </svg>
+      <ThreeDChandrayaanLoader dim={dim} />
       {label && <span className="loader-label">{label}</span>}
     </div>
   );
@@ -213,7 +307,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Clean floating Moon & 3D satellite loader revolving only on rotating orbit
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): 3D Moon rotating opposite + satellite revolving on orbit perimeter
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
