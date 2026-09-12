@@ -74,29 +74,35 @@ class CelestialStreak {
       transparent: true,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
+      depthTest: true,
       depthWrite: false,
     });
 
     this.mesh = new THREE.Mesh(this.geo, this.mat);
     this.mesh.frustumCulled = false;
     this.mesh.visible = false;
+    this.mesh.renderOrder = -1;
 
     // Glowing head sprite
     this.spriteMat = new THREE.SpriteMaterial({
       map: nucleusTex,
       transparent: true,
       blending: THREE.AdditiveBlending,
+      depthTest: true,
       depthWrite: false,
     });
     this.sprite = new THREE.Sprite(this.spriteMat);
     this.sprite.visible = false;
+    this.sprite.renderOrder = -1;
 
     this.group = new THREE.Group();
+    this.group.renderOrder = -1;
     this.group.add(this.mesh);
     this.group.add(this.sprite);
   }
 
   spawn(bounds, isComet = false) {
+    this.bounds = bounds;
     this.isComet = isComet;
     this.elapsed = 0;
 
@@ -113,19 +119,21 @@ class CelestialStreak {
 
     // Direction angle: diagonal sweep from top-right to bottom-left (or top-left to bottom-right)
     const angle = (Math.PI * 1.15) + (Math.random() - 0.5) * 0.45; // ~200 deg oblique angle
+    // Non-positive Z direction: drifts deeper into deep cosmic space, never towards the camera
+    const dirZ = -Math.random() * 0.08;
     const dir = new THREE.Vector3(
       Math.cos(angle),
       Math.sin(angle),
-      (Math.random() - 0.5) * 0.25
+      dirZ
     ).normalize();
 
     this.vel.copy(dir).multiplyScalar(this.speed);
 
-    // Slight celestial gravitational curve for comets
+    // Slight celestial gravitational curve for comets (Z curve also non-positive)
     this.curve.set(
       (Math.random() - 0.5) * 0.4,
       -0.35 - Math.random() * 0.35,
-      (Math.random() - 0.5) * 0.2
+      -Math.random() * 0.06
     );
 
     // Pick random start position along the upper/lateral boundary
@@ -156,6 +164,21 @@ class CelestialStreak {
       return;
     }
 
+    // If streak head drops below minY boundary (e.g. Lunar horizon), accelerate dissipation
+    let belowHorizonFade = 1.0;
+    if (this.bounds && typeof this.bounds.minY === 'number') {
+      if (this.headPos.y < this.bounds.minY) {
+        const depthBelow = this.bounds.minY - this.headPos.y;
+        belowHorizonFade = Math.max(0, 1.0 - depthBelow * 2.5);
+        if (belowHorizonFade <= 0.02) {
+          this.active = false;
+          this.mesh.visible = false;
+          this.sprite.visible = false;
+          return;
+        }
+      }
+    }
+
     // Comets curve slightly as they pass near planetary gravitational wells
     if (this.isComet) {
       this.vel.addScaledVector(this.curve, dt);
@@ -172,7 +195,7 @@ class CelestialStreak {
 
     // Natural atmospheric flare: sin curve ramp-up and fade-out
     // Fine pinpoint star-sized nucleus head (~0.015-0.023)
-    const flare = Math.sin(progress * Math.PI);
+    const flare = Math.sin(progress * Math.PI) * belowHorizonFade;
     const headScale = this.isComet ? (0.028 + flare * 0.014) : (0.015 + flare * 0.008);
     this.sprite.position.copy(this.headPos);
     this.sprite.scale.set(headScale, headScale, headScale);
@@ -225,7 +248,11 @@ class CelestialStreak {
       posArr[(idx + 1) * 3 + 2] = p.z - side.z * halfW;
 
       // Alpha decay along tail
-      const tailAlpha = Math.pow(1.0 - frac, 1.6) * flare;
+      let tailAlpha = Math.pow(1.0 - frac, 1.6) * flare;
+      if (this.bounds && typeof this.bounds.minY === 'number' && p.y < this.bounds.minY) {
+        tailAlpha *= Math.max(0, 1.0 - (this.bounds.minY - p.y) * 3.5);
+      }
+
       const r = rBase * tailAlpha;
       const g = gBase * tailAlpha;
       const b = bBase * tailAlpha;
@@ -257,6 +284,7 @@ export function createShootingStarSystem({ scene, camera, bounds, poolSize = 5 }
   const nucleusTex = createNucleusTexture();
   const pool = [];
   const systemGroup = new THREE.Group();
+  systemGroup.renderOrder = -1;
 
   for (let i = 0; i < poolSize; i++) {
     const streak = new CelestialStreak(nucleusTex);
