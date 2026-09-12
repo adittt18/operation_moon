@@ -549,11 +549,11 @@ function buildLunarTerrain() {
   }
   terrainGeo.computeVertexNormals();
 
-  // Crisp silvery-grey lunar regolith matching SS2
+  // Crisp silvery-grey lunar regolith: pure matte, zero shine, authentic planetary dust
   const terrainMat = new THREE.MeshStandardMaterial({
     color: 0xb2c2d4, // silvery lunar regolith with high-contrast sunlight
-    roughness: 0.88,
-    metalness: 0.08,
+    roughness: 1.0,
+    metalness: 0.0,
     flatShading: false,
   });
 
@@ -586,6 +586,15 @@ function buildLunarTerrain() {
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(10, 5);
     terrainMat.roughnessMap = tex;
+    terrainMat.roughness = 1.0;
+    terrainMat.needsUpdate = true;
+  });
+
+  loader.load('/moon_metalness_1024.jpg', (tex) => {
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(10, 5);
+    terrainMat.metalnessMap = tex;
+    terrainMat.metalness = 0.0;
     terrainMat.needsUpdate = true;
   });
 
@@ -613,8 +622,8 @@ function buildLunarTerrain() {
 
   const ridgeMat = new THREE.MeshStandardMaterial({
     color: 0x90a2b6, // sunlit silvery mountain ridge peaks
-    roughness: 0.92,
-    metalness: 0.06,
+    roughness: 1.0,
+    metalness: 0.0,
   });
   loader.load('/moon_1024.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
@@ -628,6 +637,13 @@ function buildLunarTerrain() {
     tex.repeat.set(8, 2.5);
     ridgeMat.normalMap = tex;
     ridgeMat.normalScale.set(2.0, 2.0);
+    ridgeMat.needsUpdate = true;
+  });
+  loader.load('/moon_metalness_1024.jpg', (tex) => {
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(8, 2.5);
+    ridgeMat.metalnessMap = tex;
+    ridgeMat.metalness = 0.0;
     ridgeMat.needsUpdate = true;
   });
 
