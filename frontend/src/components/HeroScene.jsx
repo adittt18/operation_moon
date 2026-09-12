@@ -459,9 +459,9 @@ function buildVikramLander() {
     strutCollar.castShadow = true;
     legGroup.add(strutCollar);
 
-    // 1. VERTICAL WHITE SUPPORTER ROD (matching user screenshot 1: stands upright from leg strut up to collar top rim)
-    const pCollarRim = new THREE.Vector3(0.165, -0.079, 0);
-    const verticalSupporter = createTrussStrut(pJunction, pCollarRim, 0.012, chromeMaterial);
+    // 1. VERTICAL WHITE SUPPORTER ROD (stands upright from leg strut, trimmed cleanly at underside of body collar)
+    const pCollarUnderside = new THREE.Vector3(0.1335, -0.1356, 0);
+    const verticalSupporter = createTrussStrut(pJunction, pCollarUnderside, 0.012, chromeMaterial);
     legGroup.add(verticalSupporter);
 
     // 2. DIAGONAL WHITE SUPPORTER ROD (matching user screenshot 1: goes from leg junction up to underside of lander body)
