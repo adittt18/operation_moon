@@ -82,7 +82,7 @@ function makeSolarTexture() {
  * 3. 3D Moon upright, rotating on vertical Y-axis in reverse of MoonGlobe, with lightened bright surface.
  * 4. Lightened satellite color (pale radiant champagne gold) with realistic photovoltaic solar panels that open/close automatically while self-rotating.
  */
-function ThreeDChandrayaanLoader({ dim = 104 }) {
+function ThreeDChandrayaanLoader({ dim = 118 }) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -92,10 +92,10 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
     const width = dim;
     const height = dim;
 
-    // 1. Scene & Camera (Wide frustum with >1.1 unit safety margin ensuring satellite NEVER cuts its panels)
+    // 1. Scene & Camera (Wide frustum with generous safety margin ensuring satellite NEVER cuts its panels)
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-    camera.position.set(0, 0, 6.2);
+    camera.position.set(0, 0, 6.0);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -105,7 +105,7 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 2. Clean Lighting: Vibrant illumination for lightened Moon & radiant light-gold satellite
+    // 2. Clean Lighting: Vibrant illumination for lightened Moon & warm white-yellow satellite
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
     scene.add(ambientLight);
 
@@ -123,7 +123,7 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
     scene.add(satFrontLight);
 
     // 3. Central 3D Moon Sphere (Lightened bright surface, upright, rotating in reverse direction of MoonGlobe)
-    const moonRadius = 0.44;
+    const moonRadius = 0.50;
     const moonGeo = new THREE.SphereGeometry(moonRadius, 48, 48);
     const moonMat = new THREE.MeshStandardMaterial({
       color: 0xffffff, // lightened pure bright lunar base
@@ -142,7 +142,7 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
     scene.add(moonMesh);
 
     // 4. Orbit of Light Grey Rocks (Completely within view with large safety margin)
-    const orbitRadius = 0.76;
+    const orbitRadius = 0.88;
     const orbitRocksGroup = new THREE.Group();
 
     const rockMat = new THREE.MeshStandardMaterial({
@@ -153,12 +153,12 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
     });
 
     const rockGeo = new THREE.DodecahedronGeometry(1, 0);
-    const rockCount = 76;
+    const rockCount = 80;
 
     for (let i = 0; i < rockCount; i++) {
       const angle = (i / rockCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.05;
-      const rad = orbitRadius + (Math.random() - 0.5) * 0.035;
-      const zJitter = (Math.random() - 0.5) * 0.035;
+      const rad = orbitRadius + (Math.random() - 0.5) * 0.04;
+      const zJitter = (Math.random() - 0.5) * 0.04;
 
       const rockMesh = new THREE.Mesh(rockGeo, rockMat);
       rockMesh.position.set(
@@ -168,7 +168,7 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
       );
 
       // Varied rock boulder shapes
-      const baseScale = 0.013 + Math.random() * 0.015;
+      const baseScale = 0.015 + Math.random() * 0.016;
       rockMesh.scale.set(
         baseScale * (0.8 + Math.random() * 0.5),
         baseScale * (0.8 + Math.random() * 0.5),
@@ -200,39 +200,39 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
 
     scene.add(orbitRocksGroup);
 
-    // 5. Lightened High-Visibility Satellite with Realistic Solar Panels
+    // 5. Warm White-Yellow High-Visibility Satellite with Realistic Solar Panels
     const satHolder = new THREE.Group(); // controls position on orbit perimeter
     const satCraft = new THREE.Group();  // controls satellite self-rotation
 
-    // Lightened Pale Champagne Gold MLI Body (Radiant, high visibility, never turns dark)
+    // Warm White-Yellow Spacecraft Chassis (Radiant, warm sunny luminescence)
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xfff7a3, // bright lightened pale champagne gold
-      metalness: 0.20, // low metalness so diffuse illumination dominates
-      roughness: 0.28,
-      emissive: 0x362c08, // soft golden luminescence
+      color: 0xfff9cc, // rich warm white yellow
+      metalness: 0.18,
+      roughness: 0.24,
+      emissive: 0x423610, // warm golden luminescence
     });
-    const bodyGeo = new THREE.BoxGeometry(0.24, 0.16, 0.16);
+    const bodyGeo = new THREE.BoxGeometry(0.27, 0.18, 0.18);
     const bodyMesh = new THREE.Mesh(bodyGeo, goldMat);
     satCraft.add(bodyMesh);
 
-    // Bright White High-Gain Dish Antenna
+    // High-Gain Dish Antenna in Warm White-Yellow (Eliminates cold grey tint)
     const dishMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 0.15,
-      roughness: 0.2,
-      emissive: 0x222222,
+      color: 0xfffae0, // warm white yellow
+      metalness: 0.12,
+      roughness: 0.22,
+      emissive: 0x473b12, // warm golden glow
     });
-    const dishGeo = new THREE.CylinderGeometry(0.09, 0.02, 0.035, 16);
+    const dishGeo = new THREE.CylinderGeometry(0.10, 0.02, 0.04, 16);
     const dishMesh = new THREE.Mesh(dishGeo, dishMat);
-    dishMesh.position.set(0, 0.12, 0);
+    dishMesh.position.set(0, 0.13, 0);
     dishMesh.rotation.x = Math.PI;
     satCraft.add(dishMesh);
 
     // Cyan Optical Science Beacon
     const beaconMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const beaconGeo = new THREE.SphereGeometry(0.036, 12, 12);
+    const beaconGeo = new THREE.SphereGeometry(0.04, 12, 12);
     const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
-    beaconMesh.position.set(0, -0.10, 0.06);
+    beaconMesh.position.set(0, -0.11, 0.07);
     satCraft.add(beaconMesh);
 
     // Realistic Photovoltaic Solar Panel Texture
@@ -253,29 +253,29 @@ function ThreeDChandrayaanLoader({ dim = 104 }) {
 
     // Left Solar Wing (opens and closes automatically)
     const leftWingHinge = new THREE.Group();
-    leftWingHinge.position.set(-0.12, 0, 0);
+    leftWingHinge.position.set(-0.135, 0, 0);
 
-    const leftBracket = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.04, 8), bracketMat);
+    const leftBracket = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.045, 8), bracketMat);
     leftBracket.position.set(-0.02, 0, 0);
     leftBracket.rotation.z = Math.PI / 2;
     leftWingHinge.add(leftBracket);
 
-    const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.16, 0.012), solarPanelMat);
-    leftPanel.position.set(-0.16, 0, 0);
+    const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.18, 0.014), solarPanelMat);
+    leftPanel.position.set(-0.18, 0, 0);
     leftWingHinge.add(leftPanel);
     satCraft.add(leftWingHinge);
 
     // Right Solar Wing (opens and closes automatically)
     const rightWingHinge = new THREE.Group();
-    rightWingHinge.position.set(0.12, 0, 0);
+    rightWingHinge.position.set(0.135, 0, 0);
 
-    const rightBracket = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.04, 8), bracketMat);
+    const rightBracket = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.045, 8), bracketMat);
     rightBracket.position.set(0.02, 0, 0);
     rightBracket.rotation.z = Math.PI / 2;
     rightWingHinge.add(rightBracket);
 
-    const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.16, 0.012), solarPanelMat);
-    rightPanel.position.set(0.16, 0, 0);
+    const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.18, 0.014), solarPanelMat);
+    rightPanel.position.set(0.18, 0, 0);
     rightWingHinge.add(rightPanel);
     satCraft.add(rightWingHinge);
 
@@ -397,8 +397,8 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isModal = size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  // Extended frame: modal is 104px; lg is 110px; md is 80px; sm is 26px
-  const dim = isSm ? 26 : isSpinner ? 56 : isModal ? 104 : isLg ? 110 : isXl ? 130 : 80;
+  // Scaled frame: modal is 118px; lg is 124px; md is 90px; sm is 26px
+  const dim = isSm ? 26 : isSpinner ? 58 : isModal ? 118 : isLg ? 124 : isXl ? 144 : 90;
 
   if (isSm) {
     return (
@@ -442,7 +442,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Extended frame 104px, 100% in-frame guaranteed, lightened satellite with authentic photovoltaic solar panels
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Scaled 118px, 100% in-frame guaranteed, warm white-yellow satellite with authentic photovoltaic solar panels
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
