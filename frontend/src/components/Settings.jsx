@@ -168,7 +168,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
   };
 
   return (
-    <div className="page-card page-fade">
+    <div className="page-card page-fade settings-page-card">
       <div className="card-header">
         <span className="badge isro-badge">ISRO · Team CODE_CHAOS</span>
         <h2>System Settings &amp; Preferences</h2>
@@ -196,7 +196,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
             <strong>Space Sound Feedback</strong>
             <span>Audio notification chime upon registration completion</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="settings-row-controls">
             <label className="switch" title="Toggle audio chime">
               <input
                 type="checkbox"
@@ -214,7 +214,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
             <strong>Space Telemetry Tone</strong>
             <span>Select from 5 synthesized space notification sounds</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="settings-row-controls">
             <select
               className="settings-select"
               value={soundPreset}
@@ -245,7 +245,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
             <strong>Audio Volume ({Math.round(volume * 100)}%)</strong>
             <span>Adjust volume output level for space chime playback</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '160px' }}>
+          <div className="settings-row-controls" style={{ flex: '0 1 180px' }}>
             {volume === 0 ? <VolumeX size={15} color="var(--text-muted)" /> : <Volume2 size={15} color="var(--accent-blue-soft)" />}
             <input
               type="range"
@@ -255,7 +255,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
               value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
               disabled={!soundEnabled}
-              style={{ width: '110px' }}
+              style={{ width: '100%', minWidth: '80px', touchAction: 'pan-y' }}
             />
           </div>
         </div>
@@ -319,7 +319,7 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
               {pingLatency === -1 && ' (Ping failed)'}
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="settings-row-controls">
             <button
               className="btn btn-secondary btn-sm"
               onClick={handlePingBackend}
