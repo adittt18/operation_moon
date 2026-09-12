@@ -61,24 +61,24 @@ function makeSolarArrayTexture() {
       const x = pad + col * (cellW + pad);
       const y = pad + r * (cellH + pad);
 
-      // Crystalline solar cell with radiant lighter blue gradient
+      // Crystalline solar cell with authentic space solar blue gradient
       const grad = ctx.createLinearGradient(x, y, x + cellW, y + cellH);
-      grad.addColorStop(0, '#2a62ac');
-      grad.addColorStop(0.5, '#387acc');
-      grad.addColorStop(1, '#1e4a8a');
+      grad.addColorStop(0, '#103568');
+      grad.addColorStop(0.5, '#1e5296');
+      grad.addColorStop(1, '#0c264a');
       ctx.fillStyle = grad;
       ctx.fillRect(x, y, cellW, cellH);
 
       // Silver / pale blue busbars
-      ctx.strokeStyle = 'rgba(186, 220, 255, 0.75)';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = 'rgba(180, 215, 255, 0.85)';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
       ctx.moveTo(x + cellW / 2, y);
       ctx.lineTo(x + cellW / 2, y + cellH);
       ctx.stroke();
 
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.45)';
-      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = 'rgba(147, 197, 253, 0.55)';
+      ctx.lineWidth = 1.0;
       ctx.beginPath();
       ctx.moveTo(x, y + cellH / 2);
       ctx.lineTo(x + cellW, y + cellH / 2);
@@ -177,20 +177,17 @@ function buildVikramLander() {
   });
 
   const solarPanelMaterial = new THREE.MeshPhysicalMaterial({
-    map: solarDiffuseMap,
-    color: new THREE.Color(0x9ad0ff), // Lighter aerospace crystalline blue tint
-    emissive: new THREE.Color(0x0e2444), // Subtle deep celestial luminance preventing muddy shadow zones
-    normalMap: solarNormalMap,
-    normalScale: new THREE.Vector2(0.35, 0.35),
-    roughnessMap: solarRoughnessMap,
-    metalness: 0.28,          // Dielectric semiconductor cell: lets radiant blue diffuse shine through
+    map: solarTex,
+    color: new THREE.Color(0xd0e6ff), // Luminous space solar blue tint
+    emissive: new THREE.Color(0x0a1e38), // Subtle deep blue luminescence
+    metalness: 0.35,          // Dielectric silicon wafer: full vibrant blue visibility
     roughness: 0.18,          // High-transmittance protective silica coverglass
     clearcoat: 1.0,           // Aerospace quartz protective coverglass
     clearcoatRoughness: 0.10,  // Crystal-clear coverglass reflection
     reflectivity: 0.98,
     sheen: 1.0,               // Micro-grooved photovoltaic cell sheen
     sheenColor: new THREE.Color(0xb8e0ff), // Lighter blue-white photovoltaic sheen
-    sheenRoughness: 0.30,
+    sheenRoughness: 0.28,
     specularIntensity: 1.0,
     specularColor: new THREE.Color(0xffffff),
     side: THREE.DoubleSide,
@@ -479,40 +476,32 @@ function buildVikramLander() {
     mainStrut.castShadow = true;
     legGroup.add(mainStrut);
 
-    // Secondary A-frame support struts (anchored firmly under the base collar down to main strut)
-    const junction = new THREE.Vector3(0, -0.42, 0);
-    const leftMount = new THREE.Vector3(-0.16, -0.02, -0.20);
-    const rightMount = new THREE.Vector3(-0.16, -0.02, +0.20);
+    // White supporter rod running beside gold strut in the screenshot area
+    const diagonalBrace1 = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 0.48, 8),
+      chromeMaterial
+    );
+    diagonalBrace1.position.set(-0.14, -0.24, 0);
+    diagonalBrace1.rotation.z = 0.54;
+    diagonalBrace1.castShadow = true;
+    legGroup.add(diagonalBrace1);
 
-    [leftMount, rightMount].forEach((mountPoint) => {
-      const dir = new THREE.Vector3().subVectors(junction, mountPoint);
-      const len = dir.length();
-      const mid = new THREE.Vector3().addVectors(mountPoint, junction).multiplyScalar(0.5);
-      const braceMesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.010, 0.010, len, 8),
-        chromeMaterial
-      );
-      braceMesh.position.copy(mid);
-      braceMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
-      braceMesh.castShadow = true;
-      legGroup.add(braceMesh);
+    // Cross-brace connecting white supporter rod to main gold strut
+    const crossBrace = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.010, 0.010, 0.24, 8),
+      chromeMaterial
+    );
+    crossBrace.position.set(-0.07, -0.36, 0);
+    crossBrace.rotation.z = -0.42;
+    crossBrace.castShadow = true;
+    legGroup.add(crossBrace);
 
-      // Clevis mounting bracket anchoring strut under base collar
-      const bracket = new THREE.Mesh(
-        new THREE.BoxGeometry(0.024, 0.024, 0.024),
-        darkGoldMaterial
-      );
-      bracket.position.copy(mountPoint);
-      bracket.castShadow = true;
-      legGroup.add(bracket);
-    });
-
-    // Strut junction collar where secondary struts join the main strut
+    // Secure junction collar on main strut
     const strutCollar = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.030, 0.030, 0.04, 12),
+      new THREE.CylinderGeometry(0.029, 0.029, 0.035, 12),
       darkGoldMaterial
     );
-    strutCollar.position.copy(junction);
+    strutCollar.position.set(0, -0.36, 0);
     strutCollar.castShadow = true;
     legGroup.add(strutCollar);
 
