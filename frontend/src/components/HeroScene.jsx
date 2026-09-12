@@ -692,12 +692,15 @@ function buildPhotorealisticEarth() {
         gl_FragColor = vec4(surfaceColor, 1.0);
       }
     `,
+    depthTest: true,
+    depthWrite: true,
   });
 
   const earthGeo = new THREE.SphereGeometry(radius, 128, 128);
   earthGeo.computeTangents();
   const earth = new THREE.Mesh(earthGeo, earthMat);
   earth.rotation.y = 2.15; // default orientation matching reference continents
+  earth.renderOrder = 1;
   orientGroup.add(earth);
 
   // 2. Separate 3D Atmospheric Clouds Layer (soft volume scattering & natural transparency)
@@ -740,6 +743,7 @@ function buildPhotorealisticEarth() {
       }
     `,
     transparent: true,
+    depthTest: true,
     depthWrite: false,
     blending: THREE.NormalBlending,
   });
@@ -747,6 +751,7 @@ function buildPhotorealisticEarth() {
   const cloudsGeo = new THREE.SphereGeometry(radius * 1.0035, 128, 128);
   const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
   clouds.rotation.y = 2.15;
+  clouds.renderOrder = 2;
   orientGroup.add(clouds);
 
   const dispose = () => {
@@ -906,12 +911,31 @@ export default function HeroScene() {
     scene.add(stars);
 
     // ── CELESTIAL SHOOTING STARS & COMETS ────────────────────────────────────
+    // Confined strictly to deep cosmic space behind Earth (ez = -2.5) and above the lunar horizon (minY: 0.35)
     const shootingStars = createShootingStarSystem({
       scene,
       camera,
-      bounds: { minX: -5.0, maxX: 6.0, minY: 1.2, maxY: 3.8, minZ: -12.0, maxZ: -4.0 },
+      bounds: { minX: -8.0, maxX: 8.0, minY: 0.35, maxY: 5.5, minZ: -16.0, maxZ: -8.5 },
       poolSize: 4,
     });
+
+    // ── LUNAR HORIZON DEPTH OCCLUDER ────────────────────────────────────────
+    // Invisible depth mask covering the entire lunar terrain below the mountain ridge line.
+    // colorWrite: false ensures the authentic 2D lunar surface background renders untouched.
+    // depthWrite: true at z = -4.0 physically blocks any deep celestial shooting star
+    // from ever rendering on the lunar surface, hills, or ground.
+    const horizonGeo = new THREE.PlaneGeometry(40, 20);
+    const horizonMat = new THREE.MeshBasicMaterial({
+      colorWrite: false,
+      depthWrite: true,
+      depthTest: true,
+    });
+    const horizonOccluder = new THREE.Mesh(horizonGeo, horizonMat);
+    // Placed at z = -4.0 (behind Earth at z = -2.5, in front of stars at z = -8.5..-16.0).
+    // Top edge at y = 0.35 matching the lunar mountain horizon ridge line.
+    horizonOccluder.position.set(0, -10.0 + 0.35, -4.0);
+    horizonOccluder.renderOrder = -1;
+    scene.add(horizonOccluder);
 
     // ── 3D EARTH MODEL (5-texture photorealistic globe, slow rotation) ────────
     const earthControls = buildPhotorealisticEarth();

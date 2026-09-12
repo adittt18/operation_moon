@@ -166,11 +166,11 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     // Add photorealistic deep space background
     scene.add(makePhotorealisticSpace());
 
-    // Add photorealistic shooting stars & majestic comets
+    // Add photorealistic shooting stars & majestic comets strictly behind the 3D Moon
     const shootingStars = createShootingStarSystem({
       scene,
       camera,
-      bounds: { minX: -14, maxX: 14, minY: -8, maxY: 9, minZ: -16, maxZ: -4 },
+      bounds: { minX: -16, maxX: 16, minY: -10, maxY: 12, minZ: -24, maxZ: -8 },
       poolSize: 5,
     });
     const clock = new THREE.Clock();
@@ -185,6 +185,8 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
       specular: new THREE.Color(0x000000), // Zero specular reflection: absolutely NO shine or gloss!
       shininess: 0,                        // Zero shininess: pure matte dusty regolith
       flatShading: false,
+      depthTest: true,
+      depthWrite: true,
     });
 
     const textureLoader = new THREE.TextureLoader();
@@ -216,6 +218,7 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     });
 
     const moonMesh = new THREE.Mesh(sphereGeo, moonMaterial);
+    moonMesh.renderOrder = 1;
     scene.add(moonMesh);
 
     // 4. Site Markers
