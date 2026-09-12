@@ -828,9 +828,9 @@ export default function HeroScene() {
     const hemiLight = new THREE.HemisphereLight(0xfff6e6, 0x182438, 0.40);
     scene.add(hemiLight);
 
-    // Primary Sun — bright directional light casting sharp space shadows across the satellite
-    const sunLight = new THREE.DirectionalLight(0xfffaee, 4.6);
-    sunLight.position.set(5.2, 4.8, 4.0);
+    // Primary Sun — natural parallel directional light casting sharp space shadows across the satellite
+    const sunLight = new THREE.DirectionalLight(0xfffaee, 4.8);
+    sunLight.position.set(4.8, 4.2, 4.4);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -846,26 +846,18 @@ export default function HeroScene() {
     scene.add(sunLight.target);
     scene.add(sunLight);
 
-    // Sunlight reflection from the right side of Earth falling across space onto the satellite
-    const earthReflectionLight = new THREE.DirectionalLight(0xa6d4ff, 0.65);
-    earthReflectionLight.position.set(2.4, 2.0, 2.2);
+    // Natural directional sunlight reflection from Earth falling across space onto both satellite panels
+    const earthReflectionLight = new THREE.DirectionalLight(0xa6d8ff, 0.95);
+    earthReflectionLight.position.set(3.4, 2.2, 3.8);
     earthReflectionLight.target.position.set(-0.85, -0.60, 0.85);
     scene.add(earthReflectionLight.target);
     scene.add(earthReflectionLight);
 
-    // Dedicated soft grazing light beam from the Earth/sun direction falling partially across the 2nd solar panel
-    const secondPanelLight = new THREE.SpotLight(0xa8d6ff, 2.5);
-    secondPanelLight.position.set(1.8, 1.4, 2.8);
-    secondPanelLight.target.position.set(-0.72, -0.58, 1.05); // aimed to fall partially across the 2nd panel
-    secondPanelLight.angle = 0.44;
-    secondPanelLight.penumbra = 0.85; // feathered edge creating a soft, natural partial light gradient
-    secondPanelLight.decay = 1.0;
-    scene.add(secondPanelLight.target);
-    scene.add(secondPanelLight);
-
     // Front-left warm cosmic fill light bringing out radiant light gold tones on the satellite
-    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.48);
+    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.42);
     satelliteFillLight.position.set(-3.5, 1.2, 3.2);
+    satelliteFillLight.target.position.set(-0.85, -0.60, 0.85);
+    scene.add(satelliteFillLight.target);
     scene.add(satelliteFillLight);
 
     // Subtle lunar surface diffuse bounce from below
