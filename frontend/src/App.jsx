@@ -209,6 +209,36 @@ export default function App() {
             </div>
           )}
 
+          {currentTab === 'docs' && (
+            <div className="docs-panel glass-card page-fade">
+              <h3>Pixel-Moon Technical Architecture</h3>
+              <div className="docs-grid">
+                <div className="doc-section">
+                  <h4>Evaluation Criteria</h4>
+                  <ul>
+                    <li><strong>RMSE:</strong> &lt; 1.0 pixel (Sub-pixel accuracy achieved with cornerSubPix)</li>
+                    <li><strong>Inlier Count:</strong> &gt; 100 verified tie points</li>
+                    <li><strong>Inlier Ratio:</strong> &gt; 0.50 (Lowe's ratio test &lt; 0.75 + RANSAC)</li>
+                    <li><strong>Spatial Grid Coverage:</strong> &gt; 0.75 (&ge; 12 of 16 grid cells occupied)</li>
+                    <li><strong>Sensors Handled:</strong> Chandrayaan-2 OHRC (0.25m), TMC-2 (5m), IIRS (80m)</li>
+                  </ul>
+                </div>
+                <div className="doc-section">
+                  <h4>7-Step Registration Pipeline</h4>
+                  <ol>
+                    <li><strong>Data Ingestion:</strong> Format auto-detection (PNG/TIFF/FITS/IMG) &amp; sensor categorization</li>
+                    <li><strong>Preprocessing:</strong> CLAHE (clipLimit=2.0) sun-angle normalization + Lanczos/area resolution harmonisation</li>
+                    <li><strong>Feature Detection:</strong> Spatially-uniform 4×4 Grid-Tiled SIFT + deep SuperPoint fallback</li>
+                    <li><strong>Feature Matching:</strong> FLANN KDTree kNN (k=2) + Lowe's ratio test + multi-scale search</li>
+                    <li><strong>Homography Alignment:</strong> RANSAC projective homography estimation</li>
+                    <li><strong>Sub-Pixel Refinement:</strong> cv2.cornerSubPix on inliers + recomputed H matrix</li>
+                    <li><strong>Metric Evaluation:</strong> Automated compliance validation against SIH targets</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          )}
+
           {currentTab === 'settings' && (
             <SettingsPage theme={theme} onToggleTheme={toggleTheme} apiOnline={apiOnline} />
           )}
