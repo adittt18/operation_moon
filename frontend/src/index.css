@@ -362,7 +362,7 @@ p { margin: 0; }
   width: 25px; height: 25px; border-radius: 50%; background: #2465ab; color: #fff;
   font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; letter-spacing: 0.3px;
 }
-.user-chip span.name { font-size: 12px; font-weight: 600; color: #bfe0fb; letter-spacing: 0.2px; white-space: nowrap; }
+.user-chip span.name { font-size: 12px; font-weight: 600; color: #bfe0fb; letter-spacing: 0.2px; white-space: pre; }
 .user-chip svg.chev { width: 12px; height: 12px; color: #bfe0fb; }
 
 .status-chip { display: flex; flex-direction: column; gap: 1px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--border-subtle); background: var(--input-bg); flex-shrink: 0; }
@@ -411,9 +411,7 @@ p { margin: 0; }
 
 .hero-scene-wrap { position: relative; width: 50%; min-height: 440px; overflow: hidden; }
 .hero-scene-wrap::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 220px;
-  background: linear-gradient(90deg, #163355 0%, rgba(22, 51, 85, 0.92) 20%, rgba(16, 38, 64, 0.65) 50%, rgba(8, 18, 34, 0.25) 80%, transparent 100%);
-  z-index: 3; pointer-events: none;
+  display: none;
 }
 .hero-scene-canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: default; }
 .hero-scene-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -1389,9 +1387,14 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .hero-pill svg {
   color: #3282db;
 }
+[data-theme="light"] .hero-scene-wrap {
+  background: #040a16;
+}
 [data-theme="light"] .hero-scene-wrap::before {
-  width: 220px;
+  display: block;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 220px;
   background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 20%, rgba(240, 246, 255, 0.70) 45%, rgba(225, 238, 255, 0.30) 75%, transparent 100%);
+  z-index: 3; pointer-events: none;
 }
 [data-theme="light"] .hero-status-badge {
   background: rgba(8, 20, 38, 0.85);

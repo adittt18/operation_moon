@@ -740,16 +740,16 @@ export default function HeroScene() {
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
     camera.position.set(0, 0.15, 5.4);
 
-    // Renderer with shadow map enabled
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    // Renderer with shadow map enabled and alpha transparency
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // Deep cosmic space navy — blends seamlessly in both themes!
-    renderer.setClearColor(0x040a16, 1);
+    // Transparent clear color so hero-banner flows seamlessly without vertical seams or blend overlays
+    renderer.setClearColor(0x000000, 0);
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
