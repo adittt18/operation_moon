@@ -53,23 +53,39 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
           </filter>
         </defs>
 
-        {/* 1. Circular Orbit Track (True Circle, Thicker Lining, Realistic and Close to the Moon) */}
-        <circle
-          cx="140"
-          cy="140"
-          r="72"
-          fill="none"
-          stroke="#38bdf8"
-          strokeWidth="2.8"
-          strokeOpacity="0.82"
-          strokeDasharray="14 3 3 3"
-          filter={`url(#orbitGlow-${size})`}
-        />
+        {/* 1. Circular Orbit Track - ROTATING CLOCKWISE around the Moon */}
+        <g className="mature-orbit-rotating-track">
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 140 140"
+            to="360 140 140"
+            dur="4.6s"
+            repeatCount="indefinite"
+          />
+          {/* Thick circular trajectory line */}
+          <circle
+            cx="140"
+            cy="140"
+            r="72"
+            fill="none"
+            stroke="#38bdf8"
+            strokeWidth="2.8"
+            strokeOpacity="0.85"
+            strokeDasharray="18 6 6 6"
+            filter={`url(#orbitGlow-${size})`}
+          />
+          {/* Orbital telemetry guide nodes that rotate clockwise */}
+          <circle cx="140" cy="68" r="1.6" fill="#38bdf8" />
+          <circle cx="212" cy="140" r="1.6" fill="#38bdf8" />
+          <circle cx="140" cy="212" r="1.6" fill="#38bdf8" />
+          <circle cx="68" cy="140" r="1.6" fill="#38bdf8" />
+        </g>
 
-        {/* 2. Central Moon: High-res authentic Lunar PNG provided by user with soft atmospheric rim */}
+        {/* 2. Central Moon: Rotated 90 Degrees Anti-Clockwise */}
         <g className="mature-moon">
           <image
-            href="/real_moon.png"
+            href="/real_moon.png?v=rot90"
             x="86"
             y="86"
             width="108"
@@ -87,7 +103,7 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
           />
         </g>
 
-        {/* 3. Orbiting 3D Workable Chandrayaan Satellite (Low Lunar Orbit R=72, Open/Close Solar Panels) */}
+        {/* 3. Orbiting 3D Chandrayaan Satellite (Revolving strictly ONLY ON the orbit circle R=72) */}
         <g className="mature-satellite-orbit-carrier">
           <animateTransform
             attributeName="transform"
@@ -97,7 +113,7 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
             dur="4.6s"
             repeatCount="indefinite"
           />
-          {/* Positioned directly ON the orbit circle r=72 at (140, 68) with 3D scaling */}
+          {/* Positioned strictly ON the orbit circle r=72 at (140, 68) with 3D scaling */}
           <g transform="translate(140, 68) scale(1.18)">
             
             {/* Parabolic High-Gain Dish Antenna (HGA) mounted on articulated mast facing space */}
@@ -105,98 +121,36 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
             <ellipse cx="-2.5" cy="-14" rx="5.8" ry="3.4" transform="rotate(-20 -2.5 -14)" fill={`url(#dishGrad-${size})`} stroke="#64748b" strokeWidth="0.8" />
             <circle cx="-2.5" cy="-14" r="1.1" fill="#f8fafc" />
 
-            {/* LEFT SOLAR WING: Articulated 2-Stage Multi-Hinge Panels that Open & Close */}
-            <g className="sat-wing-left-root" transform="translate(-8.5, 0)">
-              {/* Inner Wing Panel (Hinged at satellite bus) */}
-              <g>
-                <animateTransform
-                  attributeName="transform"
-                  type="scale"
-                  values="1 1; 1 1; 0.20 0.88; 0.20 0.88; 1 1; 1 1"
-                  keyTimes="0; 0.24; 0.46; 0.64; 0.86; 1"
-                  dur="4.6s"
-                  repeatCount="indefinite"
-                />
-                {/* Hinge Pin */}
-                <rect x="-1" y="-2" width="1.5" height="4" rx="0.5" fill="#94a3b8" />
-                {/* Inner Panel Chassis & Photovoltaic Solar Cells */}
-                <rect x="-12.5" y="-8" width="12.5" height="16" rx="1" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
-                <rect x="-11.5" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="-11.5" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="-5.5" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="-5.5" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <line x1="-12" y1="0" x2="-0.5" y2="0" stroke="rgba(147,197,253,0.75)" strokeWidth="0.5" />
-
-                {/* Outer Wing Panel (Hinged to inner panel at -12.5) */}
-                <g transform="translate(-12.5, 0)">
-                  <g>
-                    <animateTransform
-                      attributeName="transform"
-                      type="scale"
-                      values="1 1; 1 1; 0.10 0.78; 0.10 0.78; 1 1; 1 1"
-                      keyTimes="0; 0.22; 0.48; 0.62; 0.88; 1"
-                      dur="4.6s"
-                      repeatCount="indefinite"
-                    />
-                    {/* Hinge Pin */}
-                    <rect x="-1" y="-1.5" width="1.5" height="3" rx="0.4" fill="#cbd5e1" />
-                    {/* Outer Panel Chassis & Solar Cells */}
-                    <rect x="-12.5" y="-8" width="12.5" height="16" rx="1" fill="#091325" stroke="#d97706" strokeWidth="0.8" />
-                    <rect x="-11.5" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="-11.5" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="-5.5" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="-5.5" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <line x1="-12" y1="0" x2="-0.5" y2="0" stroke="rgba(147,197,253,0.75)" strokeWidth="0.5" />
-                  </g>
-                </g>
-              </g>
+            {/* LEFT SOLAR WING: Firmly mounted on bus, aligned on orbit */}
+            <g className="sat-wing-left">
+              <rect x="-9.5" y="-2" width="1.5" height="4" rx="0.4" fill="#94a3b8" />
+              {/* Solar Panel Chassis with Golden Frame */}
+              <rect x="-34" y="-8.5" width="24.5" height="17" rx="1.2" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
+              {/* Photovoltaic Solar Cells (Deep Blue Silicon) */}
+              <rect x="-32.5" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="-32.5" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="-24.5" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="-24.5" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="-16.5" y="-7.5" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="-16.5" y="0.8" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              {/* Center Busbar */}
+              <line x1="-33" y1="0" x2="-10.5" y2="0" stroke="rgba(147,197,253,0.8)" strokeWidth="0.6" />
             </g>
 
-            {/* RIGHT SOLAR WING: Articulated 2-Stage Multi-Hinge Panels that Open & Close */}
-            <g className="sat-wing-right-root" transform="translate(8.5, 0)">
-              {/* Inner Wing Panel (Hinged at satellite bus) */}
-              <g>
-                <animateTransform
-                  attributeName="transform"
-                  type="scale"
-                  values="1 1; 1 1; 0.20 0.88; 0.20 0.88; 1 1; 1 1"
-                  keyTimes="0; 0.24; 0.46; 0.64; 0.86; 1"
-                  dur="4.6s"
-                  repeatCount="indefinite"
-                />
-                {/* Hinge Pin */}
-                <rect x="-0.5" y="-2" width="1.5" height="4" rx="0.5" fill="#94a3b8" />
-                {/* Inner Panel Chassis & Photovoltaic Solar Cells */}
-                <rect x="0" y="-8" width="12.5" height="16" rx="1" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
-                <rect x="1" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="1" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="7" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <rect x="7" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                <line x1="0.5" y1="0" x2="12" y2="0" stroke="rgba(147,197,253,0.75)" strokeWidth="0.5" />
-
-                {/* Outer Wing Panel (Hinged to inner panel at +12.5) */}
-                <g transform="translate(12.5, 0)">
-                  <g>
-                    <animateTransform
-                      attributeName="transform"
-                      type="scale"
-                      values="1 1; 1 1; 0.10 0.78; 0.10 0.78; 1 1; 1 1"
-                      keyTimes="0; 0.22; 0.48; 0.62; 0.88; 1"
-                      dur="4.6s"
-                      repeatCount="indefinite"
-                    />
-                    {/* Hinge Pin */}
-                    <rect x="-0.5" y="-1.5" width="1.5" height="3" rx="0.4" fill="#cbd5e1" />
-                    {/* Outer Panel Chassis & Solar Cells */}
-                    <rect x="0" y="-8" width="12.5" height="16" rx="1" fill="#091325" stroke="#d97706" strokeWidth="0.8" />
-                    <rect x="1" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="1" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="7" y="-7" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <rect x="7" y="0.5" width="5" height="6.5" rx="0.4" fill={`url(#solarCell-${size})`} />
-                    <line x1="0.5" y1="0" x2="12" y2="0" stroke="rgba(147,197,253,0.75)" strokeWidth="0.5" />
-                  </g>
-                </g>
-              </g>
+            {/* RIGHT SOLAR WING: Firmly mounted on bus, aligned on orbit */}
+            <g className="sat-wing-right">
+              <rect x="8" y="-2" width="1.5" height="4" rx="0.4" fill="#94a3b8" />
+              {/* Solar Panel Chassis with Golden Frame */}
+              <rect x="9.5" y="-8.5" width="24.5" height="17" rx="1.2" fill="#0b172d" stroke="#d97706" strokeWidth="0.8" />
+              {/* Photovoltaic Solar Cells (Deep Blue Silicon) */}
+              <rect x="11" y="-7.5" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="11" y="0.8" width="5.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="18" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="18" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="26" y="-7.5" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              <rect x="26" y="0.8" width="6.5" height="6.8" rx="0.4" fill={`url(#solarCell-${size})`} />
+              {/* Center Busbar */}
+              <line x1="10.5" y1="0" x2="33" y2="0" stroke="rgba(147,197,253,0.8)" strokeWidth="0.6" />
             </g>
 
             {/* Central 3D Satellite Bus Body (Golden MLI Thermal Blanket with 3D Depth) */}
@@ -259,7 +213,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Clean floating Moon & 3D workable satellite loader
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Clean floating Moon & 3D satellite loader revolving only on rotating orbit
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
