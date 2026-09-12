@@ -40,7 +40,7 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="sidebar-brand-logo">
-          <IsroMark />
+          <SidebarMoonMark />
         </div>
         <div className="sidebar-brand-text">
           <h1>Pixel-Moon</h1>
@@ -66,7 +66,7 @@ export default function Sidebar({ currentTab, onNavigate, hasResult }) {
       <div className="sidebar-terrain" aria-hidden="true" />
       <div className="sidebar-footer">
         <div className="sidebar-footer-logo">
-          <IsroMark size={32} />
+          <SidebarMoonMark size={32} />
         </div>
         <div className="sidebar-footer-text">
           <strong>ISRO /</strong>
@@ -101,11 +101,11 @@ export function MobileNav({ currentTab, onNavigate, hasResult }) {
   );
 }
 
-function IsroMark({ size = 44 }) {
+function SidebarMoonMark({ size = 44 }) {
   return (
     <img
-      src="/isro_logo.png"
-      alt="ISRO"
+      src="/moon_brand_logo.png"
+      alt="Pixel-Moon"
       style={{
         width: size,
         height: size,
@@ -114,6 +114,8 @@ function IsroMark({ size = 44 }) {
         objectFit: 'contain',
         display: 'block',
         flexShrink: 0,
+        borderRadius: '50%',
+        filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45))',
       }}
     />
   );
