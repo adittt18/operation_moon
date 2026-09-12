@@ -1849,7 +1849,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1.5px solid #99c2f6;
 }
 [data-theme="light"] .settings-section-info h3 {
-  color: #0f2747;
+  color: #0c2f66 !important;
+  font-weight: 700;
 }
 [data-theme="light"] .settings-section-info p {
   color: #5c7490;
