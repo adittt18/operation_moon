@@ -459,7 +459,7 @@ function buildPhotorealisticEarth() {
   // Directional sun angle matching the scene's primary sun and MoonGlobe terminator
   const sunDirection = new THREE.Vector3(1.15, 0.45, 0.85).normalize();
 
-  // 1. Earth Surface PBR ShaderMaterial
+  // 1. Earth Surface PBR ShaderMaterial (Matte terrain roughness & gentle ocean sheen)
   const earthMat = new THREE.ShaderMaterial({
     uniforms: {
       uDayMap: { value: dayTex },
@@ -470,7 +470,6 @@ function buildPhotorealisticEarth() {
       uSunDirection: { value: sunDirection },
       uCameraPosition: { value: new THREE.Vector3(0, 0.15, 5.4) },
       uCloudsOffset: { value: 0.0 },
-      uNormalScale: { value: 1.25 },
     },
     vertexShader: `
       attribute vec4 tangent;
@@ -500,7 +499,6 @@ function buildPhotorealisticEarth() {
       uniform vec3 uSunDirection;
       uniform vec3 uCameraPosition;
       uniform float uCloudsOffset;
-      uniform float uNormalScale;
 
       varying vec2 vUv;
       varying vec3 vWorldNormal;
@@ -509,11 +507,17 @@ function buildPhotorealisticEarth() {
       varying vec3 vWorldPosition;
 
       void main() {
-        // High-resolution tangent space normal map relief
+        // Water mask: White = ocean, Black = land
+        float oceanMask = texture2D(uSpecularMap, vUv).r;
+        float isWater = smoothstep(0.30, 0.70, oceanMask);
+        float landFactor = 1.0 - isWater;
+
+        // Dynamic surface roughness: land has deep tactile mountain relief, oceans are smooth
+        float normalStrength = mix(0.40, 2.35, landFactor);
         vec3 normalTex = texture2D(uNormalMap, vUv).xyz * 2.0 - 1.0;
         vec3 perturbedNormal = normalize(
-          vWorldTangent * (normalTex.x * uNormalScale) +
-          vWorldBitangent * (normalTex.y * uNormalScale) +
+          vWorldTangent * (normalTex.x * normalStrength) +
+          vWorldBitangent * (normalTex.y * normalStrength) +
           vWorldNormal * normalTex.z
         );
 
@@ -522,39 +526,43 @@ function buildPhotorealisticEarth() {
 
         // Day/night terminator curve matching 3D MoonGlobe
         float nDotL = dot(perturbedNormal, sunDir);
-        float dayFactor = smoothstep(-0.06, 0.18, nDotL);
-        float nightFactor = 1.0 - smoothstep(0.0, 0.18, nDotL);
+        float dayFactor = smoothstep(-0.06, 0.16, nDotL);
+        float nightFactor = 1.0 - smoothstep(0.0, 0.16, nDotL);
 
         // Daytime surface texture (NASA Blue Marble)
         vec3 dayColor = texture2D(uDayMap, vUv).rgb;
 
-        // Cloud shadow cast onto daytime ground
+        // Cloud ground shadow cast onto terrain underneath
         vec2 cloudShadowUv = vec2(vUv.x + uCloudsOffset - sunDir.x * 0.003, vUv.y - sunDir.y * 0.003);
-        float cloudShadow = texture2D(uCloudsMap, cloudShadowUv).r * 0.45 * dayFactor;
+        float cloudShadow = texture2D(uCloudsMap, cloudShadowUv).r * 0.42 * dayFactor;
         dayColor *= (1.0 - cloudShadow);
 
-        // Ocean specular sun glint masked by water map
-        float oceanMask = texture2D(uSpecularMap, vUv).r;
+        // Gentle, realistic ocean sun sheen (reduced shine, zero plastic gloss)
         vec3 halfVec = normalize(sunDir + viewDir);
         float nDotH = max(dot(perturbedNormal, halfVec), 0.0);
-        float specular = pow(nDotH, 55.0) * oceanMask * dayFactor;
-        vec3 oceanGlint = vec3(1.0, 0.98, 0.92) * specular * 2.2;
+        // Soft ocean capillary wave scatter instead of harsh mirror spot
+        float oceanSpecular = pow(nDotH, 22.0) * isWater * dayFactor;
+        // Physical water Fresnel (F0 = 0.02)
+        float vDotH = max(dot(viewDir, halfVec), 0.0);
+        float waterFresnel = 0.02 + 0.98 * pow(1.0 - vDotH, 5.0);
+        vec3 oceanGlint = vec3(0.92, 0.96, 1.0) * (oceanSpecular * waterFresnel * 0.35);
 
-        // Daytime lit surface
-        vec3 litDay = (dayColor * (0.03 + 1.28 * dayFactor)) + oceanGlint;
+        // Continental matte diffuse scattering (grounded, tactile, no blown-out highlights)
+        float roughDiffuse = mix(nDotL, pow(max(nDotL, 0.0), 1.15), landFactor * 0.45);
+        vec3 litDay = (dayColor * (0.018 + 0.94 * max(roughDiffuse, 0.0))) + oceanGlint;
 
-        // Night side: deep space shadow (like MoonGlobe) + glowing city lights
+        // Night side: deep cosmic shadow (like 3D MoonGlobe) + warm city lights
         vec3 nightColor = texture2D(uNightMap, vUv).rgb;
-        vec3 cityLights = pow(nightColor, vec3(1.12)) * 2.4 * nightFactor;
-        vec3 darkSide = (dayColor * 0.015) + cityLights;
+        vec3 cityLights = pow(nightColor, vec3(1.15)) * 2.3 * nightFactor;
+        vec3 darkSide = (dayColor * 0.012) + cityLights;
 
-        // Blend between day and night
+        // Natural blend between day and night
         vec3 surfaceColor = mix(darkSide, litDay, dayFactor);
 
-        // Atmospheric Rayleigh scattering along the sunlit limb ONLY (no night halo)
+        // Atmospheric Rayleigh limb scattering (strictly sunlit crescent, no night-side halo)
         float limbFresnel = pow(1.0 - max(dot(normalize(vWorldNormal), viewDir), 0.0), 3.4);
         float sunAlignment = max(dot(vWorldNormal, sunDir) + 0.12, 0.0);
-        vec3 atmosphericRim = vec3(0.36, 0.68, 1.0) * (limbFresnel * sunAlignment * 1.65);
+        vec3 atmosphericRim = vec3(0.32, 0.62, 0.96) * (limbFresnel * sunAlignment * 0.95);
         surfaceColor += atmosphericRim;
 
         gl_FragColor = vec4(surfaceColor, 1.0);
@@ -568,7 +576,7 @@ function buildPhotorealisticEarth() {
   earth.rotation.y = 2.15; // default orientation matching reference continents
   orientGroup.add(earth);
 
-  // 2. Separate 3D Atmospheric Clouds Layer (with independent drift and day/night shading)
+  // 2. Separate 3D Atmospheric Clouds Layer (soft volume scattering & natural transparency)
   const cloudsMat = new THREE.ShaderMaterial({
     uniforms: {
       uCloudsMap: { value: cloudsTex },
@@ -594,15 +602,15 @@ function buildPhotorealisticEarth() {
         if (cloudVal < 0.04) discard;
 
         float nDotL = dot(vWorldNormal, normalize(uSunDirection));
-        float dayFactor = smoothstep(-0.06, 0.20, nDotL);
+        float dayFactor = smoothstep(-0.06, 0.18, nDotL);
 
-        // Day clouds are crisp brilliant white; night clouds fade into deep cosmic dark
-        vec3 cloudLit = vec3(1.0, 1.0, 1.0);
-        vec3 cloudDark = vec3(0.02, 0.03, 0.05);
+        // Soft diffuse sunlight scattering on cloud tops (not flat plastic white)
+        vec3 cloudLit = vec3(0.95, 0.97, 1.0) * (0.86 + 0.14 * max(nDotL, 0.0));
+        vec3 cloudDark = vec3(0.015, 0.02, 0.035);
         vec3 col = mix(cloudDark, cloudLit, dayFactor);
 
-        // Transparent on night side so city lights shine through clearly
-        float alpha = cloudVal * mix(0.16, 0.90, dayFactor);
+        // Soft, realistic cloud opacity allowing terrain and oceans below to be appreciated
+        float alpha = cloudVal * mix(0.10, 0.68, dayFactor);
 
         gl_FragColor = vec4(col, alpha);
       }
