@@ -421,36 +421,34 @@ function buildVikramLander() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- *  EARTH  — Far in lunar sky, luminous bright daylight Earth (as seen in SS2 & SS3)
+ *  EARTH  — Natural Blue Marble Earth, enlarged & floating high in starry sky
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildEarth() {
   const group = new THREE.Group();
-  const radius = 0.52; // scaled for distant perspective from Moon
+  const radius = 0.86; // enlarged so it's clearly visible and majestic
   const loader = new THREE.TextureLoader();
 
-  // Earth globe with brightened oceans & continents
+  // Natural Earth material with specular reflection (reverted from artificial brightened look)
   const earthMat = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    specular: new THREE.Color(0x3388ff),
-    shininess: 28,
-    emissive: new THREE.Color(0x122848),
-    emissiveIntensity: 0.35, // lightened to pop against dark space!
+    roughness: 0.6,
+    metalness: 0.1,
+    shininess: 18,
   });
 
   loader.load('/earth_atmos_2048.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     earthMat.map = tex;
+    earthMat.specularMap = tex;
     earthMat.needsUpdate = true;
   });
 
   const earth = new THREE.Mesh(new THREE.SphereGeometry(radius, 48, 48), earthMat);
   group.add(earth);
 
-  // Brilliant white cloud layer
+  // Natural rotating cloud layer
   const cloudMat = new THREE.MeshLambertMaterial({
-    color: 0xffffff,
     transparent: true,
-    opacity: 0.88,
+    opacity: 0.80,
     depthWrite: false,
   });
 
@@ -460,13 +458,13 @@ function buildEarth() {
     cloudMat.needsUpdate = true;
   });
 
-  const clouds = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.022, 48, 48), cloudMat);
+  const clouds = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.018, 48, 48), cloudMat);
   group.add(clouds);
 
-  // Atmospheric Fresnel Rim Glow (Luminous electric cyan halo)
+  // Atmospheric Fresnel Rim Glow (Soft atmospheric blue rim)
   const glowMat = new THREE.ShaderMaterial({
     uniforms: {
-      glowColor: { value: new THREE.Color(0x4ca5ff) },
+      glowColor: { value: new THREE.Color(0x60a5fa) },
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -482,7 +480,7 @@ function buildEarth() {
       varying vec3 vPositionNormal;
       uniform vec3 glowColor;
       void main() {
-        float intensity = pow(0.62 - dot(vNormal, vPositionNormal), 2.8);
+        float intensity = pow(0.58 - dot(vNormal, vPositionNormal), 3.0);
         gl_FragColor = vec4(glowColor, 1.0) * intensity;
       }
     `,
@@ -492,7 +490,7 @@ function buildEarth() {
     depthWrite: false,
   });
 
-  const glow = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.25, 36, 36), glowMat);
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.20, 48, 48), glowMat);
   group.add(glow);
 
   return { group, earth, clouds };
@@ -570,37 +568,37 @@ function buildLunarTerrain() {
   terrain.receiveShadow = true;
   group.add(terrain);
 
-  // Background rugged crater ridge along horizon (matching SS2 & SS3)
-  const ridgeGeo = new THREE.PlaneGeometry(32, 6, 60, 24);
+  // Background rugged crater ridge along horizon (kept down on horizon line)
+  const ridgeGeo = new THREE.PlaneGeometry(32, 4, 60, 16);
   const rPos = ridgeGeo.attributes.position;
   for (let i = 0; i < rPos.count; i++) {
     const rx = rPos.getX(i);
     const h = Math.max(
       0,
-      Math.sin(rx * 0.35 + 0.6) * 1.3 +
-      Math.sin(rx * 0.85 - 0.4) * 0.7 +
-      Math.sin(rx * 1.8) * 0.35
+      Math.sin(rx * 0.35 + 0.6) * 0.45 +
+      Math.sin(rx * 0.85 - 0.4) * 0.25 +
+      Math.sin(rx * 1.8) * 0.12
     );
     rPos.setZ(i, h);
   }
   ridgeGeo.computeVertexNormals();
 
   const ridgeMat = new THREE.MeshStandardMaterial({
-    color: 0x7a8a9a,
-    roughness: 0.95,
+    color: 0x687888,
+    roughness: 0.96,
     metalness: 0.04,
   });
   loader.load('/moon_1024.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(6, 2);
+    tex.repeat.set(6, 1.5);
     ridgeMat.map = tex;
     ridgeMat.needsUpdate = true;
   });
 
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
-  ridge.rotation.x = -Math.PI / 2.7;
-  ridge.position.set(0, -0.75, -4.2);
+  ridge.rotation.x = -Math.PI / 2.6;
+  ridge.position.set(0, -1.05, -3.8);
   ridge.receiveShadow = true;
   group.add(ridge);
 
@@ -732,10 +730,9 @@ export default function HeroScene() {
     const stars = makeStarfield();
     scene.add(stars);
 
-    // ── EARTH (Placed far in the lunar sky — as seen from the Moon) ───────────
+    // ── EARTH (Floating high in the open lunar sky — never touching the ground) ──
     const { group: earthGroup, earth, clouds } = buildEarth();
-    // High up and far in the background (upper-right)
-    earthGroup.position.set(2.05, 1.28, -4.8);
+    earthGroup.position.set(1.48, 0.90, -1.35);
     scene.add(earthGroup);
 
     // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
