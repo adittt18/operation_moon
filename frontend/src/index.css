@@ -2180,7 +2180,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 [data-theme="light"] .metric-bar {
-  background: #eaf3fe !important;
+  background: #c0d7f6 !important;
 }
 
 [data-theme="light"] .loading-modal-backdrop {
