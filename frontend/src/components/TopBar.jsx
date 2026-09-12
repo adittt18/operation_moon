@@ -13,7 +13,6 @@ import {
   AlertCircle,
   Radio,
   Compass,
-  ChevronDown,
 } from 'lucide-react';
 
 const SEARCH_ENTRIES = [
@@ -131,7 +130,7 @@ export default function TopBar({
   theme,
   onToggleTheme,
   apiOnline,
-  teamName = 'Team Code_Chaos',
+  teamName = 'TEAM CODE-CHAOS',
   initials = 'TC',
   notifications = [],
   onClearNotifications,
@@ -339,11 +338,10 @@ export default function TopBar({
           </span>
         </button>
 
-        {/* Team Chip with dropdown chevron matching reference */}
+        {/* Team Chip */}
         <div className="user-chip">
           <span className="user-chip-avatar">{initials}</span>
           <span className="name">{teamName}</span>
-          <ChevronDown size={13} className="chev" />
         </div>
 
         <div className="status-chip">
