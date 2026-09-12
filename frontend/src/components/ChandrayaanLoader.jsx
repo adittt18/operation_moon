@@ -2,9 +2,10 @@ import React from 'react';
 
 export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isSm = size === 'sm';
+  const isSpinner = size === 'spinner' || size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  const dim = isSm ? 30 : isLg ? 160 : isXl ? 250 : 80;
+  const dim = isSm ? 24 : isSpinner ? 52 : isLg ? 140 : isXl ? 200 : 72;
 
   return (
     <div className={`chandrayaan-mature-loader size-${size}`} style={{ width: dim, height: dim }}>
@@ -164,7 +165,7 @@ export function RegistrationLoadingModal({ isProcessing }) {
 
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
-      <ChandrayaanLoader size="xl" />
+      <ChandrayaanLoader size="spinner" />
     </div>
   );
 }
