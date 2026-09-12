@@ -10,3 +10,4 @@ powershell.cmd
 .env
 .env.local
 .env.production.local
+results/
