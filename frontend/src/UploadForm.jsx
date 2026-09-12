@@ -252,26 +252,6 @@ export default function UploadForm({
           </button>
         </div>
       </form>
-
-      {/* Real-time Step Progress Pipeline */}
-      {isProcessing && (
-        <div className="pipeline-steps-status">
-          <h4>Pipeline Orchestration In Progress</h4>
-          <div className="step-chain">
-            <div className="step-node active">1. Ingest & Detect</div>
-            <div className="step-arrow">→</div>
-            <div className="step-node active">2. CLAHE & Harmonise</div>
-            <div className="step-arrow">→</div>
-            <div className="step-node active">3. Grid SIFT</div>
-            <div className="step-arrow">→</div>
-            <div className="step-node active">4. FLANN Match</div>
-            <div className="step-arrow">→</div>
-            <div className="step-node active">5. RANSAC & Sub-pixel</div>
-            <div className="step-arrow">→</div>
-            <div className="step-node active">6. Metric Evaluation</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
