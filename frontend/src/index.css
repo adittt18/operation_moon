@@ -1334,19 +1334,25 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   transform-origin: 140px 140px;
 }
 
-/* Fullscreen Pipeline Loading Modal (Pure Floating Vector Loader, No Card Box / No Text) */
+.chandrayaan-mature-loader.size-spinner,
+.chandrayaan-mature-loader.size-modal {
+  filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.5));
+}
+
+/* Fullscreen Pipeline Loading Modal (Completely Clear Transparent Overlay - Background Remains 100% Clearly Visible) */
 .loading-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(3, 8, 18, 0.80);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   z-index: 250;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   pointer-events: all;
+  cursor: wait;
 }
 
 /* ===== LIGHT THEME HIGH-CONTRAST OVERRIDES (EXACT REFERENCE MATCH) ===== */
