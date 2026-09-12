@@ -47,6 +47,9 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 DATA_SOURCE_DIR = BASE_DIR / "data" / "source"
 DATA_REF_DIR = BASE_DIR / "data" / "reference"
 FRONTEND_DIR = BASE_DIR / "frontend"
+FRONTEND_DIST = FRONTEND_DIR / "dist"
+if (FRONTEND_DIST / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="static-assets")
 
 
 # Pre-defined Lunar Imaging & Landing Sites for 3D Globe
@@ -289,6 +292,10 @@ async def serve_moon_texture():
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     """Serves the interactive web dashboard."""
+    dist_index = FRONTEND_DIR / "dist" / "index.html"
+    if dist_index.exists():
+        with open(dist_index, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
     index_path = FRONTEND_DIR / "index.html"
     if index_path.exists():
         with open(index_path, "r", encoding="utf-8") as f:

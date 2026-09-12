@@ -130,7 +130,7 @@ export default function TopBar({
   theme,
   onToggleTheme,
   apiOnline,
-  teamName = 'TEAM CODE_CHAOS',
+  teamName = 'Team CODE_CHAOS',
   initials = 'TC',
   notifications = [],
   onClearNotifications,
