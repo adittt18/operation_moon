@@ -480,53 +480,43 @@ function buildVikramLander() {
     mainStrut.castShadow = true;
     legGroup.add(mainStrut);
 
-    // Secure junction collar on main strut
+    // Secure junction collar on main strut (where main strut, vertical supporter, and diagonal brace meet)
+    const pJunction = new THREE.Vector3(0, -0.38, 0);
     const strutCollar = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.029, 0.029, 0.035, 12),
+      new THREE.CylinderGeometry(0.030, 0.030, 0.040, 12),
       darkGoldMaterial
     );
-    strutCollar.position.set(0, -0.36, 0);
+    strutCollar.position.copy(pJunction);
     strutCollar.castShadow = true;
     legGroup.add(strutCollar);
 
-    // Upper chassis mounting bracket under body collar
-    const chassisBracket = new THREE.Mesh(
-      new THREE.BoxGeometry(0.045, 0.032, 0.15),
+    // 1. VERTICAL WHITE SUPPORTER ROD (matching user screenshot 1: stands upright from leg strut up to collar top rim)
+    const pCollarRim = new THREE.Vector3(0.165, -0.079, 0);
+    const verticalSupporter = createTrussStrut(pJunction, pCollarRim, 0.012, chromeMaterial);
+    legGroup.add(verticalSupporter);
+
+    // Small mounting bracket connecting vertical supporter top to gold collar rim
+    const verticalBracket = new THREE.Mesh(
+      new THREE.BoxGeometry(0.030, 0.020, 0.024),
       darkGoldMaterial
     );
-    chassisBracket.position.set(-0.16, -0.015, 0);
-    chassisBracket.castShadow = true;
-    legGroup.add(chassisBracket);
+    verticalBracket.position.set(0.155, -0.079, 0);
+    verticalBracket.castShadow = true;
+    legGroup.add(verticalBracket);
 
-    // White supporter rods carefully and cleanly connecting strut collar to upper body chassis bracket
-    const pStrut = new THREE.Vector3(0, -0.36, 0);
-    const pBodyA = new THREE.Vector3(-0.16, -0.015, 0.055);
-    const pBodyB = new THREE.Vector3(-0.16, -0.015, -0.055);
+    // 2. DIAGONAL WHITE SUPPORTER ROD (matching user screenshot 1: goes from leg junction up to underside of lander body)
+    const pUnderbody = new THREE.Vector3(-0.327, 0.110, 0);
+    const diagonalSupporter = createTrussStrut(pJunction, pUnderbody, 0.011, chromeMaterial);
+    legGroup.add(diagonalSupporter);
 
-    const supportRodA = createTrussStrut(pStrut, pBodyA, 0.011, chromeMaterial);
-    const supportRodB = createTrussStrut(pStrut, pBodyB, 0.011, chromeMaterial);
-    legGroup.add(supportRodA);
-    legGroup.add(supportRodB);
-
-    // Mid-span cross stabilization brace connecting the supporter rods
-    const midRodA = new THREE.Vector3().addVectors(pStrut, pBodyA).multiplyScalar(0.5);
-    const midRodB = new THREE.Vector3().addVectors(pStrut, pBodyB).multiplyScalar(0.5);
-    const crossBar = createTrussStrut(midRodA, midRodB, 0.0075, chromeMaterial);
-    legGroup.add(crossBar);
-
-    // Mechanical shock absorber damper sleeve on the supporter rods
-    [pBodyA, pBodyB].forEach((pB) => {
-      const pDamperMid = new THREE.Vector3().lerpVectors(pStrut, pB, 0.40);
-      const damperSleeve = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.016, 0.016, 0.09, 8),
-        darkGoldMaterial
-      );
-      damperSleeve.position.copy(pDamperMid);
-      const dir = new THREE.Vector3().subVectors(pB, pStrut).normalize();
-      damperSleeve.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-      damperSleeve.castShadow = true;
-      legGroup.add(damperSleeve);
-    });
+    // Chassis bracket mounting the diagonal supporter to the underside of the body
+    const underbodyBracket = new THREE.Mesh(
+      new THREE.BoxGeometry(0.035, 0.025, 0.035),
+      darkGoldMaterial
+    );
+    underbodyBracket.position.copy(pUnderbody);
+    underbodyBracket.castShadow = true;
+    legGroup.add(underbodyBracket);
 
     // Gimbal ball-joint connecting leg strut to footpad
     const ballJoint = new THREE.Mesh(

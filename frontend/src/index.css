@@ -571,7 +571,7 @@ p { margin: 0; }
 .hero-scene-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
 
 .hero-status-badge {
-  position: absolute; z-index: 5; top: 154px; right: 32px; left: auto; transform: none;
+  position: absolute; z-index: 5; top: 180px; right: 32px; left: auto; transform: none;
   display: flex; align-items: center; gap: 8px;
   padding: 6px 13px; border-radius: 11px;
   background: rgba(14, 16, 22, 0.30); border: 1px solid rgba(255, 255, 255, 0.32);
@@ -594,7 +594,7 @@ p { margin: 0; }
 }
 
 .hero-vertical-text {
-  position: absolute; z-index: 5; right: 32px; top: 26px; transform: none;
+  position: absolute; z-index: 5; right: 32px; top: 50px; transform: none;
   display: flex; flex-direction: column; align-items: flex-start; gap: 3px; pointer-events: none;
 }
 .hero-vertical-text span {
