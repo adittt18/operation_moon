@@ -15,8 +15,11 @@ services:
   - type: web
     name: pixel-moon-frontend
     runtime: static
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: npm --prefix frontend install && npm --prefix frontend run build
     staticPublishPath: frontend/dist
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
     routes:
       - type: rewrite
         source: /*
