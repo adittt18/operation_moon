@@ -571,22 +571,35 @@ p { margin: 0; }
 .hero-scene-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
 
 .hero-status-badge {
-  position: absolute; z-index: 5; top: 36%; left: 24%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px;
-  padding: 4px 9px; border-radius: 8px; background: rgba(8, 20, 38, 0.20); border: 1px solid rgba(147, 197, 253, 0.15);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); pointer-events: none;
+  position: absolute; z-index: 5; top: 50%; left: 54%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 22px; border-radius: 16px;
+  background: rgba(8, 28, 54, 0.48); border: 1px solid rgba(96, 165, 250, 0.28);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 14px 34px rgba(0, 4, 18, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: none;
 }
-.hero-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); flex-shrink: 0; }
-.hero-status-badge .txt strong { display: block; font-size: 10px; color: #bfe0fb; font-weight: 600; line-height: 1.15; }
-.hero-status-badge .txt span { font-size: 8.5px; color: #94a3b8; line-height: 1.15; opacity: 0.85; }
+.hero-status-badge .dot {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #00e676; box-shadow: 0 0 12px #00e676, 0 0 24px rgba(0, 230, 118, 0.45);
+  flex-shrink: 0;
+}
+.hero-status-badge .txt strong {
+  display: block; font-size: 14px; color: #ffffff; font-weight: 700;
+  letter-spacing: 0.2px; line-height: 1.2;
+}
+.hero-status-badge .txt span {
+  font-size: 12px; color: #7dd3fc; line-height: 1.2;
+  margin-top: 3px; display: block;
+}
 
 .hero-vertical-text {
-  position: absolute; z-index: 5; right: 24px; top: 16%;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 3px; pointer-events: none;
+  position: absolute; z-index: 5; right: 22px; top: 48%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none;
 }
 .hero-vertical-text span {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.8px; line-height: 1.35;
-  color: #bfe0fb; opacity: 0.85; text-align: left;
+  font-size: 12px; font-weight: 600; letter-spacing: 1.6px; line-height: 1.45;
+  color: #6a95c0; opacity: 0.90; text-align: left;
 }
 
 @media (max-width: 1150px) {
@@ -603,7 +616,10 @@ p { margin: 0; }
   .hero-pill { padding: 7px 12px; font-size: 12px; }
   .hero-scene-wrap { min-height: 220px; }
   .hero-vertical-text { display: none; }
-  .hero-status-badge { top: 12px; left: 12px; right: auto; transform: none; padding: 4px 8px; }
+  .hero-status-badge { top: 16px; left: 16px; right: auto; transform: none; padding: 8px 14px; gap: 8px; border-radius: 12px; }
+  .hero-status-badge .dot { width: 9px; height: 9px; }
+  .hero-status-badge .txt strong { font-size: 12px; }
+  .hero-status-badge .txt span { font-size: 10px; }
 }
 
 /* ===== SECTION HEADERS ===== */
@@ -1999,18 +2015,18 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: none !important;
 }
 [data-theme="light"] .hero-status-badge {
-  background: rgba(8, 20, 38, 0.20);
-  border: 1px solid rgba(147, 197, 253, 0.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background: rgba(10, 30, 58, 0.48);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  box-shadow: 0 14px 34px rgba(0, 4, 18, 0.35);
 }
 [data-theme="light"] .hero-status-badge .txt strong {
   color: #ffffff;
 }
 [data-theme="light"] .hero-status-badge .txt span {
-  color: #94a3b8;
+  color: #60a5fa;
 }
 [data-theme="light"] .hero-vertical-text span {
-  color: #7ba3d0;
+  color: #2b5c8c;
   text-align: left;
 }
 

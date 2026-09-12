@@ -429,7 +429,7 @@ function buildVikramLander() {
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildEarth() {
   const group = new THREE.Group();
-  const radius = 0.95; // realistic distant earth scale
+  const radius = 1.30; // prominent cosmic Earth scale matching reference
   const loader = new THREE.TextureLoader();
 
   // Natural Earth material with specular reflection
@@ -601,7 +601,7 @@ function buildLunarTerrain() {
 
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2.3;
-  terrain.position.set(0.4, -2.25, -0.3);
+  terrain.position.set(0.4, -1.70, -0.2);
   terrain.receiveShadow = true;
   group.add(terrain);
 
@@ -650,7 +650,7 @@ function buildLunarTerrain() {
 
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
   ridge.rotation.x = -Math.PI / 2.6;
-  ridge.position.set(0, -1.85, -3.8);
+  ridge.position.set(0, -1.15, -3.2);
   ridge.receiveShadow = true;
   group.add(ridge);
 
@@ -663,17 +663,17 @@ function buildLunarTerrain() {
     flatShading: true,
   });
   const rockCoords = [
-    [0.9, -1.97, 0.4],
-    [-0.3, -2.01, 0.2],
-    [1.5, -1.93, -0.2],
-    [2.3, -2.07, 0.5],
-    [-1.7, -1.97, 0.3],
-    [0.2, -2.11, 0.8],
-    [-0.9, -1.83, 1.0],
-    [1.9, -1.87, 0.2],
-    [3.1, -1.99, -0.3],
-    [-0.5, -2.03, 0.6],
-    [0.6, -2.09, 0.3],
+    [0.9, -1.42, 0.4],
+    [-0.3, -1.46, 0.2],
+    [1.5, -1.38, -0.2],
+    [2.3, -1.52, 0.5],
+    [-1.7, -1.42, 0.3],
+    [0.2, -1.56, 0.8],
+    [-0.9, -1.28, 1.0],
+    [1.9, -1.32, 0.2],
+    [3.1, -1.44, -0.3],
+    [-0.5, -1.48, 0.6],
+    [0.6, -1.54, 0.3],
   ];
   rockCoords.forEach(([rx, ry, rz], idx) => {
     const rock = new THREE.Mesh(rockGeo, rockMat);
@@ -711,7 +711,7 @@ function makeLanderShadowDecal() {
 
   const tex = new THREE.CanvasTexture(c);
   const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.85, 1.15),
+    new THREE.PlaneGeometry(2.3, 1.45),
     new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
@@ -720,7 +720,7 @@ function makeLanderShadowDecal() {
     })
   );
   mesh.rotation.x = -Math.PI / 2.3;
-  mesh.position.set(-1.40, -1.58, 0.75);
+  mesh.position.set(-1.38, -1.18, 0.85);
   return mesh;
 }
 
@@ -791,13 +791,13 @@ export default function HeroScene() {
     const shootingStars = createShootingStarSystem({
       scene,
       camera,
-      bounds: { minX: -5.5, maxX: 6.5, minY: 1.5, maxY: 4.5, minZ: -12.0, maxZ: -4.0 },
+      bounds: { minX: -5.0, maxX: 6.0, minY: 1.2, maxY: 3.8, minZ: -12.0, maxZ: -4.0 },
       poolSize: 4,
     });
 
-    // ── EARTH (Placed backward of the moon surface in upper right sky) ────────
+    // ── EARTH (Placed backward of the moon surface in mid-right sky matching reference image) ────────
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(3.85, 2.45, -9.0);
+    earthGroup.position.set(1.42, 0.62, -4.5);
     scene.add(earthGroup);
 
     // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
@@ -816,12 +816,12 @@ export default function HeroScene() {
       roverRamp,
     } = buildVikramLander();
 
-    // Positioned firmly on the lowered lunar surface (left side of surface, scaled down)
-    const landerBase = { x: -1.25, y: -1.08, z: 0.75 };
-    const landerBaseRot = { x: 0.06, y: -0.10 };
+    // Positioned firmly on the lunar surface on the left side matching reference image
+    const landerBase = { x: -1.22, y: -0.60, z: 0.85 };
+    const landerBaseRot = { x: 0.05, y: -0.18 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
-    lander.scale.set(0.82, 0.82, 0.82);
+    lander.scale.set(1.05, 1.05, 1.05);
     scene.add(lander);
 
     // Interactive State: Panels Deployed / Stowed
