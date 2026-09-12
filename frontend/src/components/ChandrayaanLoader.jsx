@@ -3,13 +3,12 @@ import * as THREE from 'three';
 
 /**
  * Photorealistic 3D Moon & Satellite Loader:
- * 1. Compact 100px display (smaller, easily noticeable).
- * 2. Orbit rotated 90 degrees to front view (like Saturn from top view: true circular ring in X-Y plane),
- *    made out of light grey rocks, rotating clockwise.
- * 3. Moon rotation unchanged: upright, rotating on its vertical axis in reverse direction of MoonGlobe, with lightened lunar surface.
- * 4. High-visibility prominent satellite (not small!) revolving on orbit perimeter, self-rotating on its own axis, and automatically opening/closing solar panels.
+ * 1. Compact 94px display (smaller, fully shown with zero clipping).
+ * 2. Complete circular orbit of light grey rocks in X-Y plane (like Saturn from top view), rotating clockwise.
+ * 3. 3D Moon upright, rotating on its vertical axis in reverse direction of MoonGlobe, with lightened bright surface.
+ * 4. Exact same satellite size: high-visibility, self-rotating on its axis while revolving, and auto opening/closing solar panels.
  */
-function ThreeDChandrayaanLoader({ dim = 100 }) {
+function ThreeDChandrayaanLoader({ dim = 94 }) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -19,10 +18,10 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     const width = dim;
     const height = dim;
 
-    // 1. Scene & Camera (Front view looking at origin so orbit is a true circular disc like Saturn from top view)
+    // 1. Scene & Camera (Front view with generous FOV so orbit & satellite are completely visible without clipping)
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0, 3.65);
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0, 4.3);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -33,10 +32,10 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     container.appendChild(renderer.domElement);
 
     // 2. Bright, Clean Lighting for Lightened Lunar Surface
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.45);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 2.9);
     sunLight.position.set(4.5, 2.2, 3.5);
     scene.add(sunLight);
 
@@ -45,7 +44,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     scene.add(fillLight);
 
     // 3. Central 3D Moon Sphere (Upright, Rotating on Vertical Y-Axis in Reverse of MoonGlobe)
-    const moonRadius = 0.96;
+    const moonRadius = 0.72;
     const moonGeo = new THREE.SphereGeometry(moonRadius, 48, 48);
     const moonMat = new THREE.MeshStandardMaterial({
       color: 0xffffff, // lightened bright lunar surface
@@ -63,8 +62,8 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     const moonMesh = new THREE.Mesh(moonGeo, moonMat);
     scene.add(moonMesh);
 
-    // 4. Orbit of Light Grey Rocks Rotated 90° to Front View (Like Saturn from Top View: True Circle in X-Y Plane)
-    const orbitRadius = 1.58;
+    // 4. Orbit of Light Grey Rocks (Completely within View, Like Saturn from Top View)
+    const orbitRadius = 1.22;
     const orbitRocksGroup = new THREE.Group();
 
     const rockMat = new THREE.MeshStandardMaterial({
@@ -75,12 +74,12 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     });
 
     const rockGeo = new THREE.DodecahedronGeometry(1, 0);
-    const rockCount = 84;
+    const rockCount = 80;
 
     for (let i = 0; i < rockCount; i++) {
       const angle = (i / rockCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.05;
-      const rad = orbitRadius + (Math.random() - 0.5) * 0.07;
-      const zJitter = (Math.random() - 0.5) * 0.07;
+      const rad = orbitRadius + (Math.random() - 0.5) * 0.06;
+      const zJitter = (Math.random() - 0.5) * 0.06;
 
       const rockMesh = new THREE.Mesh(rockGeo, rockMat);
       rockMesh.position.set(
@@ -90,7 +89,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
       );
 
       // Varied rock boulder shapes
-      const baseScale = 0.026 + Math.random() * 0.030;
+      const baseScale = 0.022 + Math.random() * 0.024;
       rockMesh.scale.set(
         baseScale * (0.8 + Math.random() * 0.5),
         baseScale * (0.8 + Math.random() * 0.5),
@@ -122,11 +121,11 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
 
     scene.add(orbitRocksGroup);
 
-    // 5. PROMINENT 3D SATELLITE (High visibility, NOT small! Self-rotates and opens/closes panels)
+    // 5. 3D SATELLITE (Exact Same Size: 0.32 body, 0.42 wings, high-gain dish & beacon!)
     const satHolder = new THREE.Group(); // controls position on orbit perimeter
     const satCraft = new THREE.Group();  // controls satellite self-rotation
 
-    // Golden MLI Bus Body (Substantial size and high visibility)
+    // Golden MLI Bus Body (Exact same dimensions)
     const goldMat = new THREE.MeshStandardMaterial({
       color: 0xf59e0b,
       metalness: 0.95,
@@ -136,7 +135,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     const bodyMesh = new THREE.Mesh(bodyGeo, goldMat);
     satCraft.add(bodyMesh);
 
-    // High-Gain Dish Antenna
+    // High-Gain Dish Antenna (Exact same dimensions)
     const dishMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       metalness: 0.8,
@@ -148,7 +147,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     dishMesh.rotation.x = Math.PI;
     satCraft.add(dishMesh);
 
-    // Cyan Science Payload Beacon
+    // Cyan Science Payload Beacon (Exact same dimensions)
     const beaconMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const beaconGeo = new THREE.SphereGeometry(0.048, 12, 12);
     const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
@@ -167,7 +166,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
       roughness: 0.22,
     });
 
-    // Left Wing Hinge (opens and closes automatically)
+    // Left Wing Hinge (Exact same dimensions, opens and closes automatically)
     const leftWingHinge = new THREE.Group();
     leftWingHinge.position.set(-0.16, 0, 0);
     const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.24, 0.024), solarTexMat);
@@ -178,7 +177,7 @@ function ThreeDChandrayaanLoader({ dim = 100 }) {
     leftWingHinge.add(leftFrame);
     satCraft.add(leftWingHinge);
 
-    // Right Wing Hinge (opens and closes automatically)
+    // Right Wing Hinge (Exact same dimensions, opens and closes automatically)
     const rightWingHinge = new THREE.Group();
     rightWingHinge.position.set(0.16, 0, 0);
     const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.24, 0.024), solarTexMat);
@@ -302,8 +301,8 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isModal = size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  // Modal size for clean floating upload loader is 100px (smaller, easily noticeable); lg is 120px; md is 80px; sm is 26px
-  const dim = isSm ? 26 : isSpinner ? 60 : isModal ? 100 : isLg ? 120 : isXl ? 140 : 80;
+  // Modal size for clean floating upload loader is 94px (smaller & 100% shown without clipping); lg is 110px; md is 76px; sm is 26px
+  const dim = isSm ? 26 : isSpinner ? 56 : isModal ? 94 : isLg ? 110 : isXl ? 130 : 76;
 
   if (isSm) {
     return (
@@ -347,7 +346,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Compact 100px 3D Moon with Saturn-like top-view rock orbit & prominent self-rotating satellite with open/close panels
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Compact 94px 3D Moon with Saturn-like top-view rock orbit, completely shown, same satellite size
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
