@@ -1342,12 +1342,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* Hero Banner */
 [data-theme="light"] .hero-banner {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(238, 246, 255, 0.97) 100%);
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 14px 35px rgba(25, 65, 130, 0.08);
 }
 [data-theme="light"] .hero-eyebrow {
   color: #2563eb;
-  font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -1355,7 +1354,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .hero-brand-prefix {
   color: #0e2552 !important;
   -webkit-text-fill-color: #0e2552 !important;
-  font-weight: 800 !important;
 }
 [data-theme="light"] .hero-title .grad {
   background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 50%, #6366f1 100%) !important;
@@ -1368,18 +1366,15 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .hero-subtitle {
   color: #133266 !important;
   -webkit-text-fill-color: #133266 !important;
-  font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {
   color: #2b6cb0;
   line-height: 1.6;
-  font-weight: 500;
 }
 [data-theme="light"] .hero-pill {
   background: #ffffff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   color: #2563eb;
-  font-weight: 600;
   box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
 }
 [data-theme="light"] .hero-pill svg {
@@ -1402,7 +1397,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .hero-vertical-text span {
   color: #5a799c;
-  font-weight: 600;
 }
 
 /* Topbar */
@@ -1459,7 +1453,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .user-chip span.name {
   color: #1e50a2;
-  font-weight: 700;
 }
 [data-theme="light"] .user-chip svg.chev {
   color: #2563eb;
@@ -1471,7 +1464,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .status-chip .row span.label {
   color: #1e4494 !important;
-  font-weight: 700;
 }
 [data-theme="light"] .status-chip .version {
   color: #6482a4;
@@ -1524,18 +1516,16 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .section-heading h3 {
   color: #1d4ed8;
-  font-weight: 800;
   letter-spacing: 0.8px;
 }
 [data-theme="light"] .section-heading p {
   color: #4b6a8e;
-  font-weight: 500;
 }
 
 /* Dataset Cards (Both One-Click and Additional) */
 [data-theme="light"] .dataset-card {
   background: #ffffff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 4px 18px rgba(25, 65, 130, 0.05);
 }
 [data-theme="light"] .dataset-card:hover {
@@ -1548,11 +1538,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .dataset-thumb {
   background: #e0ecfa;
-  border: 1.5px solid #b6d4f9;
+  border: 1px solid #b6d4f9;
 }
 [data-theme="light"] .dataset-title {
   color: #1d4ed8;
-  font-weight: 700;
 }
 [data-theme="light"] .dataset-sub,
 [data-theme="light"] .dataset-desc {
@@ -1560,7 +1549,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .dataset-file {
   color: #2563eb;
-  font-weight: 500;
 }
 [data-theme="light"] .dataset-file svg {
   color: #2563eb;
@@ -1572,13 +1560,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   background: #dcfce7;
   color: #15803d;
   border: 1px solid rgba(22, 163, 74, 0.25);
-  font-weight: 600;
 }
 [data-theme="light"] .dataset-sensor-pill {
   background: #e3effd;
   border: 1px solid #bfdbfe;
   color: #1d4ed8;
-  font-weight: 600;
 }
 
 /* Processing Bar & Stepper */
@@ -1589,22 +1575,18 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .processing-label {
   color: #1d4ed8;
-  font-weight: 700;
 }
 [data-theme="light"] .processing-label svg {
   color: #2563eb;
 }
 [data-theme="light"] .slider-field .row {
   color: #1d4ed8;
-  font-weight: 600;
 }
 [data-theme="light"] .slider-field .row b {
   color: #1d4ed8;
-  font-weight: 700;
 }
 [data-theme="light"] .checkbox-field {
   color: #1d4ed8;
-  font-weight: 600;
 }
 [data-theme="light"] .step-num {
   background: #e2effe !important;
@@ -1618,18 +1600,15 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .step-pill span.step-label {
   color: #648ebb !important;
-  font-weight: 500 !important;
 }
 [data-theme="light"] .step-pill.active span.step-label {
   color: #2563eb !important;
-  font-weight: 700 !important;
 }
 [data-theme="light"] .step-chevron {
   color: #9bb8dc !important;
 }
 [data-theme="light"] .stepper-tag {
   color: #2563eb;
-  font-weight: 600;
 }
 [data-theme="light"] .stepper-tag svg {
   color: #2563eb;
@@ -1640,7 +1619,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #ffffff !important;
   border: 1px solid rgba(147, 197, 253, 0.5) !important;
   box-shadow: 0 4px 14px rgba(30, 69, 128, 0.25) !important;
-  font-weight: 700;
 }
 [data-theme="light"] .btn-primary:hover:not(:disabled),
 [data-theme="light"] .btn-run:hover:not(:disabled) {
@@ -1669,7 +1647,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .docs-panel,
 [data-theme="light"] .moon-globe-wrapper {
   background: #ffffff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 4px 20px rgba(25, 65, 130, 0.05);
 }
 [data-theme="light"] .card-header h2,
@@ -1696,12 +1674,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* Metric Cards */
 [data-theme="light"] .metric-card {
   background: #ffffff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 3px 12px rgba(25, 65, 130, 0.05);
 }
 [data-theme="light"] .metric-title {
   color: #2357a4 !important;
-  font-weight: 600;
 }
 [data-theme="light"] .metric-value {
   color: #1e4494 !important;
@@ -1799,7 +1776,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .btn-secondary {
   background: rgba(45, 94, 168, 0.08) !important;
   color: #1e4580 !important;
-  border: 1.5px solid #99c2f6 !important;
+  border: 1px solid #7cb0f2 !important;
 }
 [data-theme="light"] .btn-secondary:hover:not(:disabled) {
   background: rgba(45, 94, 168, 0.15) !important;
@@ -1810,12 +1787,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* Architecture / Docs */
 [data-theme="light"] .doc-section {
   background: #f8fbff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 2px 8px rgba(25, 65, 130, 0.04);
 }
 [data-theme="light"] .doc-section h4 {
   color: #1d4ed8 !important;
-  font-weight: 700;
 }
 [data-theme="light"] .doc-section ul,
 [data-theme="light"] .doc-section ol {
@@ -1823,30 +1799,27 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .doc-section li {
   color: #2b6cb0 !important;
-  font-weight: 500;
 }
 [data-theme="light"] .doc-section li strong {
   color: #1e40af !important;
-  font-weight: 700;
 }
 [data-theme="light"] .doc-section li::marker {
   color: #2563eb !important;
-  font-weight: 700;
 }
 
 /* Settings */
 [data-theme="light"] .settings-section-card {
   background: #ffffff;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   box-shadow: 0 4px 18px rgba(25, 65, 130, 0.08), 0 1px 4px rgba(25, 65, 130, 0.04);
 }
 [data-theme="light"] .settings-section-header {
-  border-bottom: 1.5px solid #c2dbfc;
+  border-bottom: 1px solid #c2dbfc;
 }
 [data-theme="light"] .settings-section-icon {
   background: rgba(37, 99, 235, 0.08);
   color: #2563eb;
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
 }
 [data-theme="light"] .settings-section-info h3 {
   color: #184e94 !important;
@@ -1869,7 +1842,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .settings-select {
   background-color: rgba(45, 94, 168, 0.08);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231e4580' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   color: #1e4580;
   box-shadow: none;
 }
@@ -1886,7 +1859,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* 3D Moon Globe Overlay */
 [data-theme="light"] .site-info-overlay {
   background: rgba(255, 255, 255, 0.96);
-  border: 1.5px solid #99c2f6;
+  border: 1px solid #7cb0f2;
   color: #0a1c36;
   box-shadow: 0 14px 35px rgba(25, 65, 130, 0.15);
 }
@@ -1901,7 +1874,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 [data-theme="light"] .footer-bar p {
   color: #5a7b9e;
-  font-weight: 500;
 }
 
 

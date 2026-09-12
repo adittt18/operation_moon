@@ -199,7 +199,12 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
                 <strong>Appearance Theme</strong>
                 <span>{theme === 'dark' ? 'Dark mode (Space obsidian)' : 'Light mode (High-contrast lab)'}</span>
               </div>
-              <button className="btn btn-secondary btn-sm" onClick={onToggleTheme} type="button">
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={onToggleTheme}
+                type="button"
+                style={{ minWidth: '136px', justifyContent: 'center' }}
+              >
                 {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
                 Switch to {theme === 'dark' ? 'Light' : 'Dark'}
               </button>
