@@ -106,6 +106,11 @@ function makeSolarArrayTexture() {
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildVikramLander() {
   const group = new THREE.Group();
+  const baseGroup = new THREE.Group();
+  const upperGroup = new THREE.Group();
+  group.add(baseGroup);
+  group.add(upperGroup);
+
   const solarTex = makeSolarArrayTexture();
   const loader = new THREE.TextureLoader();
 
@@ -130,43 +135,44 @@ function buildVikramLander() {
   const solarNormalMap = loadTex('/solar_panel_normal.jpg', 1, 1, false);
   const solarRoughnessMap = loadTex('/solar_panel_roughness.jpg', 1, 1, false);
 
-  // Materials with authentic space MLI gold foil roughness and tactile relief
+  // Materials with authentic space MLI gold foil roughness and tactile relief (lightened & luminous)
   const goldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
+    color: 0xfff3cf,
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(2.8, 2.8),
+    normalScale: new THREE.Vector2(2.2, 2.2),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.82,
-    roughness: 0.64,
+    metalness: 0.88,
+    roughness: 0.40,
   });
 
   const darkGoldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
-    color: 0x9a6515,
+    color: 0xf0c765, // Lightened from dark brown to warm, luminous honey gold
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(2.4, 2.4),
+    normalScale: new THREE.Vector2(2.0, 2.0),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.78,
-    roughness: 0.72,
+    metalness: 0.84,
+    roughness: 0.48,
   });
 
   const brightGoldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
-    color: 0xf2be4b,
+    color: 0xfffae6, // Brilliant gleaming champagne gold
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(2.0, 2.0),
+    normalScale: new THREE.Vector2(1.8, 1.8),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.86,
-    roughness: 0.52,
+    metalness: 0.92,
+    roughness: 0.28,
   });
 
   const chromeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xb8c4d2,
+    color: 0xe8f0f8, // Bright clean space titanium/chrome
     normalMap: metalNormalMap,
-    normalScale: new THREE.Vector2(1.4, 1.4),
+    normalScale: new THREE.Vector2(1.2, 1.2),
     roughnessMap: metalRoughnessMap,
-    metalness: 0.80,
-    roughness: 0.56,
+    metalness: 0.88,
+    roughness: 0.35,
   });
 
   const solarPanelMaterial = new THREE.MeshStandardMaterial({
@@ -180,12 +186,12 @@ function buildVikramLander() {
   });
 
   const engineMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1c2028,
+    color: 0x222630,
     normalMap: metalNormalMap,
-    normalScale: new THREE.Vector2(2.2, 2.2),
+    normalScale: new THREE.Vector2(2.0, 2.0),
     roughnessMap: metalRoughnessMap,
-    metalness: 0.74,
-    roughness: 0.78,
+    metalness: 0.76,
+    roughness: 0.70,
   });
 
   const dispose = () => {
@@ -201,7 +207,7 @@ function buildVikramLander() {
     ].forEach((t) => t.dispose());
   };
 
-  // 1. Main Core: Octagonal / Pyramidal gold foil superstructure
+  // 1. Main Core: Octagonal / Pyramidal gold foil superstructure (in upperGroup)
   const coreBody = new THREE.Mesh(
     new THREE.CylinderGeometry(0.48, 0.64, 0.52, 8),
     goldMaterial
@@ -209,7 +215,7 @@ function buildVikramLander() {
   coreBody.position.y = 0.06;
   coreBody.castShadow = true;
   coreBody.receiveShadow = true;
-  group.add(coreBody);
+  upperGroup.add(coreBody);
 
   // Horizontal gold foil MLI bands
   [-0.12, 0.06, 0.20].forEach((yOff) => {
@@ -218,20 +224,18 @@ function buildVikramLander() {
       brightGoldMaterial
     );
     band.position.y = 0.06 + yOff;
-    group.add(band);
+    band.castShadow = true;
+    upperGroup.add(band);
   });
 
-  // 2. LARGE SLANTED SOLAR PANELS (Covering the 4 main angled faces)
-  // Matching SS1 where the solar panels are prominent, large, and dark blue!
+  // 2. LARGE SLANTED SOLAR PANELS (Covering the 4 main angled faces, in upperGroup)
   const panelAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
   const sidePanels = [];
 
-  panelAngles.forEach((angle, idx) => {
+  panelAngles.forEach((angle) => {
     const hingeGroup = new THREE.Group();
-    // Top pivot line
     hingeGroup.position.set(0, 0.28, 0);
 
-    // Large solar panel wing (increased size to match SS1!)
     const panelWidth = 0.54;
     const panelHeight = 0.56;
     const panelMesh = new THREE.Mesh(
@@ -246,19 +250,23 @@ function buildVikramLander() {
     const frameGeoH = new THREE.BoxGeometry(panelWidth + 0.03, 0.024, 0.026);
     const frameTop = new THREE.Mesh(frameGeoH, brightGoldMaterial);
     frameTop.position.set(0, 0, 0.54);
+    frameTop.castShadow = true;
     hingeGroup.add(frameTop);
 
     const frameBottom = new THREE.Mesh(frameGeoH, brightGoldMaterial);
     frameBottom.position.set(0, -panelHeight, 0.54);
+    frameBottom.castShadow = true;
     hingeGroup.add(frameBottom);
 
     const frameGeoV = new THREE.BoxGeometry(0.024, panelHeight, 0.026);
     const frameLeft = new THREE.Mesh(frameGeoV, brightGoldMaterial);
     frameLeft.position.set(-panelWidth / 2, -panelHeight / 2, 0.54);
+    frameLeft.castShadow = true;
     hingeGroup.add(frameLeft);
 
     const frameRight = new THREE.Mesh(frameGeoV, brightGoldMaterial);
     frameRight.position.set(panelWidth / 2, -panelHeight / 2, 0.54);
+    frameRight.castShadow = true;
     hingeGroup.add(frameRight);
 
     // Initial slight inward slant matching the pyramid body
@@ -267,16 +275,16 @@ function buildVikramLander() {
     const radialGroup = new THREE.Group();
     radialGroup.rotation.y = angle;
     radialGroup.add(hingeGroup);
-    group.add(radialGroup);
+    upperGroup.add(radialGroup);
 
     sidePanels.push({
       hinge: hingeGroup,
-      openRotX: -0.68, // unfolds wide outward on click!
-      closedRotX: -0.26, // resting flat against the body
+      openRotX: -0.68,
+      closedRotX: -0.26,
     });
   });
 
-  // 3. Deployable Lateral Solar Wings (Unfurl horizontally on click)
+  // 3. Deployable Lateral Solar Wings (in upperGroup)
   const topWings = [];
   [-1, 1].forEach((dir) => {
     const wingHinge = new THREE.Group();
@@ -296,10 +304,11 @@ function buildVikramLander() {
       brightGoldMaterial
     );
     edgeTrim.position.set(dir * 0.38, 0, 0);
+    edgeTrim.castShadow = true;
     wingHinge.add(edgeTrim);
 
-    wingHinge.rotation.z = dir * 0.12; // default folded
-    group.add(wingHinge);
+    wingHinge.rotation.z = dir * 0.12;
+    upperGroup.add(wingHinge);
 
     topWings.push({
       hinge: wingHinge,
@@ -309,7 +318,7 @@ function buildVikramLander() {
     });
   });
 
-  // 4. Pragyan Rover Deployment Ramp
+  // 4. Pragyan Rover Deployment Ramp (in upperGroup)
   const rampHinge = new THREE.Group();
   rampHinge.position.set(0, -0.18, 0.56);
   const rampMesh = new THREE.Mesh(
@@ -320,7 +329,7 @@ function buildVikramLander() {
   rampMesh.castShadow = true;
   rampHinge.add(rampMesh);
   rampHinge.rotation.x = 0.44;
-  group.add(rampHinge);
+  upperGroup.add(rampHinge);
 
   const roverRamp = {
     hinge: rampHinge,
@@ -328,7 +337,7 @@ function buildVikramLander() {
     closedRotX: -0.78,
   };
 
-  // 5. 4 Spherical Gold Propellant Tanks
+  // 5. 4 Spherical Gold Propellant Tanks (in upperGroup)
   const tankAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
   tankAngles.forEach((ang) => {
     const tank = new THREE.Mesh(
@@ -337,36 +346,34 @@ function buildVikramLander() {
     );
     tank.position.set(Math.cos(ang) * 0.42, 0.30, Math.sin(ang) * 0.42);
     tank.castShadow = true;
-    group.add(tank);
+    upperGroup.add(tank);
 
     const bracket = new THREE.Mesh(
       new THREE.CylinderGeometry(0.014, 0.014, 0.14, 6),
       darkGoldMaterial
     );
     bracket.position.set(Math.cos(ang) * 0.42, 0.20, Math.sin(ang) * 0.42);
-    group.add(bracket);
+    bracket.castShadow = true;
+    upperGroup.add(bracket);
   });
 
-  // 6. UPPER DECK & DOMES (Exact copy of SS1)
-  // Upper instrument deck
+  // 6. UPPER DECK & DOMES (in upperGroup)
   const topDeck = new THREE.Mesh(
     new THREE.CylinderGeometry(0.32, 0.36, 0.10, 8),
     darkGoldMaterial
   );
   topDeck.position.y = 0.36;
   topDeck.castShadow = true;
-  group.add(topDeck);
+  upperGroup.add(topDeck);
 
-  // Large Central Gold Dome (from SS1)
   const centralDome = new THREE.Mesh(
     new THREE.SphereGeometry(0.15, 20, 16, 0, Math.PI * 2, 0, Math.PI / 2),
     brightGoldMaterial
   );
   centralDome.position.y = 0.41;
   centralDome.castShadow = true;
-  group.add(centralDome);
+  upperGroup.add(centralDome);
 
-  // Antenna Truss Cage on top of central dome (seen in SS1)
   const cageHeight = 0.14;
   const cageRadius = 0.08;
   const cagePillars = 6;
@@ -377,7 +384,8 @@ function buildVikramLander() {
       goldMaterial
     );
     pillar.position.set(Math.cos(a) * cageRadius, 0.41 + 0.15 + cageHeight / 2, Math.sin(a) * cageRadius);
-    group.add(pillar);
+    pillar.castShadow = true;
+    upperGroup.add(pillar);
   }
   const cageRing = new THREE.Mesh(
     new THREE.TorusGeometry(cageRadius, 0.008, 6, 16),
@@ -385,17 +393,17 @@ function buildVikramLander() {
   );
   cageRing.rotation.x = Math.PI / 2;
   cageRing.position.y = 0.41 + 0.15 + cageHeight;
-  group.add(cageRing);
+  cageRing.castShadow = true;
+  upperGroup.add(cageRing);
 
-  // Center omni antenna mast
   const centerMast = new THREE.Mesh(
     new THREE.CylinderGeometry(0.009, 0.009, 0.18, 6),
     chromeMaterial
   );
   centerMast.position.y = 0.41 + 0.15 + cageHeight + 0.08;
-  group.add(centerMast);
+  centerMast.castShadow = true;
+  upperGroup.add(centerMast);
 
-  // Two Secondary Gold Sensor Domes on diagonal corners (seen in SS1)
   [
     [-0.20, 0.14],
     [0.20, -0.14],
@@ -405,10 +413,20 @@ function buildVikramLander() {
       brightGoldMaterial
     );
     subDome.position.set(sx, 0.41, sz);
-    group.add(subDome);
+    subDome.castShadow = true;
+    upperGroup.add(subDome);
   });
 
-  // 7. Landing Gear Assembly (4 outward angled legs with footpads & braces)
+  // 7. FIXED BASE PLATFORM & GIMBAL COLLAR (in baseGroup, 100% locked to surface)
+  const baseCollar = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.58, 0.64, 0.06, 16),
+    darkGoldMaterial
+  );
+  baseCollar.position.y = -0.08;
+  baseCollar.castShadow = true;
+  baseGroup.add(baseCollar);
+
+  // 8. 4 LANDING GEAR LEGS WITH CROSS-BRACING & WIDE FOOTPADS (in baseGroup)
   const legAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
   legAngles.forEach((ang) => {
     const legGroup = new THREE.Group();
@@ -429,6 +447,7 @@ function buildVikramLander() {
     );
     diagonalBrace1.position.set(-0.14, -0.24, 0);
     diagonalBrace1.rotation.z = 0.54;
+    diagonalBrace1.castShadow = true;
     legGroup.add(diagonalBrace1);
 
     const diagonalBrace2 = new THREE.Mesh(
@@ -437,6 +456,7 @@ function buildVikramLander() {
     );
     diagonalBrace2.position.set(0.14, -0.24, 0);
     diagonalBrace2.rotation.z = -0.54;
+    diagonalBrace2.castShadow = true;
     legGroup.add(diagonalBrace2);
 
     // Wide circular landing footpad
@@ -451,10 +471,10 @@ function buildVikramLander() {
     legGroup.rotation.z = 0.50;
     legGroup.position.set(Math.cos(ang) * 0.54, -0.06, Math.sin(ang) * 0.54);
     legGroup.rotation.y = -ang + Math.PI / 4;
-    group.add(legGroup);
+    baseGroup.add(legGroup);
   });
 
-  // 8. 4 Main Liquid Rocket Thruster Nozzles + 1 Center Thruster
+  // 9. 5 ROCKET THRUSTER NOZZLES (in baseGroup, facing down towards ground)
   const thrusterPositions = [
     [-0.16, -0.16],
     [0.16, -0.16],
@@ -470,10 +490,10 @@ function buildVikramLander() {
     nozzle.position.set(tx, -0.26, tz);
     nozzle.rotation.x = Math.PI;
     nozzle.castShadow = true;
-    group.add(nozzle);
+    baseGroup.add(nozzle);
   });
 
-  return { group, sidePanels, topWings, roverRamp, dispose };
+  return { group, baseGroup, upperGroup, sidePanels, topWings, roverRamp, dispose };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -525,6 +545,7 @@ function buildPhotorealisticEarth() {
       uSunDirection: { value: sunDirection },
       uCameraPosition: { value: new THREE.Vector3(0, 0.15, 5.4) },
       uCloudsOffset: { value: 0.0 },
+      uTime: { value: 0.0 },
     },
     vertexShader: `
       attribute vec4 tangent;
@@ -554,12 +575,30 @@ function buildPhotorealisticEarth() {
       uniform vec3 uSunDirection;
       uniform vec3 uCameraPosition;
       uniform float uCloudsOffset;
+      uniform float uTime;
 
       varying vec2 vUv;
       varying vec3 vWorldNormal;
       varying vec3 vWorldTangent;
       varying vec3 vWorldBitangent;
       varying vec3 vWorldPosition;
+
+      float hash1(float n) {
+        return fract(sin(n) * 43758.5453123);
+      }
+
+      // Procedural realistic multi-stroke lightning discharge
+      float getLightningStrike(float time, float period, float offset) {
+        float t = time + offset;
+        float cycle = mod(t, period);
+        if (cycle < 0.26) {
+          float pulse = sin(cycle * 48.0) * 0.5 + 0.5;
+          float env = sin((cycle / 0.26) * 3.14159265);
+          float jitter = hash1(floor(cycle * 55.0) + offset);
+          return pow(pulse * env, 1.3) * step(0.18, jitter) * 2.8;
+        }
+        return 0.0;
+      }
 
       void main() {
         // Water mask: White = ocean, Black = land
@@ -589,15 +628,14 @@ function buildPhotorealisticEarth() {
 
         // Cloud ground shadow cast onto terrain underneath
         vec2 cloudShadowUv = vec2(vUv.x + uCloudsOffset - sunDir.x * 0.003, vUv.y - sunDir.y * 0.003);
+        float cloudVal = texture2D(uCloudsMap, vec2(vUv.x + uCloudsOffset, vUv.y)).r;
         float cloudShadow = texture2D(uCloudsMap, cloudShadowUv).r * 0.42 * dayFactor;
         dayColor *= (1.0 - cloudShadow);
 
         // Gentle, realistic ocean sun sheen (reduced shine, zero plastic gloss)
         vec3 halfVec = normalize(sunDir + viewDir);
         float nDotH = max(dot(perturbedNormal, halfVec), 0.0);
-        // Soft ocean capillary wave scatter instead of harsh mirror spot
         float oceanSpecular = pow(nDotH, 22.0) * isWater * dayFactor;
-        // Physical water Fresnel (F0 = 0.02)
         float vDotH = max(dot(viewDir, halfVec), 0.0);
         float waterFresnel = 0.02 + 0.98 * pow(1.0 - vDotH, 5.0);
         vec3 oceanGlint = vec3(0.92, 0.96, 1.0) * (oceanSpecular * waterFresnel * 0.35);
@@ -620,10 +658,42 @@ function buildPhotorealisticEarth() {
         vec3 atmosphericRim = vec3(0.32, 0.62, 0.96) * (limbFresnel * sunAlignment * 0.95);
         surfaceColor += atmosphericRim;
 
-        // Very dim sunlight reflection on the right side of Earth (illuminating towards the satellite)
+        // Sunlight reflection on right side of Earth (illuminating towards the satellite)
         float sunLimbGlint = pow(max(dot(perturbedNormal, halfVec), 0.0), 10.0) * isWater * dayFactor;
-        vec3 rightSideSunlightGlint = vec3(0.95, 0.98, 1.0) * (sunLimbGlint * 0.24);
+        vec3 rightSideSunlightGlint = vec3(0.95, 0.98, 1.0) * (sunLimbGlint * 0.32);
         surfaceColor += rightSideSunlightGlint;
+
+        // ── ATMOSPHERIC LIGHTNING STORMS ON RIGHT SIDE OF EARTH ────────────────
+        // Focus lightning on the right hemisphere facing space & towards satellite (view-space X > 0)
+        float rightSideFactor = smoothstep(0.04, 0.65, vWorldNormal.x);
+
+        // Storm Cell 1: Tropical convective system on right limb
+        vec2 storm1 = vec2(0.66, 0.48);
+        float dist1 = length(vec2(fract(vUv.x + uCloudsOffset) - storm1.x, vUv.y - storm1.y));
+        float strike1 = getLightningStrike(uTime, 2.7, 0.1);
+        float flash1 = smoothstep(0.18, 0.02, dist1) * strike1;
+
+        // Storm Cell 2: Mid-latitude cyclone on upper-right limb
+        vec2 storm2 = vec2(0.74, 0.66);
+        float dist2 = length(vec2(fract(vUv.x + uCloudsOffset) - storm2.x, vUv.y - storm2.y));
+        float strike2 = getLightningStrike(uTime, 3.6, 1.35);
+        float flash2 = smoothstep(0.15, 0.02, dist2) * strike2;
+
+        // Storm Cell 3: Rapid twilight lightning cell
+        vec2 storm3 = vec2(0.60, 0.32);
+        float dist3 = length(vec2(fract(vUv.x + uCloudsOffset) - storm3.x, vUv.y - storm3.y));
+        float strike3 = getLightningStrike(uTime, 4.2, 2.4);
+        float flash3 = smoothstep(0.14, 0.02, dist3) * strike3;
+
+        // Cloud illumination from inside the storm
+        float stormGlow = (flash1 + flash2 + flash3) * rightSideFactor;
+        vec3 lightningColor = vec3(0.76, 0.92, 1.0) * (stormGlow * (0.85 + 1.8 * cloudVal) * 4.5);
+
+        // High-altitude atmospheric sheet flash along the right limb
+        float limbSheet = (strike1 * 0.38 + strike2 * 0.32 + strike3 * 0.28) * rightSideFactor * pow(limbFresnel, 1.8);
+        vec3 limbFlashColor = vec3(0.62, 0.86, 1.0) * (limbSheet * 3.0);
+
+        surfaceColor += lightningColor + limbFlashColor;
 
         gl_FragColor = vec4(surfaceColor, 1.0);
       }
@@ -641,6 +711,7 @@ function buildPhotorealisticEarth() {
     uniforms: {
       uCloudsMap: { value: cloudsTex },
       uSunDirection: { value: sunDirection },
+      uTime: { value: 0.0 },
     },
     vertexShader: `
       varying vec2 vUv;
@@ -654,12 +725,29 @@ function buildPhotorealisticEarth() {
     fragmentShader: `
       uniform sampler2D uCloudsMap;
       uniform vec3 uSunDirection;
+      uniform float uTime;
       varying vec2 vUv;
       varying vec3 vWorldNormal;
 
+      float hash1(float n) {
+        return fract(sin(n) * 43758.5453123);
+      }
+
+      float getLightningStrike(float time, float period, float offset) {
+        float t = time + offset;
+        float cycle = mod(t, period);
+        if (cycle < 0.26) {
+          float pulse = sin(cycle * 48.0) * 0.5 + 0.5;
+          float env = sin((cycle / 0.26) * 3.14159265);
+          float jitter = hash1(floor(cycle * 55.0) + offset);
+          return pow(pulse * env, 1.3) * step(0.18, jitter) * 2.8;
+        }
+        return 0.0;
+      }
+
       void main() {
         float cloudVal = texture2D(uCloudsMap, vUv).r;
-        if (cloudVal < 0.04) discard;
+        if (cloudVal < 0.03) discard;
 
         float nDotL = dot(vWorldNormal, normalize(uSunDirection));
         float dayFactor = smoothstep(-0.06, 0.18, nDotL);
@@ -669,10 +757,25 @@ function buildPhotorealisticEarth() {
         vec3 cloudDark = vec3(0.015, 0.02, 0.035);
         vec3 col = mix(cloudDark, cloudLit, dayFactor);
 
-        // Soft, realistic cloud opacity allowing terrain and oceans below to be appreciated
-        float alpha = cloudVal * mix(0.10, 0.68, dayFactor);
+        // Lightning flashes in the cloud volume on the right side
+        float rightSideFactor = smoothstep(0.04, 0.65, vWorldNormal.x);
+        vec2 storm1 = vec2(0.66, 0.48);
+        float dist1 = length(vec2(vUv.x - storm1.x, vUv.y - storm1.y));
+        float strike1 = getLightningStrike(uTime, 2.7, 0.1);
+        float flash1 = smoothstep(0.18, 0.02, dist1) * strike1;
 
-        gl_FragColor = vec4(col, alpha);
+        vec2 storm2 = vec2(0.74, 0.66);
+        float dist2 = length(vec2(vUv.x - storm2.x, vUv.y - storm2.y));
+        float strike2 = getLightningStrike(uTime, 3.6, 1.35);
+        float flash2 = smoothstep(0.15, 0.02, dist2) * strike2;
+
+        float stormCloudGlow = (flash1 + flash2) * rightSideFactor;
+        col += vec3(0.80, 0.94, 1.0) * (stormCloudGlow * 4.0);
+
+        // Soft, realistic cloud opacity allowing terrain and oceans below to be appreciated
+        float alpha = cloudVal * mix(0.10, 0.68, dayFactor) + stormCloudGlow * 0.45;
+
+        gl_FragColor = vec4(col, min(alpha, 1.0));
       }
     `,
     transparent: true,
@@ -803,30 +906,42 @@ export default function HeroScene() {
 
     // ── LIGHTING ─────────────────────────────────────────────────────────────
     // Deep cosmic space ambient light (guarantees one side in dramatic shadow like MoonGlobe)
-    scene.add(new THREE.AmbientLight(0x0a1424, 0.22));
+    scene.add(new THREE.AmbientLight(0x0e1b2e, 0.32));
+
+    // Soft hemisphere fill light ensuring lightened gold foil details gleam without pitch-black dead zones
+    const hemiLight = new THREE.HemisphereLight(0xfff6e6, 0x182438, 0.40);
+    scene.add(hemiLight);
 
     // Primary Sun — bright directional light casting sharp space shadows across the satellite
-    const sunLight = new THREE.DirectionalLight(0xfff6ea, 4.2);
-    sunLight.position.set(5.5, 4.8, 3.8);
+    const sunLight = new THREE.DirectionalLight(0xfffaee, 4.6);
+    sunLight.position.set(5.2, 4.8, 4.0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 20;
-    sunLight.shadow.camera.left = -3;
-    sunLight.shadow.camera.right = 3;
-    sunLight.shadow.camera.top = 3;
-    sunLight.shadow.camera.bottom = -3;
-    sunLight.shadow.bias = -0.001;
+    sunLight.shadow.camera.near = 1.0;
+    sunLight.shadow.camera.far = 18.0;
+    sunLight.shadow.camera.left = -2.2;
+    sunLight.shadow.camera.right = 2.2;
+    sunLight.shadow.camera.top = 2.2;
+    sunLight.shadow.camera.bottom = -2.2;
+    sunLight.shadow.bias = -0.0006;
+    sunLight.shadow.normalBias = 0.02;
+    sunLight.target.position.set(-0.85, -0.65, 0.85);
+    scene.add(sunLight.target);
     scene.add(sunLight);
 
-    // Very dim sunlight reflection from the right side of Earth falling across space onto the satellite
+    // Sunlight reflection from the right side of Earth falling across space onto the satellite
     const earthReflectionLight = new THREE.DirectionalLight(0xa6d2ff, 0.42);
     earthReflectionLight.position.set(2.2, 1.8, -2.0);
     scene.add(earthReflectionLight);
 
+    // Front-left warm cosmic fill light bringing out radiant light gold tones on the satellite
+    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.52);
+    satelliteFillLight.position.set(-3.5, 1.2, 3.2);
+    scene.add(satelliteFillLight);
+
     // Subtle lunar surface diffuse bounce from below
-    const lunarBounce = new THREE.DirectionalLight(0x9a8060, 0.20);
+    const lunarBounce = new THREE.DirectionalLight(0x9a8060, 0.22);
     lunarBounce.position.set(0, -3, 2);
     scene.add(lunarBounce);
 
@@ -847,14 +962,31 @@ export default function HeroScene() {
     positionEarthToMatchReference(earthControls, width, height, camera);
     scene.add(earthControls.rootGroup);
 
-    // ── CONTACT SHADOW DECAL ─────────────────────────────────────────────────
+    // ── DYNAMIC THREE.JS SHADOW RECEIVER ON LUNAR GROUND ─────────────────────
+    // Seamless transparent ground plane receiving real-time dynamic soft shadows
+    // from the 4 legs, body, solar wings, and thrusters of the satellite
+    const shadowReceiverGeo = new THREE.PlaneGeometry(8, 6);
+    const shadowReceiverMat = new THREE.ShadowMaterial({
+      opacity: 0.72,
+      depthWrite: false,
+    });
+    const shadowReceiver = new THREE.Mesh(shadowReceiverGeo, shadowReceiverMat);
+    shadowReceiver.position.set(-0.85, -1.33, 0.85);
+    shadowReceiver.rotation.x = -Math.PI / 2 + 0.12;
+    shadowReceiver.receiveShadow = true;
+    scene.add(shadowReceiver);
+
+    // Soft contact ambient occlusion decal directly under the landing feet
     const shadowDecal = makeLanderShadowDecal();
+    shadowDecal.position.set(-0.85, -1.32, 0.85);
     scene.add(shadowDecal);
 
     // ── CHANDRAYAAN-2 LANDER ─────────────────────────────────────────────────
     const landerControls = buildVikramLander();
     const {
       group: lander,
+      baseGroup,
+      upperGroup,
       sidePanels,
       topWings,
       roverRamp,
@@ -871,8 +1003,8 @@ export default function HeroScene() {
     // Interactive State: Panels Deployed / Stowed
     let isDeployed = true;
 
-    // Lander gentle cursor-tilt (position is permanently fixed)
-    const targetRot = { x: landerBaseRot.x, y: landerBaseRot.y };
+    // Target rotation for UPPER payload only (Base feet stay 100% locked to the surface!)
+    const upperTargetRot = { x: 0, y: 0 };
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -887,9 +1019,10 @@ export default function HeroScene() {
       mouse.x = nx;
       mouse.y = -ny;
 
-      // Only lander tilts gently with cursor — Earth, terrain & position stay completely locked!
-      targetRot.y = landerBaseRot.y + cx * 0.24;
-      targetRot.x = landerBaseRot.x - cy * 0.12;
+      // Base feet stay 100% locked to the lunar ground.
+      // Upper payload and solar panels smoothly swivel to track the cursor!
+      upperTargetRot.y = cx * 0.32;
+      upperTargetRot.x = -cy * 0.16;
 
       // Hover pointer when cursor over lander
       raycaster.setFromCamera(mouse, camera);
@@ -910,8 +1043,8 @@ export default function HeroScene() {
     };
 
     const onPointerLeave = () => {
-      targetRot.y = landerBaseRot.y;
-      targetRot.x = landerBaseRot.x;
+      upperTargetRot.y = 0;
+      upperTargetRot.x = 0;
       container.style.cursor = 'default';
     };
 
@@ -939,11 +1072,21 @@ export default function HeroScene() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
+      const elapsedTime = clock.getElapsedTime();
 
-      // Majestic planetary rotation of 3D Earth & clouds (speed increased smoothly)
+      // Majestic planetary rotation of 3D Earth & clouds
       earthControls.earth.rotation.y += dt * 0.038;
       earthControls.clouds.rotation.y += dt * 0.048;
       earthControls.earthMat.uniforms.uCloudsOffset.value += dt * 0.007;
+      earthControls.earthMat.uniforms.uTime.value = elapsedTime;
+      earthControls.cloudsMat.uniforms.uTime.value = elapsedTime;
+
+      // Atmospheric lightning pulses on Earth reflecting onto the satellite
+      const s1 = (elapsedTime + 0.1) % 2.7 < 0.26 ? 1.0 : 0.0;
+      const s2 = (elapsedTime + 1.35) % 3.6 < 0.26 ? 1.0 : 0.0;
+      const s3 = (elapsedTime + 2.4) % 4.2 < 0.26 ? 1.0 : 0.0;
+      const lightningActive = Math.max(s1, Math.max(s2, s3));
+      earthReflectionLight.intensity = 0.42 + lightningActive * 0.38;
 
       // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
@@ -951,9 +1094,10 @@ export default function HeroScene() {
       // Realistic shooting stars & comets crossing space
       shootingStars.update(dt, camera);
 
-      // Lander: smooth rotation tilt towards cursor, position stays fixed
-      lander.rotation.y += (targetRot.y - lander.rotation.y) * 0.07;
-      lander.rotation.x += (targetRot.x - lander.rotation.x) * 0.07;
+      // Lander: Base landing gear feet stay permanently locked to the lunar dust!
+      // Upper payload & solar panels swivel smoothly towards cursor, casting dynamic shadows
+      upperGroup.rotation.y += (upperTargetRot.y - upperGroup.rotation.y) * 0.08;
+      upperGroup.rotation.x += (upperTargetRot.x - upperGroup.rotation.x) * 0.08;
 
       // Fluid solar panel open/close deployment animation on click
       sidePanels.forEach((p) => {
