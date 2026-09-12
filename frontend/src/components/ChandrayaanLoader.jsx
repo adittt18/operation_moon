@@ -74,7 +74,7 @@ function makeSolarTexture() {
  * 3. 3D Moon upright, rotating on vertical Y-axis in reverse of MoonGlobe, with lightened bright surface.
  * 4. Lightened satellite color (pale radiant champagne gold) with realistic photovoltaic solar panels that open/close automatically while self-rotating.
  */
-function ThreeDChandrayaanLoader({ dim = 94 }) {
+function ThreeDChandrayaanLoader({ dim = 80 }) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ function ThreeDChandrayaanLoader({ dim = 94 }) {
     scene.add(satFrontLight);
 
     // 3. Central 3D Moon Sphere (Lightened bright surface, upright, rotating in reverse direction of MoonGlobe)
-    const moonRadius = 0.60;
+    const moonRadius = 0.48;
     const moonGeo = new THREE.SphereGeometry(moonRadius, 48, 48);
     const moonMat = new THREE.MeshStandardMaterial({
       color: 0xffffff, // lightened pure bright lunar base
@@ -134,7 +134,7 @@ function ThreeDChandrayaanLoader({ dim = 94 }) {
     scene.add(moonMesh);
 
     // 4. Orbit of Light Grey Rocks (Completely within view with large safety margin)
-    const orbitRadius = 1.05;
+    const orbitRadius = 0.88;
     const orbitRocksGroup = new THREE.Group();
 
     const rockMat = new THREE.MeshStandardMaterial({
@@ -145,12 +145,12 @@ function ThreeDChandrayaanLoader({ dim = 94 }) {
     });
 
     const rockGeo = new THREE.DodecahedronGeometry(1, 0);
-    const rockCount = 80;
+    const rockCount = 76;
 
     for (let i = 0; i < rockCount; i++) {
       const angle = (i / rockCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.05;
-      const rad = orbitRadius + (Math.random() - 0.5) * 0.05;
-      const zJitter = (Math.random() - 0.5) * 0.05;
+      const rad = orbitRadius + (Math.random() - 0.5) * 0.04;
+      const zJitter = (Math.random() - 0.5) * 0.04;
 
       const rockMesh = new THREE.Mesh(rockGeo, rockMat);
       rockMesh.position.set(
@@ -160,7 +160,7 @@ function ThreeDChandrayaanLoader({ dim = 94 }) {
       );
 
       // Varied rock boulder shapes
-      const baseScale = 0.018 + Math.random() * 0.020;
+      const baseScale = 0.015 + Math.random() * 0.016;
       rockMesh.scale.set(
         baseScale * (0.8 + Math.random() * 0.5),
         baseScale * (0.8 + Math.random() * 0.5),
@@ -376,8 +376,8 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isModal = size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  // Modal size for clean floating upload loader is 94px; lg is 110px; md is 76px; sm is 26px
-  const dim = isSm ? 26 : isSpinner ? 56 : isModal ? 94 : isLg ? 110 : isXl ? 130 : 76;
+  // Modal size for clean floating upload loader is 80px; lg is 96px; md is 68px; sm is 26px
+  const dim = isSm ? 26 : isSpinner ? 52 : isModal ? 80 : isLg ? 96 : isXl ? 116 : 68;
 
   if (isSm) {
     return (
@@ -421,7 +421,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Compact 94px 3D Moon with rock orbit, 100% in-frame, lightened satellite with authentic solar panels
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Compact 80px 3D Moon with rock orbit, 100% in-frame, lightened satellite with authentic solar panels
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
