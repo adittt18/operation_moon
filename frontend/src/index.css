@@ -1325,16 +1325,23 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   --bg-page-3: #d8e8fc;
   --bg-page: linear-gradient(165deg, #f4f8ff 0%, #e5f0fe 50%, #d8e8fc 100%);
 
-  --text-primary: #1d4ed8;
-  --text-secondary: #2563eb;
-  --text-muted: #2b6cb0;
-  --text-faint: #6482a4;
+  --text-primary: #0c2f66;
+  --text-secondary: #144485;
+  --text-muted: #2e5584;
+  --text-faint: #5a7b9e;
 
-  --accent-blue: #1d4ed8;
-  --accent-blue-soft: #2563eb;
-  --border-subtle: rgba(185, 212, 245, 0.85);
-  --divider: rgba(200, 222, 248, 0.7);
+  --accent-blue: #0c2f66;
+  --accent-blue-soft: #1d4ed8;
+  --border-subtle: #99c2f6;
+  --divider: #c2dbfc;
   --input-bg: #ffffff;
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4 {
+  color: #0c2f66;
 }
 
 [data-theme="light"] .app-main-column { background: transparent; }
@@ -1342,19 +1349,19 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* Hero Banner */
 [data-theme="light"] .hero-banner {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(238, 246, 255, 0.97) 100%);
-  border: 1px solid rgba(185, 212, 245, 0.9);
-  box-shadow: 0 14px 35px rgba(25, 65, 130, 0.08);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 14px 35px rgba(12, 47, 102, 0.08);
 }
 [data-theme="light"] .hero-eyebrow {
-  color: #2563eb;
+  color: #144485;
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 [data-theme="light"] .hero-title,
 [data-theme="light"] .hero-brand-prefix {
-  color: #0e2552 !important;
-  -webkit-text-fill-color: #0e2552 !important;
+  color: #0c2f66 !important;
+  -webkit-text-fill-color: #0c2f66 !important;
   font-weight: 800 !important;
 }
 [data-theme="light"] .hero-title .grad {
@@ -1366,24 +1373,24 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   display: inline-block;
 }
 [data-theme="light"] .hero-subtitle {
-  color: #133266 !important;
-  -webkit-text-fill-color: #133266 !important;
+  color: #0c2f66 !important;
+  -webkit-text-fill-color: #0c2f66 !important;
   font-weight: 700 !important;
 }
 [data-theme="light"] .hero-desc {
-  color: #2b6cb0;
+  color: #2e5584;
   line-height: 1.6;
   font-weight: 500;
 }
 [data-theme="light"] .hero-pill {
   background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.9);
-  color: #2563eb;
+  border: 1.5px solid #99c2f6;
+  color: #0c2f66;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(30, 70, 140, 0.05);
+  box-shadow: 0 2px 8px rgba(12, 47, 102, 0.06);
 }
 [data-theme="light"] .hero-pill svg {
-  color: #2563eb;
+  color: #0c2f66;
 }
 [data-theme="light"] .hero-scene-wrap::before {
   width: 220px;
@@ -1520,43 +1527,43 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 
 /* Section Headings */
 [data-theme="light"] .section-heading .icon {
-  color: #2563eb;
+  color: #0c2f66;
 }
 [data-theme="light"] .section-heading h3 {
-  color: #1d4ed8;
+  color: #0c2f66;
   font-weight: 800;
   letter-spacing: 0.8px;
 }
 [data-theme="light"] .section-heading p {
-  color: #4b6a8e;
+  color: #2e5584;
   font-weight: 500;
 }
 
 /* Dataset Cards (Both One-Click and Additional) */
 [data-theme="light"] .dataset-card {
   background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
-  box-shadow: 0 4px 18px rgba(25, 65, 130, 0.05);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 4px 18px rgba(12, 47, 102, 0.08);
 }
 [data-theme="light"] .dataset-card:hover {
-  border-color: #2563eb;
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.12);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(12, 47, 102, 0.14);
 }
 [data-theme="light"] .dataset-card.selected {
-  border-color: #1d4ed8;
-  box-shadow: 0 0 0 1px #1d4ed8, 0 10px 25px rgba(29, 78, 216, 0.14);
+  border-color: #0c2f66;
+  box-shadow: 0 0 0 1px #0c2f66, 0 10px 25px rgba(12, 47, 102, 0.16);
 }
 [data-theme="light"] .dataset-thumb {
   background: #e0ecfa;
-  border: 1px solid rgba(185, 212, 245, 0.9);
+  border: 1.5px solid #b6d4f9;
 }
 [data-theme="light"] .dataset-title {
-  color: #1d4ed8;
+  color: #0c2f66;
   font-weight: 700;
 }
 [data-theme="light"] .dataset-sub,
 [data-theme="light"] .dataset-desc {
-  color: #4b6a8e;
+  color: #2e5584;
 }
 [data-theme="light"] .dataset-file {
   color: #2563eb;
@@ -1669,17 +1676,17 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .docs-panel,
 [data-theme="light"] .moon-globe-wrapper {
   background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
-  box-shadow: 0 4px 20px rgba(25, 65, 130, 0.05);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 4px 20px rgba(12, 47, 102, 0.08), 0 1px 4px rgba(12, 47, 102, 0.04);
 }
 [data-theme="light"] .card-header h2,
 [data-theme="light"] .results-header h2,
 [data-theme="light"] .docs-panel h3,
 [data-theme="light"] .globe-controls-bar h3 {
-  color: #1e4494 !important;
+  color: #0c2f66 !important;
 }
 [data-theme="light"] .card-header .subtitle {
-  color: #2b6cb0 !important;
+  color: #2e5584 !important;
 }
 [data-theme="light"] .badge.isro-badge {
   color: #ea580c;
@@ -1687,23 +1694,25 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(234, 88, 12, 0.25);
 }
 [data-theme="light"] .section-label {
-  color: #1d4ed8;
+  color: #0c2f66;
+  font-weight: 700;
 }
 [data-theme="light"] .divider-text {
-  color: #6482a4;
+  color: #5a7b9e;
 }
 
 /* Metric Cards */
 [data-theme="light"] .metric-card {
   background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 3px 12px rgba(12, 47, 102, 0.06);
 }
 [data-theme="light"] .metric-title {
-  color: #2357a4 !important;
+  color: #0c2f66 !important;
   font-weight: 600;
 }
 [data-theme="light"] .metric-value {
-  color: #1e4494 !important;
+  color: #0c2f66 !important;
 }
 [data-theme="light"] .metric-value .unit {
   color: #2b6cb0;
@@ -1796,106 +1805,111 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #4b6a8e;
 }
 [data-theme="light"] .btn-secondary {
-  background: rgba(45, 94, 168, 0.08) !important;
-  color: #1e4580 !important;
-  border: 1px solid rgba(147, 197, 253, 0.45) !important;
+  background: rgba(12, 47, 102, 0.06) !important;
+  color: #0c2f66 !important;
+  font-weight: 600 !important;
+  border: 1.5px solid #99c2f6 !important;
 }
 [data-theme="light"] .btn-secondary:hover:not(:disabled) {
-  background: rgba(45, 94, 168, 0.15) !important;
-  border-color: rgba(96, 165, 250, 0.7) !important;
-  color: #163668 !important;
+  background: rgba(12, 47, 102, 0.12) !important;
+  border-color: #68a3f2 !important;
+  color: #061c3e !important;
 }
 
 /* Architecture / Docs */
 [data-theme="light"] .doc-section {
   background: #f8fbff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
-  box-shadow: 0 2px 8px rgba(25, 65, 130, 0.04);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 3px 12px rgba(12, 47, 102, 0.06);
 }
 [data-theme="light"] .doc-section h4 {
-  color: #1d4ed8 !important;
+  color: #0c2f66 !important;
   font-weight: 700;
 }
 [data-theme="light"] .doc-section ul,
 [data-theme="light"] .doc-section ol {
-  color: #2b6cb0;
+  color: #2e5584;
 }
 [data-theme="light"] .doc-section li {
-  color: #2b6cb0 !important;
+  color: #2e5584 !important;
   font-weight: 500;
 }
 [data-theme="light"] .doc-section li strong {
-  color: #1e40af !important;
+  color: #0c2f66 !important;
   font-weight: 700;
 }
 [data-theme="light"] .doc-section li::marker {
-  color: #2563eb !important;
+  color: #144485 !important;
   font-weight: 700;
 }
 
 /* Settings */
 [data-theme="light"] .settings-section-card {
   background: #ffffff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
-  box-shadow: 0 4px 18px rgba(25, 65, 130, 0.05);
+  border: 1.5px solid #99c2f6;
+  box-shadow: 0 4px 18px rgba(12, 47, 102, 0.08), 0 1px 4px rgba(12, 47, 102, 0.04);
 }
 [data-theme="light"] .settings-section-header {
-  border-bottom: 1px solid rgba(210, 230, 252, 0.7);
+  border-bottom: 1.5px solid #c2dbfc;
 }
 [data-theme="light"] .settings-section-icon {
-  background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: #e8f2fe;
+  color: #0c2f66;
+  border: 1.5px solid #99c2f6;
 }
 [data-theme="light"] .settings-section-info h3 {
-  color: #0f2747;
+  color: #0c2f66 !important;
+  font-weight: 700;
 }
 [data-theme="light"] .settings-section-info p {
-  color: #5c7490;
+  color: #2e5584;
 }
 [data-theme="light"] .settings-row {
-  border-bottom: 1px solid rgba(210, 230, 252, 0.6);
+  border-bottom: 1px solid #dceafd;
   background: transparent;
   box-shadow: none;
 }
 [data-theme="light"] .settings-row-text strong {
-  color: #1e3a8a;
+  color: #0c2f66 !important;
+  font-weight: 700;
 }
 [data-theme="light"] .settings-row-text span {
-  color: #475569;
+  color: #2e5584;
 }
 [data-theme="light"] .settings-select {
-  background-color: rgba(45, 94, 168, 0.08);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231e4580' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  border: 1px solid rgba(147, 197, 253, 0.45);
-  color: #1e4580;
-  box-shadow: none;
+  background-color: rgba(12, 47, 102, 0.06);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230c2f66' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  border: 1.5px solid #99c2f6;
+  color: #0c2f66;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(12, 47, 102, 0.05);
 }
 [data-theme="light"] .settings-select:hover:not(:disabled) {
-  background-color: rgba(45, 94, 168, 0.15);
-  border-color: rgba(96, 165, 250, 0.7);
-  color: #163668;
+  background-color: rgba(12, 47, 102, 0.12);
+  border-color: #68a3f2;
+  color: #061c3e;
 }
 [data-theme="light"] .settings-select option {
   background: #ffffff;
-  color: #1e4580;
+  color: #0c2f66;
 }
 
 /* 3D Moon Globe Overlay */
 [data-theme="light"] .site-info-overlay {
   background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(195, 218, 245, 0.9);
-  color: #0a1c36;
-  box-shadow: 0 14px 35px rgba(25, 65, 130, 0.15);
+  border: 1.5px solid #99c2f6;
+  color: #0c2f66;
+  box-shadow: 0 14px 35px rgba(12, 47, 102, 0.12);
 }
 [data-theme="light"] .site-header h4 {
-  color: #1d4ed8;
+  color: #0c2f66 !important;
+  font-weight: 700;
 }
 [data-theme="light"] .site-desc {
-  color: #405f83;
+  color: #2e5584;
 }
 [data-theme="light"] .site-coords {
-  color: #1d4ed8;
+  color: #0c2f66;
 }
 [data-theme="light"] .footer-bar p {
   color: #5a7b9e;
