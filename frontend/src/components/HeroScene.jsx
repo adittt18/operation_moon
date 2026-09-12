@@ -422,89 +422,214 @@ function buildVikramLander() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- *  3D EARTH MODEL  (Matching the texture, vibrant blue oceans & clouds of reference)
+ *  3D EARTH MODEL  (Photorealistic 5-texture PBR Earth with MoonGlobe terminator)
+ *  - Daytime diffuse (NASA Blue Marble)
+ *  - Tangent-space normal map for mountain relief
+ *  - Ocean specular sun-glint reflection
+ *  - Real atmospheric cloud layer with surface self-shadowing
+ *  - Authentic dark-side cosmic shadow with glowing night city lights
+ *  - Sunlit Rayleigh atmospheric limb scattering (strictly no night-side halo)
+ *  - Perspective elongation compensation for mathematically perfect circular globe
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildPhotorealisticEarth() {
-  const group = new THREE.Group();
+  const rootGroup = new THREE.Group();
+  const alignGroup = new THREE.Group();
+  const orientGroup = new THREE.Group();
+  rootGroup.add(alignGroup);
+  alignGroup.add(orientGroup);
+
   const radius = 0.52;
   const loader = new THREE.TextureLoader();
 
-  // 1. Earth Surface Mesh with authentic vibrant blue oceans & continents
-  const earthMat = new THREE.MeshStandardMaterial({
-    roughness: 0.65,
-    metalness: 0.08,
-  });
+  const loadTex = (url, isSRGB = false) => {
+    const tex = loader.load(url);
+    tex.colorSpace = isSRGB ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.generateMipmaps = true;
+    return tex;
+  };
 
-  loader.load('/earth_surface_vivid.jpg', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    earthMat.map = tex;
-    earthMat.needsUpdate = true;
-  });
+  const dayTex = loadTex('/user_earth_day.jpg', true);
+  const nightTex = loadTex('/user_earth_night.jpg', true);
+  const cloudsTex = loadTex('/user_earth_clouds.jpg', false);
+  const normalTex = loadTex('/user_earth_normal.jpg', false);
+  const specularTex = loadTex('/user_earth_specular.jpg', false);
 
-  loader.load('/earth_specular_2048.jpg', (tex) => {
-    earthMat.roughnessMap = tex;
-    earthMat.roughness = 0.65;
-    earthMat.needsUpdate = true;
-  });
+  // Directional sun angle matching the scene's primary sun and MoonGlobe terminator
+  const sunDirection = new THREE.Vector3(1.15, 0.45, 0.85).normalize();
 
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), earthMat);
-  earth.rotation.y = 2.15; // default orientation matching reference
-  group.add(earth);
-
-  // 2. High-Res 3D Atmospheric Clouds Layer
-  const cloudMat = new THREE.MeshLambertMaterial({
-    transparent: true,
-    opacity: 0.85,
-    depthWrite: false,
-    blending: THREE.NormalBlending,
-  });
-
-  loader.load('/earth_clouds_layer.png', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    cloudMat.map = tex;
-    cloudMat.needsUpdate = true;
-  });
-
-  const clouds = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.014, 64, 64), cloudMat);
-  clouds.rotation.y = 2.15;
-  group.add(clouds);
-
-  // 3. Atmospheric Fresnel Rim Glow (Luminous cyan-blue aura matching imaged Earth)
-  const glowMat = new THREE.ShaderMaterial({
+  // 1. Earth Surface PBR ShaderMaterial
+  const earthMat = new THREE.ShaderMaterial({
     uniforms: {
-      glowColor: { value: new THREE.Color(0x60a5fa) },
+      uDayMap: { value: dayTex },
+      uNightMap: { value: nightTex },
+      uNormalMap: { value: normalTex },
+      uSpecularMap: { value: specularTex },
+      uCloudsMap: { value: cloudsTex },
+      uSunDirection: { value: sunDirection },
+      uCameraPosition: { value: new THREE.Vector3(0, 0.15, 5.4) },
+      uCloudsOffset: { value: 0.0 },
+      uNormalScale: { value: 1.25 },
     },
     vertexShader: `
-      varying vec3 vNormal;
-      varying vec3 vPositionNormal;
+      attribute vec4 tangent;
+      varying vec2 vUv;
+      varying vec3 vWorldNormal;
+      varying vec3 vWorldTangent;
+      varying vec3 vWorldBitangent;
+      varying vec3 vWorldPosition;
+
       void main() {
-        vNormal = normalize(normalMatrix * normal);
-        vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
+        vUv = uv;
+        vec4 worldPos = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPos.xyz;
+        vWorldNormal = normalize(mat3(modelMatrix) * normal);
+        vec3 normTangent = normalize(mat3(modelMatrix) * tangent.xyz);
+        vWorldTangent = normTangent;
+        vWorldBitangent = normalize(cross(vWorldNormal, normTangent) * tangent.w);
+        gl_Position = projectionMatrix * viewMatrix * worldPos;
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uDayMap;
+      uniform sampler2D uNightMap;
+      uniform sampler2D uNormalMap;
+      uniform sampler2D uSpecularMap;
+      uniform sampler2D uCloudsMap;
+      uniform vec3 uSunDirection;
+      uniform vec3 uCameraPosition;
+      uniform float uCloudsOffset;
+      uniform float uNormalScale;
+
+      varying vec2 vUv;
+      varying vec3 vWorldNormal;
+      varying vec3 vWorldTangent;
+      varying vec3 vWorldBitangent;
+      varying vec3 vWorldPosition;
+
+      void main() {
+        // High-resolution tangent space normal map relief
+        vec3 normalTex = texture2D(uNormalMap, vUv).xyz * 2.0 - 1.0;
+        vec3 perturbedNormal = normalize(
+          vWorldTangent * (normalTex.x * uNormalScale) +
+          vWorldBitangent * (normalTex.y * uNormalScale) +
+          vWorldNormal * normalTex.z
+        );
+
+        vec3 viewDir = normalize(uCameraPosition - vWorldPosition);
+        vec3 sunDir = normalize(uSunDirection);
+
+        // Day/night terminator curve matching 3D MoonGlobe
+        float nDotL = dot(perturbedNormal, sunDir);
+        float dayFactor = smoothstep(-0.06, 0.18, nDotL);
+        float nightFactor = 1.0 - smoothstep(0.0, 0.18, nDotL);
+
+        // Daytime surface texture (NASA Blue Marble)
+        vec3 dayColor = texture2D(uDayMap, vUv).rgb;
+
+        // Cloud shadow cast onto daytime ground
+        vec2 cloudShadowUv = vec2(vUv.x + uCloudsOffset - sunDir.x * 0.003, vUv.y - sunDir.y * 0.003);
+        float cloudShadow = texture2D(uCloudsMap, cloudShadowUv).r * 0.45 * dayFactor;
+        dayColor *= (1.0 - cloudShadow);
+
+        // Ocean specular sun glint masked by water map
+        float oceanMask = texture2D(uSpecularMap, vUv).r;
+        vec3 halfVec = normalize(sunDir + viewDir);
+        float nDotH = max(dot(perturbedNormal, halfVec), 0.0);
+        float specular = pow(nDotH, 55.0) * oceanMask * dayFactor;
+        vec3 oceanGlint = vec3(1.0, 0.98, 0.92) * specular * 2.2;
+
+        // Daytime lit surface
+        vec3 litDay = (dayColor * (0.03 + 1.28 * dayFactor)) + oceanGlint;
+
+        // Night side: deep space shadow (like MoonGlobe) + glowing city lights
+        vec3 nightColor = texture2D(uNightMap, vUv).rgb;
+        vec3 cityLights = pow(nightColor, vec3(1.12)) * 2.4 * nightFactor;
+        vec3 darkSide = (dayColor * 0.015) + cityLights;
+
+        // Blend between day and night
+        vec3 surfaceColor = mix(darkSide, litDay, dayFactor);
+
+        // Atmospheric Rayleigh scattering along the sunlit limb ONLY (no night halo)
+        float limbFresnel = pow(1.0 - max(dot(normalize(vWorldNormal), viewDir), 0.0), 3.4);
+        float sunAlignment = max(dot(vWorldNormal, sunDir) + 0.12, 0.0);
+        vec3 atmosphericRim = vec3(0.36, 0.68, 1.0) * (limbFresnel * sunAlignment * 1.65);
+        surfaceColor += atmosphericRim;
+
+        gl_FragColor = vec4(surfaceColor, 1.0);
+      }
+    `,
+  });
+
+  const earthGeo = new THREE.SphereGeometry(radius, 128, 128);
+  earthGeo.computeTangents();
+  const earth = new THREE.Mesh(earthGeo, earthMat);
+  earth.rotation.y = 2.15; // default orientation matching reference continents
+  orientGroup.add(earth);
+
+  // 2. Separate 3D Atmospheric Clouds Layer (with independent drift and day/night shading)
+  const cloudsMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uCloudsMap: { value: cloudsTex },
+      uSunDirection: { value: sunDirection },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vWorldNormal;
+      void main() {
+        vUv = uv;
+        vWorldNormal = normalize(mat3(modelMatrix) * normal);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: `
-      varying vec3 vNormal;
-      varying vec3 vPositionNormal;
-      uniform vec3 glowColor;
+      uniform sampler2D uCloudsMap;
+      uniform vec3 uSunDirection;
+      varying vec2 vUv;
+      varying vec3 vWorldNormal;
+
       void main() {
-        float intensity = pow(0.62 - dot(vNormal, vPositionNormal), 3.2);
-        gl_FragColor = vec4(glowColor, 1.0) * intensity;
+        float cloudVal = texture2D(uCloudsMap, vUv).r;
+        if (cloudVal < 0.04) discard;
+
+        float nDotL = dot(vWorldNormal, normalize(uSunDirection));
+        float dayFactor = smoothstep(-0.06, 0.20, nDotL);
+
+        // Day clouds are crisp brilliant white; night clouds fade into deep cosmic dark
+        vec3 cloudLit = vec3(1.0, 1.0, 1.0);
+        vec3 cloudDark = vec3(0.02, 0.03, 0.05);
+        vec3 col = mix(cloudDark, cloudLit, dayFactor);
+
+        // Transparent on night side so city lights shine through clearly
+        float alpha = cloudVal * mix(0.16, 0.90, dayFactor);
+
+        gl_FragColor = vec4(col, alpha);
       }
     `,
-    side: THREE.BackSide,
-    blending: THREE.AdditiveBlending,
     transparent: true,
     depthWrite: false,
+    blending: THREE.NormalBlending,
   });
 
-  const glow = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.18, 48, 48), glowMat);
-  group.add(glow);
+  const cloudsGeo = new THREE.SphereGeometry(radius * 1.0035, 128, 128);
+  const clouds = new THREE.Mesh(cloudsGeo, cloudsMat);
+  clouds.rotation.y = 2.15;
+  orientGroup.add(clouds);
 
-  return { group, earth, clouds };
+  const dispose = () => {
+    earthGeo.dispose();
+    cloudsGeo.dispose();
+    earthMat.dispose();
+    cloudsMat.dispose();
+    [dayTex, nightTex, cloudsTex, normalTex, specularTex].forEach((t) => t.dispose());
+  };
+
+  return { rootGroup, alignGroup, orientGroup, earth, clouds, earthMat, cloudsMat, radius, dispose };
 }
 
-function positionEarthToMatchReference(earthGroup, width, height, camera) {
+function positionEarthToMatchReference(earthControls, width, height, camera) {
+  const { rootGroup, alignGroup, orientGroup, radius } = earthControls;
   const scale = Math.max(width / 1024, height / 576);
   // Distance from right edge in 1024x576 reference image is 270.38
   const screenX = width - 270.38 * scale;
@@ -525,9 +650,22 @@ function positionEarthToMatchReference(earthGroup, width, height, camera) {
   const ey = ndcY * distZ * (1.0 / f) + camera.position.y;
   const r3d = (screenR * distZ) / (f * (height / 2));
 
-  earthGroup.position.set(ex, ey, ez);
-  const scaleFactor = r3d / 0.52;
-  earthGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
+  rootGroup.position.set(ex, ey, ez);
+
+  // Exact perspective radial compensation for a mathematically 100% spherical circle on screen
+  const dx = ex - camera.position.x;
+  const dy = ey - camera.position.y;
+  const screenAngle = Math.atan2(dy, dx);
+  const distXY = Math.hypot(dx, dy);
+  const alpha = Math.atan2(distXY, distZ);
+  const cosAlpha = Math.cos(alpha);
+  // Factor cancelling the off-axis perspective elongation
+  const compRadial = cosAlpha * 0.992;
+  const scaleFactor = r3d / radius;
+
+  alignGroup.rotation.z = screenAngle;
+  alignGroup.scale.set(scaleFactor * compRadial, scaleFactor, scaleFactor);
+  orientGroup.rotation.z = -screenAngle;
 }
 
 
@@ -636,10 +774,10 @@ export default function HeroScene() {
       poolSize: 4,
     });
 
-    // ── 3D EARTH MODEL (Matching imaged Earth texture, slow rotation) ─────────
-    const { group: earthGroup, earth, clouds } = buildPhotorealisticEarth();
-    positionEarthToMatchReference(earthGroup, width, height, camera);
-    scene.add(earthGroup);
+    // ── 3D EARTH MODEL (5-texture photorealistic globe, slow rotation) ────────
+    const earthControls = buildPhotorealisticEarth();
+    positionEarthToMatchReference(earthControls, width, height, camera);
+    scene.add(earthControls.rootGroup);
 
     // ── CONTACT SHADOW DECAL ─────────────────────────────────────────────────
     const shadowDecal = makeLanderShadowDecal();
@@ -722,7 +860,7 @@ export default function HeroScene() {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
-      positionEarthToMatchReference(earthGroup, width, height, camera);
+      positionEarthToMatchReference(earthControls, width, height, camera);
     });
     ro.observe(container);
 
@@ -734,8 +872,9 @@ export default function HeroScene() {
       const dt = Math.min(clock.getDelta(), 0.05);
 
       // Very slow, majestic planetary rotation of 3D Earth & clouds
-      earth.rotation.y += dt * 0.016;
-      clouds.rotation.y += dt * 0.022;
+      earthControls.earth.rotation.y += dt * 0.015;
+      earthControls.clouds.rotation.y += dt * 0.021;
+      earthControls.earthMat.uniforms.uCloudsOffset.value += dt * 0.003;
 
       // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
@@ -772,6 +911,7 @@ export default function HeroScene() {
       container.removeEventListener('click', onClick);
       container.removeEventListener('mouseleave', onPointerLeave);
       shootingStars.dispose();
+      earthControls.dispose();
       renderer.dispose();
       scene.traverse((obj) => {
         if (obj.geometry) obj.geometry.dispose();
