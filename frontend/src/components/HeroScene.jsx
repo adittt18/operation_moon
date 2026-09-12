@@ -61,24 +61,23 @@ function makeSolarArrayTexture() {
       const x = pad + col * (cellW + pad);
       const y = pad + r * (cellH + pad);
 
-      // Crystalline solar cell with authentic space solar blue gradient
+      // Crystalline solar cell with slight gradient
       const grad = ctx.createLinearGradient(x, y, x + cellW, y + cellH);
-      grad.addColorStop(0, '#103568');
-      grad.addColorStop(0.5, '#1e5296');
-      grad.addColorStop(1, '#0c264a');
+      grad.addColorStop(0, '#0c2242');
+      grad.addColorStop(1, '#071830');
       ctx.fillStyle = grad;
       ctx.fillRect(x, y, cellW, cellH);
 
       // Silver / pale blue busbars
-      ctx.strokeStyle = 'rgba(180, 215, 255, 0.85)';
-      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = 'rgba(147, 197, 253, 0.65)';
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(x + cellW / 2, y);
       ctx.lineTo(x + cellW / 2, y + cellH);
       ctx.stroke();
 
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.55)';
-      ctx.lineWidth = 1.0;
+      ctx.strokeStyle = 'rgba(96, 165, 250, 0.35)';
+      ctx.lineWidth = 0.8;
       ctx.beginPath();
       ctx.moveTo(x, y + cellH / 2);
       ctx.lineTo(x + cellW, y + cellH / 2);
@@ -178,18 +177,11 @@ function buildVikramLander() {
 
   const solarPanelMaterial = new THREE.MeshPhysicalMaterial({
     map: solarTex,
-    color: new THREE.Color(0xd0e6ff), // Luminous space solar blue tint
-    emissive: new THREE.Color(0x0a1e38), // Subtle deep blue luminescence
-    metalness: 0.35,          // Dielectric silicon wafer: full vibrant blue visibility
-    roughness: 0.18,          // High-transmittance protective silica coverglass
+    metalness: 0.45,          // Authentic semiconductor metalness matching previous version
+    roughness: 0.20,          // Smooth protective coverglass
     clearcoat: 1.0,           // Aerospace quartz protective coverglass
     clearcoatRoughness: 0.10,  // Crystal-clear coverglass reflection
     reflectivity: 0.98,
-    sheen: 1.0,               // Micro-grooved photovoltaic cell sheen
-    sheenColor: new THREE.Color(0xb8e0ff), // Lighter blue-white photovoltaic sheen
-    sheenRoughness: 0.28,
-    specularIntensity: 1.0,
-    specularColor: new THREE.Color(0xffffff),
     side: THREE.DoubleSide,
   });
 
@@ -476,22 +468,22 @@ function buildVikramLander() {
     mainStrut.castShadow = true;
     legGroup.add(mainStrut);
 
-    // White supporter rod running beside gold strut in the screenshot area
+    // White supporter rod running beside gold strut (keeping green lower part, removing red collar overlap)
     const diagonalBrace1 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, 0.48, 8),
+      new THREE.CylinderGeometry(0.012, 0.012, 0.26, 8),
       chromeMaterial
     );
-    diagonalBrace1.position.set(-0.14, -0.24, 0);
+    diagonalBrace1.position.set(-0.14, -0.37, 0);
     diagonalBrace1.rotation.z = 0.54;
     diagonalBrace1.castShadow = true;
     legGroup.add(diagonalBrace1);
 
-    // Cross-brace connecting white supporter rod to main gold strut
+    // Cross-brace connecting green supporter rod to main gold strut
     const crossBrace = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.010, 0.010, 0.24, 8),
+      new THREE.CylinderGeometry(0.010, 0.010, 0.22, 8),
       chromeMaterial
     );
-    crossBrace.position.set(-0.07, -0.36, 0);
+    crossBrace.position.set(-0.07, -0.37, 0);
     crossBrace.rotation.z = -0.42;
     crossBrace.castShadow = true;
     legGroup.add(crossBrace);
