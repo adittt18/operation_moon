@@ -107,44 +107,85 @@ function makeSolarArrayTexture() {
 function buildVikramLander() {
   const group = new THREE.Group();
   const solarTex = makeSolarArrayTexture();
+  const loader = new THREE.TextureLoader();
 
-  // Materials
+  const loadTex = (url, repeatX = 1, repeatY = 1, isSRGB = false) => {
+    const tex = loader.load(url);
+    tex.colorSpace = isSRGB ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(repeatX, repeatY);
+    tex.generateMipmaps = true;
+    return tex;
+  };
+
+  const goldColorMap = loadTex('/lander_gold_color.jpg', 2, 2, true);
+  const goldNormalMap = loadTex('/lander_gold_normal.jpg', 2, 2, false);
+  const goldRoughnessMap = loadTex('/lander_gold_roughness.jpg', 2, 2, false);
+
+  const metalNormalMap = loadTex('/lander_metal_normal.jpg', 1, 2, false);
+  const metalRoughnessMap = loadTex('/lander_metal_roughness.jpg', 1, 2, false);
+
+  // Materials with authentic space MLI gold foil roughness and brushed metal
   const goldMaterial = new THREE.MeshStandardMaterial({
-    color: 0xedb338,
-    metalness: 0.92,
-    roughness: 0.22,
+    map: goldColorMap,
+    normalMap: goldNormalMap,
+    normalScale: new THREE.Vector2(1.6, 1.6),
+    roughnessMap: goldRoughnessMap,
+    metalness: 0.94,
+    roughness: 0.38,
   });
 
   const darkGoldMaterial = new THREE.MeshStandardMaterial({
-    color: 0xaa7218,
-    metalness: 0.86,
-    roughness: 0.32,
+    map: goldColorMap,
+    color: 0xb87e1e,
+    normalMap: goldNormalMap,
+    normalScale: new THREE.Vector2(1.4, 1.4),
+    roughnessMap: goldRoughnessMap,
+    metalness: 0.88,
+    roughness: 0.44,
   });
 
   const brightGoldMaterial = new THREE.MeshStandardMaterial({
-    color: 0xf5be2e,
-    metalness: 0.95,
-    roughness: 0.14,
+    map: goldColorMap,
+    color: 0xffdf78,
+    normalMap: goldNormalMap,
+    normalScale: new THREE.Vector2(1.1, 1.1),
+    roughnessMap: goldRoughnessMap,
+    metalness: 0.96,
+    roughness: 0.26,
   });
 
   const chromeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0,
-    metalness: 0.95,
-    roughness: 0.12,
+    color: 0xd0d8e2,
+    normalMap: metalNormalMap,
+    normalScale: new THREE.Vector2(0.8, 0.8),
+    roughnessMap: metalRoughnessMap,
+    metalness: 0.92,
+    roughness: 0.34,
   });
 
   const solarPanelMaterial = new THREE.MeshStandardMaterial({
     map: solarTex,
-    metalness: 0.48,
-    roughness: 0.22,
+    normalMap: metalNormalMap,
+    normalScale: new THREE.Vector2(0.4, 0.4),
+    metalness: 0.72,
+    roughness: 0.30,
     side: THREE.DoubleSide,
   });
 
   const engineMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a202c,
-    metalness: 0.92,
-    roughness: 0.40,
+    color: 0x222730,
+    normalMap: metalNormalMap,
+    normalScale: new THREE.Vector2(1.5, 1.5),
+    roughnessMap: metalRoughnessMap,
+    metalness: 0.88,
+    roughness: 0.52,
   });
+
+  const dispose = () => {
+    [goldColorMap, goldNormalMap, goldRoughnessMap, metalNormalMap, metalRoughnessMap, solarTex].forEach((t) => t.dispose());
+  };
 
   // 1. Main Core: Octagonal / Pyramidal gold foil superstructure
   const coreBody = new THREE.Mesh(
@@ -418,7 +459,7 @@ function buildVikramLander() {
     group.add(nozzle);
   });
 
-  return { group, sidePanels, topWings, roverRamp };
+  return { group, sidePanels, topWings, roverRamp, dispose };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -564,6 +605,11 @@ function buildPhotorealisticEarth() {
         float sunAlignment = max(dot(vWorldNormal, sunDir) + 0.12, 0.0);
         vec3 atmosphericRim = vec3(0.32, 0.62, 0.96) * (limbFresnel * sunAlignment * 0.95);
         surfaceColor += atmosphericRim;
+
+        // Very dim sunlight reflection on the right side of Earth (illuminating towards the satellite)
+        float sunLimbGlint = pow(max(dot(perturbedNormal, halfVec), 0.0), 10.0) * isWater * dayFactor;
+        vec3 rightSideSunlightGlint = vec3(0.95, 0.98, 1.0) * (sunLimbGlint * 0.24);
+        surfaceColor += rightSideSunlightGlint;
 
         gl_FragColor = vec4(surfaceColor, 1.0);
       }
@@ -742,12 +788,12 @@ export default function HeroScene() {
     container.appendChild(renderer.domElement);
 
     // ── LIGHTING ─────────────────────────────────────────────────────────────
-    // Ambient cosmic light
-    scene.add(new THREE.AmbientLight(0x0e1b30, 2.4));
+    // Deep cosmic space ambient light (guarantees one side in dramatic shadow like MoonGlobe)
+    scene.add(new THREE.AmbientLight(0x0a1424, 0.22));
 
-    // Primary Sun — bright directional light casting sharp lunar shadows
-    const sunLight = new THREE.DirectionalLight(0xfff6e6, 4.8);
-    sunLight.position.set(5.5, 5.5, 4.0);
+    // Primary Sun — bright directional light casting sharp space shadows across the satellite
+    const sunLight = new THREE.DirectionalLight(0xfff6ea, 4.2);
+    sunLight.position.set(5.5, 4.8, 3.8);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -760,13 +806,13 @@ export default function HeroScene() {
     sunLight.shadow.bias = -0.001;
     scene.add(sunLight);
 
-    // Earth-shine fill / rim light from upper left
-    const earthRim = new THREE.DirectionalLight(0x5a9eff, 1.8);
-    earthRim.position.set(-4, 2.5, -2);
-    scene.add(earthRim);
+    // Very dim sunlight reflection from the right side of Earth falling across space onto the satellite
+    const earthReflectionLight = new THREE.DirectionalLight(0xa6d2ff, 0.42);
+    earthReflectionLight.position.set(2.2, 1.8, -2.0);
+    scene.add(earthReflectionLight);
 
-    // Warm lunar surface bounce
-    const lunarBounce = new THREE.DirectionalLight(0xd4ab6e, 0.6);
+    // Subtle lunar surface diffuse bounce from below
+    const lunarBounce = new THREE.DirectionalLight(0x9a8060, 0.20);
     lunarBounce.position.set(0, -3, 2);
     scene.add(lunarBounce);
 
@@ -792,12 +838,13 @@ export default function HeroScene() {
     scene.add(shadowDecal);
 
     // ── CHANDRAYAAN-2 LANDER ─────────────────────────────────────────────────
+    const landerControls = buildVikramLander();
     const {
       group: lander,
       sidePanels,
       topWings,
       roverRamp,
-    } = buildVikramLander();
+    } = landerControls;
 
     // Positioned firmly on the real lunar surface on the left side matching reference image
     const landerBase = { x: -0.85, y: -0.60, z: 0.85 };
@@ -879,10 +926,10 @@ export default function HeroScene() {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
 
-      // Very slow, majestic planetary rotation of 3D Earth & clouds
-      earthControls.earth.rotation.y += dt * 0.015;
-      earthControls.clouds.rotation.y += dt * 0.021;
-      earthControls.earthMat.uniforms.uCloudsOffset.value += dt * 0.003;
+      // Majestic planetary rotation of 3D Earth & clouds (speed increased smoothly)
+      earthControls.earth.rotation.y += dt * 0.038;
+      earthControls.clouds.rotation.y += dt * 0.048;
+      earthControls.earthMat.uniforms.uCloudsOffset.value += dt * 0.007;
 
       // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
@@ -920,6 +967,7 @@ export default function HeroScene() {
       container.removeEventListener('mouseleave', onPointerLeave);
       shootingStars.dispose();
       earthControls.dispose();
+      landerControls.dispose();
       renderer.dispose();
       scene.traverse((obj) => {
         if (obj.geometry) obj.geometry.dispose();
