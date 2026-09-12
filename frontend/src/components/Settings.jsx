@@ -11,6 +11,9 @@ import {
   CheckCircle2,
   Sliders,
   Sparkles,
+  Palette,
+  Cpu,
+  Server,
 } from 'lucide-react';
 import { playNotificationSound, SOUND_PRESETS, getSavedSoundSettings } from '../audio';
 import { readJsonResponse } from '../api';
@@ -177,209 +180,252 @@ export default function Settings({ theme, onToggleTheme, apiOnline }) {
         </p>
       </div>
 
-      <div className="settings-grid">
-        {/* Appearance Row */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Appearance Theme</strong>
-            <span>{theme === 'dark' ? 'Dark mode (Space obsidian)' : 'Light mode (High-contrast lab)'}</span>
+      <div className="settings-sections-grid">
+        {/* Section 1: Display & Interface */}
+        <div className="settings-section-card">
+          <div className="settings-section-header">
+            <div className="settings-section-icon">
+              <Palette size={18} />
+            </div>
+            <div className="settings-section-info">
+              <h3>Display &amp; Interface</h3>
+              <p>Customize visual themes, contrast modes, and 3D globe presentation</p>
+            </div>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={onToggleTheme} type="button">
-            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-            Switch to {theme === 'dark' ? 'Light' : 'Dark'}
-          </button>
-        </div>
 
-        {/* Space Audio Alerts Toggle */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Space Sound Feedback</strong>
-            <span>Audio notification chime upon registration completion</span>
-          </div>
-          <div className="settings-row-controls">
-            <label className="switch" title="Toggle audio chime">
-              <input
-                type="checkbox"
-                checked={soundEnabled}
-                onChange={(e) => setSoundEnabled(e.target.checked)}
-              />
-              <span className="track" />
-            </label>
-          </div>
-        </div>
+          <div className="settings-rows-list">
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Appearance Theme</strong>
+                <span>{theme === 'dark' ? 'Dark mode (Space obsidian)' : 'Light mode (High-contrast lab)'}</span>
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={onToggleTheme} type="button">
+                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                Switch to {theme === 'dark' ? 'Light' : 'Dark'}
+              </button>
+            </div>
 
-        {/* Space Sound Preset Selection */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Space Telemetry Tone</strong>
-            <span>Select from 5 synthesized space notification sounds</span>
-          </div>
-          <div className="settings-row-controls">
-            <select
-              className="settings-select"
-              value={soundPreset}
-              onChange={(e) => setSoundPreset(e.target.value)}
-              disabled={!soundEnabled}
-            >
-              {SOUND_PRESETS.map((preset) => (
-                <option key={preset.id} value={preset.id}>
-                  {preset.name}
-                </option>
-              ))}
-            </select>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={handleTestSound}
-              disabled={!soundEnabled}
-              type="button"
-              title="Test selected sound"
-            >
-              <Volume2 size={14} /> Test
-            </button>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>3D Moon Globe Auto-Rotation</strong>
+                <span>Smooth planetary orbit rotation when inspecting landing sites</span>
+              </div>
+              <label className="switch" title="Toggle 3D auto rotation">
+                <input
+                  type="checkbox"
+                  checked={globeAutoRotate}
+                  onChange={(e) => setGlobeAutoRotate(e.target.checked)}
+                />
+                <span className="track" />
+              </label>
+            </div>
           </div>
         </div>
 
-        {/* Volume Adjuster */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Audio Volume ({Math.round(volume * 100)}%)</strong>
-            <span>Adjust volume output level for space chime playback</span>
+        {/* Section 2: Space Sound & Telemetry */}
+        <div className="settings-section-card">
+          <div className="settings-section-header">
+            <div className="settings-section-icon">
+              <Volume2 size={18} />
+            </div>
+            <div className="settings-section-info">
+              <h3>Space Sound &amp; Telemetry</h3>
+              <p>Synthesized audio chimes and mission acoustic feedback</p>
+            </div>
           </div>
-          <div className="settings-row-controls" style={{ flex: '0 1 180px' }}>
-            {volume === 0 ? <VolumeX size={15} color="var(--text-muted)" /> : <Volume2 size={15} color="var(--accent-blue-soft)" />}
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
-              disabled={!soundEnabled}
-              style={{ width: '100%', minWidth: '80px', touchAction: 'pan-y' }}
-            />
+
+          <div className="settings-rows-list">
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Space Sound Feedback</strong>
+                <span>Audio notification chime upon registration completion</span>
+              </div>
+              <div className="settings-row-controls">
+                <label className="switch" title="Toggle audio chime">
+                  <input
+                    type="checkbox"
+                    checked={soundEnabled}
+                    onChange={(e) => setSoundEnabled(e.target.checked)}
+                  />
+                  <span className="track" />
+                </label>
+              </div>
+            </div>
+
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Space Telemetry Tone</strong>
+                <span>Select from 5 synthesized space notification sounds</span>
+              </div>
+              <div className="settings-row-controls">
+                <select
+                  className="settings-select"
+                  value={soundPreset}
+                  onChange={(e) => setSoundPreset(e.target.value)}
+                  disabled={!soundEnabled}
+                >
+                  {SOUND_PRESETS.map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      {preset.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleTestSound}
+                  disabled={!soundEnabled}
+                  type="button"
+                  title="Test selected sound"
+                >
+                  <Volume2 size={14} /> Test
+                </button>
+              </div>
+            </div>
+
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Audio Volume ({Math.round(volume * 100)}%)</strong>
+                <span>Adjust volume output level for space chime playback</span>
+              </div>
+              <div className="settings-row-controls">
+                <div className="settings-volume-wrap">
+                  {volume === 0 ? <VolumeX size={16} color="var(--text-muted)" /> : <Volume2 size={16} color="var(--accent-blue-soft)" />}
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    disabled={!soundEnabled}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 3D Globe Auto-Rotation */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>3D Moon Globe Auto-Rotation</strong>
-            <span>Smooth orbit rotation when inspecting landing sites</span>
+        {/* Section 3: Algorithm & Registration Engine */}
+        <div className="settings-section-card">
+          <div className="settings-section-header">
+            <div className="settings-section-icon">
+              <Cpu size={18} />
+            </div>
+            <div className="settings-section-info">
+              <h3>Algorithm &amp; Registration Defaults</h3>
+              <p>Configure feature extraction engines and sub-pixel refinement behavior</p>
+            </div>
           </div>
-          <label className="switch" title="Toggle 3D auto rotation">
-            <input
-              type="checkbox"
-              checked={globeAutoRotate}
-              onChange={(e) => setGlobeAutoRotate(e.target.checked)}
-            />
-            <span className="track" />
-          </label>
-        </div>
 
-        {/* Default Feature Detector */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Feature Detector Engine</strong>
-            <span>Primary algorithm used for invariant tie-point extraction</span>
-          </div>
-          <select
-            className="settings-select"
-            value={defaultDetector}
-            onChange={(e) => setDefaultDetector(e.target.value)}
-          >
-            <option value="sift">Grid-Tiled SIFT (Standard)</option>
-            <option value="superpoint">SuperPoint Deep Learning</option>
-            <option value="orb">ORB Multi-Scale</option>
-          </select>
-        </div>
+          <div className="settings-rows-list">
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Feature Detector Engine</strong>
+                <span>Primary algorithm used for invariant tie-point extraction</span>
+              </div>
+              <div className="settings-row-controls">
+                <select
+                  className="settings-select"
+                  value={defaultDetector}
+                  onChange={(e) => setDefaultDetector(e.target.value)}
+                >
+                  <option value="sift">Grid-Tiled SIFT (Standard)</option>
+                  <option value="superpoint">SuperPoint Deep Learning</option>
+                  <option value="orb">ORB Multi-Scale</option>
+                </select>
+              </div>
+            </div>
 
-        {/* Sub-Pixel Refinement */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Sub-Pixel Refinement (cornerSubPix)</strong>
-            <span>Iterative gradient refinement to reach sub-pixel RMSE (&lt; 1.0 px)</span>
-          </div>
-          <label className="switch" title="Toggle sub-pixel refinement">
-            <input
-              type="checkbox"
-              checked={subpixelMode}
-              onChange={(e) => setSubpixelMode(e.target.checked)}
-            />
-            <span className="track" />
-          </label>
-        </div>
-
-        {/* Backend Status & Latency Benchmark */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>FastAPI Registration Engine</strong>
-            <span>
-              {apiOnline ? 'Operational · /health OK' : 'Offline / Unreachable'}
-              {pingLatency !== null && pingLatency >= 0 && ` (${pingLatency} ms ping)`}
-              {pingLatency === -1 && ' (Ping failed)'}
-            </span>
-          </div>
-          <div className="settings-row-controls">
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={handlePingBackend}
-              disabled={isPinging}
-              type="button"
-            >
-              <Activity size={14} /> {isPinging ? 'Pinging...' : 'Ping Test'}
-            </button>
-            <span
-              className="ready-badge"
-              style={{
-                background: apiOnline ? undefined : 'rgba(248,113,113,0.15)',
-                color: apiOnline ? undefined : 'var(--accent-red)',
-                borderColor: apiOnline ? undefined : 'rgba(248,113,113,0.3)',
-              }}
-            >
-              {apiOnline ? 'Online' : 'Offline'}
-            </span>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Sub-Pixel Refinement (cornerSubPix)</strong>
+                <span>Iterative gradient refinement to reach sub-pixel RMSE (&lt; 1.0 px)</span>
+              </div>
+              <label className="switch" title="Toggle sub-pixel refinement">
+                <input
+                  type="checkbox"
+                  checked={subpixelMode}
+                  onChange={(e) => setSubpixelMode(e.target.checked)}
+                />
+                <span className="track" />
+              </label>
+            </div>
           </div>
         </div>
 
-        {/* Export Audit Report */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Pipeline Verification Report</strong>
-            <span>Export full system configurations &amp; compliance metadata</span>
+        {/* Section 4: System Diagnostics & Platform Data */}
+        <div className="settings-section-card">
+          <div className="settings-section-header">
+            <div className="settings-section-icon">
+              <Server size={18} />
+            </div>
+            <div className="settings-section-info">
+              <h3>System Diagnostics &amp; Telemetry</h3>
+              <p>Health checks, audit verification exports, and platform metadata</p>
+            </div>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={handleExportReport} type="button">
-            <Download size={14} /> Export JSON
-          </button>
-        </div>
 
-        {/* Reset Local Preferences & Cache */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Local Storage &amp; Cache</strong>
-            <span>{cacheCleared ? 'Preferences reset to defaults!' : 'Clear stored UI parameters &amp; reset defaults'}</span>
-          </div>
-          <button className="btn btn-secondary btn-sm" onClick={handleClearCache} type="button">
-            {cacheCleared ? <CheckCircle2 size={14} color="var(--accent-green)" /> : <Trash2 size={14} />}
-            {cacheCleared ? 'Reset Done' : 'Reset Defaults'}
-          </button>
-        </div>
+          <div className="settings-rows-list">
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>FastAPI Registration Engine</strong>
+                <span>
+                  {apiOnline ? 'Operational · /health OK' : 'Offline / Unreachable'}
+                  {pingLatency !== null && pingLatency >= 0 && ` (${pingLatency} ms ping)`}
+                  {pingLatency === -1 && ' (Ping failed)'}
+                </span>
+              </div>
+              <div className="settings-row-controls">
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={handlePingBackend}
+                  disabled={isPinging}
+                  type="button"
+                >
+                  <Activity size={14} /> {isPinging ? 'Pinging...' : 'Ping Test'}
+                </button>
+                <span
+                  className="ready-badge"
+                  style={{
+                    background: apiOnline ? undefined : 'rgba(248,113,113,0.15)',
+                    color: apiOnline ? undefined : 'var(--accent-red)',
+                    borderColor: apiOnline ? undefined : 'rgba(248,113,113,0.3)',
+                  }}
+                >
+                  {apiOnline ? 'Online' : 'Offline'}
+                </span>
+              </div>
+            </div>
 
-        {/* Technical Pipeline Info */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Pipeline Core Stack</strong>
-            <span>OpenCV 4.x + NumPy + SciPy + Three.js + React 18</span>
-          </div>
-          <span className="dataset-sensor-pill">v1.0.0</span>
-        </div>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Pipeline Verification Report</strong>
+                <span>Export full system configurations &amp; compliance metadata</span>
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={handleExportReport} type="button">
+                <Download size={14} /> Export JSON
+              </button>
+            </div>
 
-        {/* Organization / Mission */}
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <strong>Indian Space Research Organisation</strong>
-            <span>Team Code_Chaos · Lunar Science &amp; Image Processing Division</span>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Local Storage &amp; Cache</strong>
+                <span>{cacheCleared ? 'Preferences reset to defaults!' : 'Clear stored UI parameters &amp; reset defaults'}</span>
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={handleClearCache} type="button">
+                {cacheCleared ? <CheckCircle2 size={14} color="var(--accent-green)" /> : <Trash2 size={14} />}
+                {cacheCleared ? 'Reset Done' : 'Reset Defaults'}
+              </button>
+            </div>
+
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <strong>Indian Space Research Organisation (ISRO)</strong>
+                <span>Team Code_Chaos · OpenCV 4.x + NumPy + Three.js + React 18</span>
+              </div>
+              <span className="dataset-sensor-pill">ISRO / DOS · v1.0.0</span>
+            </div>
           </div>
-          <span className="dataset-sensor-pill">ISRO / DOS</span>
         </div>
       </div>
     </div>
