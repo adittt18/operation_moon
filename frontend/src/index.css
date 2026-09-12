@@ -1382,9 +1382,9 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
   text-align: center;
   gap: 20px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(96, 165, 250, 0.28);
-  background: linear-gradient(185deg, rgba(13, 32, 56, 0.70) 0%, rgba(7, 19, 36, 0.72) 45%, rgba(3, 10, 21, 0.76) 100%);
-  border: 1px solid rgba(96, 165, 250, 0.32);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(96, 165, 250, 0.22);
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.50) 0%, rgba(7, 19, 36, 0.50) 45%, rgba(3, 10, 21, 0.50) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.25);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -2013,9 +2013,9 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   background: rgba(3, 8, 18, 0.65);
 }
 [data-theme="light"] .loading-modal-card {
-  background: linear-gradient(185deg, rgba(13, 32, 56, 0.70) 0%, rgba(7, 19, 36, 0.72) 45%, rgba(3, 10, 21, 0.76) 100%) !important;
-  border: 1px solid rgba(96, 165, 250, 0.32) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(96, 165, 250, 0.28) !important;
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.50) 0%, rgba(7, 19, 36, 0.50) 45%, rgba(3, 10, 21, 0.50) 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.25) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(96, 165, 250, 0.22) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
 }
