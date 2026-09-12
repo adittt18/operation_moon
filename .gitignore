@@ -11,3 +11,5 @@ powershell.cmd
 .env.local
 .env.production.local
 results/
+
+.vercel
