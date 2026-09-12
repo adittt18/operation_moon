@@ -1,14 +1,36 @@
-import React from 'react';
 import {
-  Home, UploadCloud, BarChart3, Globe2, FileText, Settings as SettingsIcon,
+  Home, UploadCloud, BarChart3, Settings as SettingsIcon,
 } from 'lucide-react';
+
+export function MoonGlobeIcon({ size = 24, strokeWidth = 2, className = '', ...props }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="9.5" />
+      <circle cx="8" cy="9" r="1.75" />
+      <circle cx="15.5" cy="8" r="1.25" />
+      <circle cx="13.5" cy="14.5" r="2.25" />
+      <circle cx="8" cy="15.5" r="1" />
+      <circle cx="17" cy="13.5" r="0.8" />
+    </svg>
+  );
+}
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'upload', label: 'Upload & Register', icon: UploadCloud },
   { id: 'results', label: 'Analysis & Metrics', icon: BarChart3, requiresResult: true },
-  { id: 'globe', label: '3D Moon Globe', icon: Globe2 },
-  { id: 'docs', label: 'PRD & Architecture', icon: FileText },
+  { id: 'globe', label: '3D Moon Globe', icon: MoonGlobeIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
 
