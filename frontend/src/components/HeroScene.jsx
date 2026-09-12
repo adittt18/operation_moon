@@ -601,7 +601,7 @@ function buildLunarTerrain() {
 
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2.3;
-  terrain.position.set(0.4, -1.75, -0.3);
+  terrain.position.set(0.4, -2.25, -0.3);
   terrain.receiveShadow = true;
   group.add(terrain);
 
@@ -650,7 +650,7 @@ function buildLunarTerrain() {
 
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
   ridge.rotation.x = -Math.PI / 2.6;
-  ridge.position.set(0, -1.45, -3.5);
+  ridge.position.set(0, -1.85, -3.8);
   ridge.receiveShadow = true;
   group.add(ridge);
 
@@ -663,17 +663,17 @@ function buildLunarTerrain() {
     flatShading: true,
   });
   const rockCoords = [
-    [0.9, -1.47, 0.4],
-    [-0.3, -1.51, 0.2],
-    [1.5, -1.43, -0.2],
-    [2.3, -1.57, 0.5],
-    [-1.7, -1.47, 0.3],
-    [0.2, -1.61, 0.8],
-    [-0.9, -1.33, 1.0],
-    [1.9, -1.37, 0.2],
-    [3.1, -1.49, -0.3],
-    [-0.5, -1.53, 0.6],
-    [0.6, -1.59, 0.3],
+    [0.9, -1.97, 0.4],
+    [-0.3, -2.01, 0.2],
+    [1.5, -1.93, -0.2],
+    [2.3, -2.07, 0.5],
+    [-1.7, -1.97, 0.3],
+    [0.2, -2.11, 0.8],
+    [-0.9, -1.83, 1.0],
+    [1.9, -1.87, 0.2],
+    [3.1, -1.99, -0.3],
+    [-0.5, -2.03, 0.6],
+    [0.6, -2.09, 0.3],
   ];
   rockCoords.forEach(([rx, ry, rz], idx) => {
     const rock = new THREE.Mesh(rockGeo, rockMat);
@@ -711,7 +711,7 @@ function makeLanderShadowDecal() {
 
   const tex = new THREE.CanvasTexture(c);
   const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.4, 1.5),
+    new THREE.PlaneGeometry(1.85, 1.15),
     new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
@@ -720,7 +720,7 @@ function makeLanderShadowDecal() {
     })
   );
   mesh.rotation.x = -Math.PI / 2.3;
-  mesh.position.set(-0.20, -1.19, 0.75);
+  mesh.position.set(-1.40, -1.58, 0.75);
   return mesh;
 }
 
@@ -791,13 +791,13 @@ export default function HeroScene() {
     const shootingStars = createShootingStarSystem({
       scene,
       camera,
-      bounds: { minX: -5.0, maxX: 5.5, minY: 1.0, maxY: 3.5, minZ: -12.0, maxZ: -4.0 },
+      bounds: { minX: -5.5, maxX: 6.5, minY: 1.5, maxY: 4.5, minZ: -12.0, maxZ: -4.0 },
       poolSize: 4,
     });
 
-    // ── EARTH (Placed backward of the moon surface in deep background) ────────
+    // ── EARTH (Placed backward of the moon surface in upper right sky) ────────
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(2.35, 1.48, -9.0);
+    earthGroup.position.set(3.85, 2.45, -9.0);
     scene.add(earthGroup);
 
     // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
@@ -816,12 +816,12 @@ export default function HeroScene() {
       roverRamp,
     } = buildVikramLander();
 
-    // Positioned firmly on the lowered lunar surface
-    const landerBase = { x: 0.05, y: -0.57, z: 0.75 };
-    const landerBaseRot = { x: 0.06, y: -0.24 };
+    // Positioned firmly on the lowered lunar surface (left side of surface, scaled down)
+    const landerBase = { x: -1.25, y: -1.08, z: 0.75 };
+    const landerBaseRot = { x: 0.06, y: -0.10 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
-    lander.scale.set(1.15, 1.15, 1.15);
+    lander.scale.set(0.82, 0.82, 0.82);
     scene.add(lander);
 
     // Interactive State: Panels Deployed / Stowed
@@ -952,7 +952,6 @@ export default function HeroScene() {
     <div
       className="hero-scene-canvas"
       ref={mountRef}
-      title="Click Chandrayaan-2 to deploy/close solar panels"
     />
   );
 }
