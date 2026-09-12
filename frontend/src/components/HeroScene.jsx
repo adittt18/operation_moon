@@ -763,11 +763,21 @@ function buildPhotorealisticEarth() {
 function positionEarthToMatchReference(earthControls, width, height, camera) {
   const { rootGroup, alignGroup, orientGroup, radius } = earthControls;
   const scale = Math.max(width / 1024, height / 576);
-  // Distance from right edge in 1024x576 reference image is 270.38
-  const screenX = width - 270.38 * scale;
-  // Distance from top in 1024x576 reference image is 95.24
-  const screenY = (height - 576 * scale) / 2 + 95.24 * scale;
-  const screenR = 62.27 * scale;
+
+  // Scaled Earth radius, bounded so it remains well-proportioned across all viewport sizes
+  let screenR = Math.min(62.27 * scale, height * 0.18, width * 0.12);
+  screenR = Math.max(screenR, 22);
+
+  // Robust screenX: aligns with reference image on desktop,
+  // clamped on narrow mobile viewports so it stays safely in the sky without colliding with right-side text
+  const rightMargin = width > 600 ? 150 : 90;
+  let screenX = width - 270.38 * scale;
+  screenX = Math.max(screenR + 18, Math.min(width - screenR - rightMargin, screenX));
+
+  // Robust screenY: guarantees Earth is always inside the upper sky viewport
+  // Prevents Earth from being pushed off-screen above the canvas in mobile desktop mode
+  let rawY = (height - 576 * scale) / 2 + 95.24 * scale;
+  let screenY = Math.max(screenR + 14, Math.min(height * 0.40, rawY));
 
   const ndcX = (screenX / width) * 2 - 1;
   const ndcY = 1 - (screenY / height) * 2;
