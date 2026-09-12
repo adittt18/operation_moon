@@ -21,6 +21,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
   const [registrationResult, setRegistrationResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingType, setProcessingType] = useState(null); // 'sample' (Run Registration) | 'upload' (Execute Sub-Pixel Registration)
   const [sites, setSites] = useState([]);
   const [apiOnline, setApiOnline] = useState(true);
 
@@ -78,6 +79,7 @@ export default function App() {
   const handleRegistrationComplete = (data) => {
     setRegistrationResult(data);
     setIsProcessing(false);
+    setProcessingType(null);
     setCurrentTab('results');
     const rmse = data.metrics?.rmse ? `${data.metrics.rmse}px` : '< 1.0px';
     addNotification({
@@ -93,6 +95,7 @@ export default function App() {
   };
 
   const handleSampleSelect = async (sampleId) => {
+    setProcessingType('sample');
     setIsProcessing(true);
     try {
       const formData = new FormData();
@@ -127,6 +130,7 @@ export default function App() {
       alert(`Error: ${err.message}`);
     } finally {
       setIsProcessing(false);
+      setProcessingType(null);
     }
   };
 
@@ -187,8 +191,14 @@ export default function App() {
                 onRegistrationComplete={handleRegistrationComplete}
                 onSampleSelect={handleSampleSelect}
                 isProcessing={isProcessing}
-                onStartProcessing={() => setIsProcessing(true)}
-                onProcessingError={() => setIsProcessing(false)}
+                onStartProcessing={() => {
+                  setProcessingType('upload');
+                  setIsProcessing(true);
+                }}
+                onProcessingError={() => {
+                  setIsProcessing(false);
+                  setProcessingType(null);
+                }}
               />
             </div>
           )}
@@ -247,6 +257,9 @@ export default function App() {
             <p>Pixel-Moon: Automated Multi-Modal Lunar Image Registration Pipeline · Chandrayaan-2 &amp; NASA LRO NAC</p>
           </footer>
         </main>
+
+        {/* Chandrayaan Orbiting Moon Pipeline Loading Modal - Strictly Centered in Right Main Column */}
+        <RegistrationLoadingModal isProcessing={isProcessing} processingType={processingType} />
       </div>
 
       <MobileNav
@@ -263,9 +276,6 @@ export default function App() {
           if (t.targetTab) setCurrentTab(t.targetTab);
         }}
       />
-
-      {/* Chandrayaan Orbiting Moon Fullscreen Pipeline Loading Modal */}
-      <RegistrationLoadingModal isProcessing={isProcessing} />
     </div>
   );
 }
