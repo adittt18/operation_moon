@@ -18,9 +18,9 @@ function createNucleusTexture() {
 
   const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
   grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  grad.addColorStop(0.12, 'rgba(235, 248, 255, 0.95)');
-  grad.addColorStop(0.35, 'rgba(96, 165, 250, 0.55)');
-  grad.addColorStop(0.65, 'rgba(30, 64, 175, 0.18)');
+  grad.addColorStop(0.18, 'rgba(240, 248, 255, 0.95)');
+  grad.addColorStop(0.40, 'rgba(96, 165, 250, 0.40)');
+  grad.addColorStop(0.70, 'rgba(30, 64, 175, 0.08)');
   grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
   ctx.fillStyle = grad;
@@ -104,11 +104,11 @@ class CelestialStreak {
     if (isComet) {
       this.duration = 3.2 + Math.random() * 1.6; // 3.2s to 4.8s
       this.speed = 6.5 + Math.random() * 3.5;
-      this.baseWidth = 0.16 + Math.random() * 0.08;
+      this.baseWidth = 0.024 + Math.random() * 0.012;
     } else {
       this.duration = 0.75 + Math.random() * 0.65; // 0.75s to 1.4s
       this.speed = 18.0 + Math.random() * 10.0;
-      this.baseWidth = 0.05 + Math.random() * 0.03;
+      this.baseWidth = 0.012 + Math.random() * 0.006;
     }
 
     // Direction angle: diagonal sweep from top-right to bottom-left (or top-left to bottom-right)
@@ -171,8 +171,9 @@ class CelestialStreak {
     this.history[0].copy(this.headPos);
 
     // Natural atmospheric flare: sin curve ramp-up and fade-out
+    // Head size tuned to match the pinpoint starfield size (~0.04-0.05)
     const flare = Math.sin(progress * Math.PI);
-    const headScale = this.isComet ? (0.65 + flare * 0.45) : (0.28 + flare * 0.22);
+    const headScale = this.isComet ? (0.075 + flare * 0.035) : (0.042 + flare * 0.022);
     this.sprite.position.copy(this.headPos);
     this.sprite.scale.set(headScale, headScale, headScale);
     this.spriteMat.opacity = flare * 0.95;
