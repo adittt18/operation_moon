@@ -455,6 +455,18 @@ function buildVikramLander() {
   baseGroup.add(baseCollar);
 
   // 8. 4 LANDING GEAR LEGS WITH CROSS-BRACING & WIDE FOOTPADS (in baseGroup)
+  const createTrussStrut = (pA, pB, radius, mat) => {
+    const dir = new THREE.Vector3().subVectors(pB, pA);
+    const len = dir.length();
+    const geo = new THREE.CylinderGeometry(radius, radius, len, 8);
+    const mesh = new THREE.Mesh(geo, mat);
+    const mid = new THREE.Vector3().addVectors(pA, pB).multiplyScalar(0.5);
+    mesh.position.copy(mid);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+    mesh.castShadow = true;
+    return mesh;
+  };
+
   const legAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
   legAngles.forEach((ang) => {
     const legGroup = new THREE.Group();
@@ -468,26 +480,6 @@ function buildVikramLander() {
     mainStrut.castShadow = true;
     legGroup.add(mainStrut);
 
-    // White supporter rod running beside gold strut (keeping green lower part, removing red collar overlap)
-    const diagonalBrace1 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, 0.26, 8),
-      chromeMaterial
-    );
-    diagonalBrace1.position.set(-0.14, -0.37, 0);
-    diagonalBrace1.rotation.z = 0.54;
-    diagonalBrace1.castShadow = true;
-    legGroup.add(diagonalBrace1);
-
-    // Cross-brace connecting green supporter rod to main gold strut
-    const crossBrace = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.010, 0.010, 0.22, 8),
-      chromeMaterial
-    );
-    crossBrace.position.set(-0.07, -0.37, 0);
-    crossBrace.rotation.z = -0.42;
-    crossBrace.castShadow = true;
-    legGroup.add(crossBrace);
-
     // Secure junction collar on main strut
     const strutCollar = new THREE.Mesh(
       new THREE.CylinderGeometry(0.029, 0.029, 0.035, 12),
@@ -496,6 +488,45 @@ function buildVikramLander() {
     strutCollar.position.set(0, -0.36, 0);
     strutCollar.castShadow = true;
     legGroup.add(strutCollar);
+
+    // Upper chassis mounting bracket under body collar
+    const chassisBracket = new THREE.Mesh(
+      new THREE.BoxGeometry(0.045, 0.032, 0.15),
+      darkGoldMaterial
+    );
+    chassisBracket.position.set(-0.16, -0.015, 0);
+    chassisBracket.castShadow = true;
+    legGroup.add(chassisBracket);
+
+    // White supporter rods carefully and cleanly connecting strut collar to upper body chassis bracket
+    const pStrut = new THREE.Vector3(0, -0.36, 0);
+    const pBodyA = new THREE.Vector3(-0.16, -0.015, 0.055);
+    const pBodyB = new THREE.Vector3(-0.16, -0.015, -0.055);
+
+    const supportRodA = createTrussStrut(pStrut, pBodyA, 0.011, chromeMaterial);
+    const supportRodB = createTrussStrut(pStrut, pBodyB, 0.011, chromeMaterial);
+    legGroup.add(supportRodA);
+    legGroup.add(supportRodB);
+
+    // Mid-span cross stabilization brace connecting the supporter rods
+    const midRodA = new THREE.Vector3().addVectors(pStrut, pBodyA).multiplyScalar(0.5);
+    const midRodB = new THREE.Vector3().addVectors(pStrut, pBodyB).multiplyScalar(0.5);
+    const crossBar = createTrussStrut(midRodA, midRodB, 0.0075, chromeMaterial);
+    legGroup.add(crossBar);
+
+    // Mechanical shock absorber damper sleeve on the supporter rods
+    [pBodyA, pBodyB].forEach((pB) => {
+      const pDamperMid = new THREE.Vector3().lerpVectors(pStrut, pB, 0.40);
+      const damperSleeve = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.016, 0.016, 0.09, 8),
+        darkGoldMaterial
+      );
+      damperSleeve.position.copy(pDamperMid);
+      const dir = new THREE.Vector3().subVectors(pB, pStrut).normalize();
+      damperSleeve.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      damperSleeve.castShadow = true;
+      legGroup.add(damperSleeve);
+    });
 
     // Gimbal ball-joint connecting leg strut to footpad
     const ballJoint = new THREE.Mesh(
@@ -926,6 +957,70 @@ export default function HeroScene() {
     const earthControls = buildPhotorealisticEarth();
     positionEarthToMatchReference(earthControls, width, height, camera);
     scene.add(earthControls.rootGroup);
+
+    // ── 3D TACTILE LUNAR REGOLITH SURFACE WITH CRATER & GRAIN TEXTURE ────────
+    const regolithLoader = new THREE.TextureLoader();
+    const loadRegTex = (url, rx = 6, ry = 6, isSRGB = false) => {
+      const tex = regolithLoader.load(url);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(rx, ry);
+      tex.colorSpace = isSRGB ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+      return tex;
+    };
+
+    const regDiffuse = loadRegTex('/lunar_regolith_diffuse.jpg', 8, 8, true);
+    const regNormal = loadRegTex('/lunar_regolith_normal.jpg', 8, 8, false);
+    const regRoughness = loadRegTex('/lunar_regolith_roughness.jpg', 8, 8, false);
+    const groundAlpha = regolithLoader.load('/lunar_ground_alpha.png');
+    groundAlpha.colorSpace = THREE.NoColorSpace;
+
+    const lunarGroundGeo = new THREE.PlaneGeometry(6.4, 4.8, 48, 48);
+    const lunarGroundMat = new THREE.MeshStandardMaterial({
+      map: regDiffuse,
+      normalMap: regNormal,
+      normalScale: new THREE.Vector2(2.5, 2.5),
+      roughnessMap: regRoughness,
+      roughness: 0.94,
+      metalness: 0.04,
+      alphaMap: groundAlpha,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
+    });
+    const lunarGround = new THREE.Mesh(lunarGroundGeo, lunarGroundMat);
+    lunarGround.position.set(-0.85, -1.345, 0.814);
+    lunarGround.rotation.x = -Math.PI / 2 + 0.05;
+    lunarGround.receiveShadow = true;
+    scene.add(lunarGround);
+
+    // ── SCATTERED 3D LUNAR ROCKS & BOULDERS AROUND THE LANDING SITE ─────────
+    const rockMat = new THREE.MeshStandardMaterial({
+      map: regDiffuse,
+      normalMap: regNormal,
+      normalScale: new THREE.Vector2(2.2, 2.2),
+      roughness: 0.90,
+      metalness: 0.06,
+      color: 0x88929e,
+    });
+    const rockGeo = new THREE.DodecahedronGeometry(1, 1);
+    const rockData = [
+      { x: -0.28, z: 0.38, s: 0.045, ry: 0.8 },
+      { x: -1.42, z: 0.62, s: 0.058, ry: 2.1 },
+      { x: -0.52, z: 1.38, s: 0.040, ry: 1.4 },
+      { x: -1.48, z: 1.18, s: 0.065, ry: 0.4 },
+      { x: -0.12, z: 1.12, s: 0.050, ry: 3.0 },
+      { x: -1.08, z: 1.58, s: 0.042, ry: 1.9 },
+    ];
+    rockData.forEach(({ x, z, s, ry }) => {
+      const rock = new THREE.Mesh(rockGeo, rockMat);
+      rock.scale.set(s, s * 0.68, s * 1.05);
+      rock.position.set(x, -1.342 + s * 0.35, z);
+      rock.rotation.y = ry;
+      rock.castShadow = true;
+      rock.receiveShadow = true;
+      scene.add(rock);
+    });
 
     // ── DYNAMIC THREE.JS SHADOW RECEIVER ON LUNAR GROUND ─────────────────────
     // Seamless transparent ground plane receiving real-time dynamic soft shadows
