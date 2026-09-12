@@ -13,7 +13,16 @@ import {
   AlertCircle,
   Radio,
   Compass,
+  ChevronDown,
+  Users,
 } from 'lucide-react';
+
+const TEAM_MEMBERS = [
+  { name: 'ADITYA SASMAL (C)', initials: 'AS', isCaptain: true },
+  { name: 'VIKASH RATHORE', initials: 'VR', isCaptain: false },
+  { name: 'ADITYA BISHT', initials: 'AB', isCaptain: false },
+  { name: 'PRATHVI PARTAP', initials: 'PP', isCaptain: false },
+];
 
 const SEARCH_ENTRIES = [
   {
@@ -142,9 +151,11 @@ export default function TopBar({
   const [showNotifs, setShowNotifs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showTeamDropdown, setShowTeamDropdown] = useState(false);
 
   const notifRef = useRef(null);
   const searchRef = useRef(null);
+  const teamRef = useRef(null);
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   const filteredResults = searchQuery.trim()
@@ -164,6 +175,9 @@ export default function TopBar({
       }
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowSearchResults(false);
+      }
+      if (teamRef.current && !teamRef.current.contains(e.target)) {
+        setShowTeamDropdown(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -338,10 +352,48 @@ export default function TopBar({
           </span>
         </button>
 
-        {/* Team Chip */}
-        <div className="user-chip">
-          <span className="user-chip-avatar">{initials}</span>
-          <span className="name" style={{ whiteSpace: 'pre' }}>{teamName}</span>
+        {/* Team Chip with Clickable Dropdown */}
+        <div className="team-chip-container" ref={teamRef}>
+          <button
+            type="button"
+            className={`user-chip ${showTeamDropdown ? 'active' : ''}`}
+            onClick={() => setShowTeamDropdown((prev) => !prev)}
+            aria-expanded={showTeamDropdown}
+            aria-haspopup="true"
+            title="Team CODE_CHAOS Members"
+          >
+            <span className="user-chip-avatar">{initials}</span>
+            <span className="name" style={{ whiteSpace: 'pre' }}>{teamName}</span>
+            <ChevronDown className={`chev ${showTeamDropdown ? 'open' : ''}`} size={12} />
+          </button>
+
+          {showTeamDropdown && (
+            <div className="team-members-popover glass-card page-fade" role="menu">
+              <div className="team-members-header">
+                <div className="team-members-title">
+                  <Users size={13} />
+                  <span>Team CODE_CHAOS</span>
+                </div>
+                <span className="team-members-badge">4 Members</span>
+              </div>
+              <div className="team-members-list">
+                {TEAM_MEMBERS.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className={`team-member-row ${m.isCaptain ? 'is-captain' : ''}`}
+                    role="menuitem"
+                  >
+                    <span className="member-avatar-chip">{m.initials}</span>
+                    <div className="member-details">
+                      <span className="member-name-text">
+                        {m.name}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="status-chip">
