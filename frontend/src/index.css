@@ -392,7 +392,7 @@ p { margin: 0; }
   background-image: linear-gradient(105deg, rgba(7, 18, 32, 0.35) 0%, rgba(12, 28, 48, 0.2) 50%, rgba(5, 14, 26, 0.4) 100%), url('/dark_page_texture.png');
   background-size: cover;
   background-position: center;
-  min-height: 440px; display: flex; align-items: stretch; box-shadow: 0 16px 40px rgba(0, 6, 16, 0.45);
+  min-height: 440px; display: flex; align-items: stretch; box-shadow: 0 3px 10px rgba(0, 4, 12, 0.15);
 }
 .hero-copy { position: relative; z-index: 4; width: 50%; padding: 40px 36px 40px 40px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
 .hero-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 3.5px; color: #bfe0fb; text-transform: uppercase; }
@@ -1343,7 +1343,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 [data-theme="light"] .hero-banner {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(238, 246, 255, 0.97) 100%);
   border: 1px solid #7cb0f2;
-  box-shadow: 0 14px 35px rgba(25, 65, 130, 0.08);
+  box-shadow: 0 3px 10px rgba(25, 65, 130, 0.05);
 }
 [data-theme="light"] .hero-eyebrow {
   color: #3282db;
