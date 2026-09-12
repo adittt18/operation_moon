@@ -425,7 +425,7 @@ function buildVikramLander() {
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildEarth() {
   const group = new THREE.Group();
-  const radius = 0.86; // enlarged so it's clearly visible and majestic
+  const radius = 1.35; // enlarged for majestic perspective in the background behind moon horizon
   const loader = new THREE.TextureLoader();
 
   // Natural Earth material with specular reflection (reverted from artificial brightened look)
@@ -503,8 +503,8 @@ function buildLunarTerrain() {
   const group = new THREE.Group();
   const loader = new THREE.TextureLoader();
 
-  // High-res subdivided lunar ground plane
-  const terrainGeo = new THREE.PlaneGeometry(28, 14, 80, 50);
+  // High-res subdivided lunar ground plane (foreground terrain)
+  const terrainGeo = new THREE.PlaneGeometry(26, 9, 72, 36);
   const pos = terrainGeo.attributes.position;
 
   for (let i = 0; i < pos.count; i++) {
@@ -542,14 +542,14 @@ function buildLunarTerrain() {
   loader.load('/moon_1024.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(5, 3);
+    tex.repeat.set(5, 2.5);
     terrainMat.map = tex;
     terrainMat.needsUpdate = true;
   });
 
   loader.load('/moon_normal_1024.jpg', (tex) => {
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(5, 3);
+    tex.repeat.set(5, 2.5);
     terrainMat.normalMap = tex;
     terrainMat.normalScale.set(1.4, 1.4);
     terrainMat.needsUpdate = true;
@@ -557,48 +557,48 @@ function buildLunarTerrain() {
 
   loader.load('/moon_roughness_1024.jpg', (tex) => {
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(5, 3);
+    tex.repeat.set(5, 2.5);
     terrainMat.roughnessMap = tex;
     terrainMat.needsUpdate = true;
   });
 
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2.3;
-  terrain.position.set(0.4, -1.30, -0.6);
+  terrain.position.set(0.4, -1.30, -0.3);
   terrain.receiveShadow = true;
   group.add(terrain);
 
-  // Background rugged crater ridge along horizon (kept down on horizon line)
-  const ridgeGeo = new THREE.PlaneGeometry(32, 4, 60, 16);
+  // Background rugged crater ridge along horizon (positioned in front of Earth)
+  const ridgeGeo = new THREE.PlaneGeometry(32, 5, 60, 20);
   const rPos = ridgeGeo.attributes.position;
   for (let i = 0; i < rPos.count; i++) {
     const rx = rPos.getX(i);
     const h = Math.max(
       0,
-      Math.sin(rx * 0.35 + 0.6) * 0.45 +
-      Math.sin(rx * 0.85 - 0.4) * 0.25 +
-      Math.sin(rx * 1.8) * 0.12
+      Math.sin(rx * 0.35 + 0.6) * 0.65 +
+      Math.sin(rx * 0.85 - 0.4) * 0.35 +
+      Math.sin(rx * 1.8) * 0.18
     );
     rPos.setZ(i, h);
   }
   ridgeGeo.computeVertexNormals();
 
   const ridgeMat = new THREE.MeshStandardMaterial({
-    color: 0x687888,
+    color: 0x6e7e8e,
     roughness: 0.96,
     metalness: 0.04,
   });
   loader.load('/moon_1024.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(6, 1.5);
+    tex.repeat.set(6, 1.8);
     ridgeMat.map = tex;
     ridgeMat.needsUpdate = true;
   });
 
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
   ridge.rotation.x = -Math.PI / 2.6;
-  ridge.position.set(0, -1.05, -3.8);
+  ridge.position.set(0, -0.80, -3.2);
   ridge.receiveShadow = true;
   group.add(ridge);
 
@@ -730,9 +730,9 @@ export default function HeroScene() {
     const stars = makeStarfield();
     scene.add(stars);
 
-    // ── EARTH (Floating high in the open lunar sky — never touching the ground) ──
+    // ── EARTH (Placed backward of the moon surface in the background) ────────
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(1.48, 0.90, -1.35);
+    earthGroup.position.set(2.05, 1.15, -4.5);
     scene.add(earthGroup);
 
     // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
