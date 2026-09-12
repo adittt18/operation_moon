@@ -1353,7 +1353,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .loading-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(3, 8, 18, 0.65);
+  background: rgba(3, 8, 18, 0.45);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   z-index: 250;
@@ -1382,9 +1382,9 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
   text-align: center;
   gap: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(96, 165, 250, 0.18);
-  background: linear-gradient(185deg, rgba(13, 32, 56, 0.20) 0%, rgba(7, 19, 36, 0.22) 45%, rgba(3, 10, 21, 0.25) 100%);
-  border: 1px solid rgba(96, 165, 250, 0.20);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(96, 165, 250, 0.16);
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.12) 0%, rgba(7, 19, 36, 0.14) 45%, rgba(3, 10, 21, 0.16) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.18);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -2010,12 +2010,12 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 [data-theme="light"] .loading-modal-backdrop {
-  background: rgba(3, 8, 18, 0.65);
+  background: rgba(3, 8, 18, 0.45);
 }
 [data-theme="light"] .loading-modal-card {
-  background: linear-gradient(185deg, rgba(13, 32, 56, 0.20) 0%, rgba(7, 19, 36, 0.22) 45%, rgba(3, 10, 21, 0.25) 100%) !important;
-  border: 1px solid rgba(96, 165, 250, 0.20) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(96, 165, 250, 0.18) !important;
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.12) 0%, rgba(7, 19, 36, 0.14) 45%, rgba(3, 10, 21, 0.16) 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.18) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(96, 165, 250, 0.16) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
 }
