@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 /**
- * 3D Photorealistic Moon & Satellite Loader:
- * - Real 3D Moon sphere rotating on its axis in the opposite direction (counter-clockwise)
- * - Fixed circular orbit perimeter around the Moon
- * - 3D Chandrayaan satellite placed on the orbit, revolving smoothly along the perimeter of the orbit (clockwise)
+ * Photorealistic 3D Moon & Satellite Loader:
+ * 1. Compact 120px display (smaller, sleeker).
+ * 2. Orbit made out of light grey rocks / boulders, rotating clockwise.
+ * 3. 3D Moon rotating on its axis in the reverse direction of MoonGlobe, with lightened, bright lunar colors.
+ * 4. High-visibility 3D satellite revolving on the orbit, self-rotating on its own axis, and automatically opening/closing its solar panels.
  */
-function ThreeDChandrayaanLoader({ dim = 150 }) {
+function ThreeDChandrayaanLoader({ dim = 120 }) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -17,11 +18,10 @@ function ThreeDChandrayaanLoader({ dim = 150 }) {
     const width = dim;
     const height = dim;
 
-    // 1. Scene & Camera (Top-view with subtle inclination to see full 3D sphericity and true circular orbit)
+    // 1. Scene & Camera (3D orbital vantage point matching MoonGlobe orientation)
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    // Camera overhead slightly inclined: circular orbit looks clean and spherical depth of moon is clear
-    camera.position.set(0, 4.4, 0.1);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.set(0, 0.85, 3.85);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -31,26 +31,24 @@ function ThreeDChandrayaanLoader({ dim = 150 }) {
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 2. Cosmic Space Lighting
-    const ambientLight = new THREE.AmbientLight(0x0a1628, 0.55);
+    // 2. Bright, Clean Lighting for Lightened Lunar Surface
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
     scene.add(ambientLight);
 
-    // Collimated directional sunlight casting realistic lunar crater relief
-    const sunLight = new THREE.DirectionalLight(0xfff6ea, 2.4);
-    sunLight.position.set(4.8, 1.8, 3.2);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    sunLight.position.set(4.5, 2.0, 3.5);
     scene.add(sunLight);
 
-    // Subtle cyan backlight for orbit visibility
-    const backRim = new THREE.DirectionalLight(0x38bdf8, 0.4);
-    backRim.position.set(-3.5, 1.0, -3.5);
-    scene.add(backRim);
+    const fillLight = new THREE.DirectionalLight(0xe2e8f0, 1.2);
+    fillLight.position.set(-3.5, 1.2, 3.2);
+    scene.add(fillLight);
 
-    // 3. Central 3D Moon Sphere
-    const moonRadius = 1.08;
+    // 3. Central 3D Moon Sphere (Lightened Color + Equirectangular Lunar Map)
+    const moonRadius = 1.02;
     const moonGeo = new THREE.SphereGeometry(moonRadius, 48, 48);
     const moonMat = new THREE.MeshStandardMaterial({
-      color: 0xd2d5da,
-      roughness: 0.95,
+      color: 0xffffff, // lightened pure bright lunar base
+      roughness: 0.82,
       metalness: 0.0,
     });
 
@@ -64,127 +62,170 @@ function ThreeDChandrayaanLoader({ dim = 150 }) {
     const moonMesh = new THREE.Mesh(moonGeo, moonMat);
     scene.add(moonMesh);
 
-    // 4. Circular Orbit (The Fixed Perimeter of the Lunar Orbit)
-    const orbitRadius = 1.54; // Low lunar orbit, skimming just above the surface
-    const orbitPts = [];
-    const segs = 96;
-    for (let i = 0; i <= segs; i++) {
-      const a = (i / segs) * Math.PI * 2;
-      orbitPts.push(new THREE.Vector3(Math.cos(a) * orbitRadius, 0, Math.sin(a) * orbitRadius));
+    // 4. Orbit Made Out of Light Grey Rocks (Rotating Clockwise)
+    const orbitRadius = 1.68;
+    const orbitRocksGroup = new THREE.Group();
+
+    const rockMat = new THREE.MeshStandardMaterial({
+      color: 0xd8dde6, // light grey natural rock
+      roughness: 0.92,
+      metalness: 0.08,
+      flatShading: true,
+    });
+
+    const rockGeo = new THREE.DodecahedronGeometry(1, 0);
+    const rockCount = 80;
+
+    for (let i = 0; i < rockCount; i++) {
+      const angle = (i / rockCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.05;
+      const rad = orbitRadius + (Math.random() - 0.5) * 0.07;
+      const yJitter = (Math.random() - 0.5) * 0.05;
+
+      const rockMesh = new THREE.Mesh(rockGeo, rockMat);
+      rockMesh.position.set(
+        Math.cos(angle) * rad,
+        yJitter,
+        Math.sin(angle) * rad
+      );
+
+      // Varied rock scales
+      const baseScale = 0.024 + Math.random() * 0.028;
+      rockMesh.scale.set(
+        baseScale * (0.8 + Math.random() * 0.5),
+        baseScale * (0.7 + Math.random() * 0.6),
+        baseScale * (0.8 + Math.random() * 0.5)
+      );
+
+      rockMesh.rotation.set(
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+      );
+
+      orbitRocksGroup.add(rockMesh);
     }
-    const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPts);
-    const orbitMat = new THREE.LineBasicMaterial({
-      color: 0x38bdf8,
+
+    // Faint guiding dust line through the rocks
+    const linePts = [];
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      linePts.push(new THREE.Vector3(Math.cos(a) * orbitRadius, 0, Math.sin(a) * orbitRadius));
+    }
+    const faintLineGeo = new THREE.BufferGeometry().setFromPoints(linePts);
+    const faintLineMat = new THREE.LineBasicMaterial({
+      color: 0xc4cbd8,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.35,
     });
-    const orbitLine = new THREE.Line(orbitGeo, orbitMat);
-    scene.add(orbitLine);
+    orbitRocksGroup.add(new THREE.Line(faintLineGeo, faintLineMat));
 
-    // Glowing subtle halo along the orbit line
-    const ringGeo = new THREE.RingGeometry(orbitRadius - 0.024, orbitRadius + 0.024, 64);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide,
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = Math.PI / 2;
-    scene.add(ringMesh);
+    scene.add(orbitRocksGroup);
 
-    // 5. 3D Chandrayaan Satellite (Placed strictly ON the perimeter of the orbit)
-    const satGroup = new THREE.Group();
+    // 5. High-Visibility 3D Chandrayaan Satellite (Opening/Closing Panels + Self-Rotating on Orbit)
+    const satHolder = new THREE.Group(); // controls position on orbit perimeter
+    const satCraft = new THREE.Group();  // controls satellite self-rotation
 
-    // Golden MLI Thermal Blanket Bus Body
+    // Golden MLI Bus Body (Vibrant, high visibility)
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xedb338,
-      metalness: 0.88,
-      roughness: 0.22,
+      color: 0xf59e0b,
+      metalness: 0.94,
+      roughness: 0.16,
     });
-    const bodyGeo = new THREE.BoxGeometry(0.24, 0.16, 0.20);
+    const bodyGeo = new THREE.BoxGeometry(0.30, 0.22, 0.24);
     const bodyMesh = new THREE.Mesh(bodyGeo, goldMat);
-    satGroup.add(bodyMesh);
+    satCraft.add(bodyMesh);
 
-    // Solar Panel Arrays (Left and Right Wings)
-    const solarMat = new THREE.MeshStandardMaterial({
-      color: 0x0e2a58,
-      metalness: 0.55,
-      roughness: 0.25,
-    });
-    const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      metalness: 0.85,
-      roughness: 0.25,
-    });
-
-    [-1, 1].forEach((dir) => {
-      const panelGroup = new THREE.Group();
-      panelGroup.position.set(dir * 0.28, 0, 0);
-
-      const panelMesh = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.016, 0.18), solarMat);
-      panelGroup.add(panelMesh);
-
-      const rimMesh = new THREE.Mesh(new THREE.BoxGeometry(0.33, 0.02, 0.19), frameMat);
-      panelGroup.add(rimMesh);
-
-      satGroup.add(panelGroup);
-    });
-
-    // Parabolic High-Gain Antenna Dish pointing outward to space
+    // High-Gain Dish Antenna
     const dishMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      metalness: 0.8,
+      color: 0xffffff,
+      metalness: 0.75,
       roughness: 0.2,
     });
-    const dishGeo = new THREE.CylinderGeometry(0.09, 0.02, 0.04, 16);
+    const dishGeo = new THREE.CylinderGeometry(0.12, 0.02, 0.05, 16);
     const dishMesh = new THREE.Mesh(dishGeo, dishMat);
-    dishMesh.position.set(0, 0.12, -0.06);
-    dishMesh.rotation.x = -0.4;
-    satGroup.add(dishMesh);
+    dishMesh.position.set(0, 0.17, 0);
+    dishMesh.rotation.x = Math.PI;
+    satCraft.add(dishMesh);
 
-    // Optical Science Aperture pointing down toward the Moon
-    const lensMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
-    const lensGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.04, 12);
-    const lensMesh = new THREE.Mesh(lensGeo, lensMat);
-    lensMesh.position.set(0, -0.09, 0);
-    satGroup.add(lensMesh);
-
-    // Pulsing Cyan Beacon
+    // Cyan Science Payload Beacon
     const beaconMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const beaconGeo = new THREE.SphereGeometry(0.022, 8, 8);
+    const beaconGeo = new THREE.SphereGeometry(0.045, 12, 12);
     const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
-    beaconMesh.position.set(0, 0.11, 0.08);
-    satGroup.add(beaconMesh);
+    beaconMesh.position.set(0, -0.14, 0.09);
+    satCraft.add(beaconMesh);
 
-    scene.add(satGroup);
+    // Solar Panel Materials (Deep space blue + gold framing)
+    const solarTexMat = new THREE.MeshStandardMaterial({
+      color: 0x1d4ed8,
+      metalness: 0.65,
+      roughness: 0.22,
+    });
+    const solarFrameMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      metalness: 0.9,
+      roughness: 0.22,
+    });
+
+    // Left Wing Hinge (opens and closes automatically)
+    const leftWingHinge = new THREE.Group();
+    leftWingHinge.position.set(-0.15, 0, 0);
+    const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.022, 0.22), solarTexMat);
+    leftPanel.position.set(-0.20, 0, 0);
+    leftWingHinge.add(leftPanel);
+    const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.41, 0.026, 0.23), solarFrameMat);
+    leftFrame.position.set(-0.20, 0, 0);
+    leftWingHinge.add(leftFrame);
+    satCraft.add(leftWingHinge);
+
+    // Right Wing Hinge (opens and closes automatically)
+    const rightWingHinge = new THREE.Group();
+    rightWingHinge.position.set(0.15, 0, 0);
+    const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.022, 0.22), solarTexMat);
+    rightPanel.position.set(0.20, 0, 0);
+    rightWingHinge.add(rightPanel);
+    const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.41, 0.026, 0.23), solarFrameMat);
+    rightFrame.position.set(0.20, 0, 0);
+    rightWingHinge.add(rightFrame);
+    satCraft.add(rightWingHinge);
+
+    satHolder.add(satCraft);
+    scene.add(satHolder);
 
     // 6. Animation Loop
     let animId;
     let orbitAngle = 0;
+    let clock = new THREE.Clock();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
 
-      // (a) 3D Moon rotates on its axis COUNTER-CLOCKWISE (opposite direction)
-      moonMesh.rotation.y -= 0.006;
+      // 1) 3D Moon rotates on its vertical axis in REVERSE direction of MoonGlobe
+      moonMesh.rotation.y -= 0.0032;
 
-      // (b) Satellite revolves along the PERIMETER of the orbit circle CLOCKWISE
-      orbitAngle += 0.018;
+      // 2) Orbit made of light grey rocks rotates CLOCKWISE
+      orbitRocksGroup.rotation.y += 0.008;
 
-      // Position satellite strictly on the orbit perimeter
-      satGroup.position.set(
+      // 3) Satellite travels along the PERIMETER of the orbit (clockwise)
+      orbitAngle += 0.016;
+      satHolder.position.set(
         Math.cos(orbitAngle) * orbitRadius,
         0,
         Math.sin(orbitAngle) * orbitRadius
       );
 
-      // Orient satellite tangent to the orbit perimeter (forward-facing in flight direction)
-      satGroup.rotation.y = -orbitAngle + Math.PI / 2;
+      // 4) Satellite rotates on its own axis while revolving on the orbit
+      satCraft.rotation.y += 0.026;
+      satCraft.rotation.x = Math.sin(elapsedTime * 1.8) * 0.18;
 
-      // Subtle pulse on beacon
-      const t = Date.now() * 0.005;
-      beaconMesh.scale.setScalar(0.8 + 0.4 * Math.sin(t));
+      // 5) Solar panels automatically open and close smoothly
+      const foldCycle = (Math.sin(elapsedTime * 1.6) + 1) / 2; // 0 (open) to 1 (closed)
+      const foldAngle = foldCycle * 1.25; // 0 to 1.25 radians fold
+      leftWingHinge.rotation.y = foldAngle;
+      rightWingHinge.rotation.y = -foldAngle;
+
+      // Beacon gentle pulse
+      beaconMesh.scale.setScalar(0.85 + 0.35 * Math.sin(elapsedTime * 6));
 
       renderer.render(scene, camera);
     };
@@ -196,20 +237,18 @@ function ThreeDChandrayaanLoader({ dim = 150 }) {
       renderer.dispose();
       moonGeo.dispose();
       moonMat.dispose();
-      orbitGeo.dispose();
-      orbitMat.dispose();
-      ringGeo.dispose();
-      ringMat.dispose();
+      rockGeo.dispose();
+      rockMat.dispose();
+      faintLineGeo.dispose();
+      faintLineMat.dispose();
       bodyGeo.dispose();
       goldMat.dispose();
-      solarMat.dispose();
-      frameMat.dispose();
       dishGeo.dispose();
       dishMat.dispose();
-      lensGeo.dispose();
-      lensMat.dispose();
       beaconGeo.dispose();
       beaconMat.dispose();
+      solarTexMat.dispose();
+      solarFrameMat.dispose();
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -237,8 +276,8 @@ function ThreeDChandrayaanLoader({ dim = 150 }) {
 function TinySvgLoader({ dim = 26 }) {
   return (
     <svg viewBox="0 0 100 100" width={dim} height={dim} aria-hidden="true">
-      <circle cx="50" cy="50" r="32" fill="none" stroke="#38bdf8" strokeWidth="3" opacity="0.85" />
-      <circle cx="50" cy="50" r="20" fill="#94a3b8" />
+      <circle cx="50" cy="50" r="32" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeDasharray="4 3" opacity="0.85" />
+      <circle cx="50" cy="50" r="20" fill="#cbd5e1" />
       <g>
         <animateTransform
           attributeName="transform"
@@ -249,8 +288,8 @@ function TinySvgLoader({ dim = 26 }) {
           repeatCount="indefinite"
         />
         <rect x="47" y="15" width="6" height="6" rx="1" fill="#f59e0b" />
-        <rect x="41" y="16.5" width="5" height="3" fill="#1e3a8a" />
-        <rect x="54" y="16.5" width="5" height="3" fill="#1e3a8a" />
+        <rect x="41" y="16.5" width="5" height="3" fill="#1d4ed8" />
+        <rect x="54" y="16.5" width="5" height="3" fill="#1d4ed8" />
       </g>
     </svg>
   );
@@ -262,8 +301,8 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isModal = size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  // Modal size for clean floating upload loader is 150px; lg is 150px; md is 90px; sm is 26px
-  const dim = isSm ? 26 : isSpinner ? 70 : isModal ? 150 : isLg ? 150 : isXl ? 180 : 90;
+  // Modal size for clean floating upload loader is 120px (smaller & sleek); lg is 130px; md is 80px; sm is 26px
+  const dim = isSm ? 26 : isSpinner ? 60 : isModal ? 120 : isLg ? 130 : isXl ? 150 : 80;
 
   if (isSm) {
     return (
@@ -307,7 +346,7 @@ export function RegistrationLoadingModal({ isProcessing, processingType = 'uploa
     );
   }
 
-  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): 3D Moon rotating opposite + satellite revolving on orbit perimeter
+  // For "EXECUTE SUB-PIXEL REGISTRATION" (Upload tab): Compact 120px 3D Moon with rock orbit & self-rotating satellite with open/close panels
   return (
     <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
       <div className="clean-floating-loader-wrap">
