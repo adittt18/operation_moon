@@ -1382,11 +1382,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
   text-align: center;
   gap: 20px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(96, 165, 250, 0.3);
-  background: var(--sidebar-bg);
-  border: 1px solid rgba(96, 165, 250, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(96, 165, 250, 0.28);
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.70) 0%, rgba(7, 19, 36, 0.72) 45%, rgba(3, 10, 21, 0.76) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.32);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .loading-modal-content {
   display: flex;
@@ -1860,8 +1860,12 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 
 /* Upload Dropzones */
 [data-theme="light"] .file-dropzone {
-  background: #f8fbff;
-  border: 1.5px dashed rgba(185, 212, 245, 0.9);
+  background: #e2edfa;
+  border: 1.5px dashed rgba(145, 185, 230, 0.95);
+}
+[data-theme="light"] .file-dropzone:hover {
+  background: #d8e7f8;
+  border-color: #3b82f6;
 }
 [data-theme="light"] .dropzone-header h4 {
   color: #2465ab;
@@ -1881,8 +1885,8 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid #bfdbfe;
 }
 [data-theme="light"] .controls-row {
-  background: #f8fbff;
-  border: 1px solid rgba(195, 218, 245, 0.85);
+  background: #e2edfa;
+  border: 1px solid rgba(175, 205, 240, 0.85);
 }
 [data-theme="light"] .control-group label {
   color: #2465ab;
@@ -2006,16 +2010,18 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 [data-theme="light"] .loading-modal-backdrop {
-  background: rgba(10, 22, 45, 0.58);
+  background: rgba(3, 8, 18, 0.65);
 }
 [data-theme="light"] .loading-modal-card {
-  background: #ffffff;
-  border: 1px solid #7cb0f2;
-  box-shadow: 0 24px 60px rgba(25, 65, 130, 0.22), 0 0 0 1px rgba(50, 130, 219, 0.3);
+  background: linear-gradient(185deg, rgba(13, 32, 56, 0.70) 0%, rgba(7, 19, 36, 0.72) 45%, rgba(3, 10, 21, 0.76) 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.32) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(96, 165, 250, 0.28) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 [data-theme="light"] .loading-modal-card h3 {
-  color: #1e3a8a;
+  color: #ffffff !important;
 }
 [data-theme="light"] .loading-sub {
-  color: #3b628a;
+  color: rgba(226, 232, 240, 0.85) !important;
 }
