@@ -433,10 +433,10 @@ p { margin: 0; }
   min-width: 100%;
   width: max-content;
   max-width: calc(100vw - 24px);
-  background: var(--sidebar-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--bg-page);
+  border: 1px solid rgba(96, 165, 250, 0.30);
   border-radius: 18px;
-  box-shadow: 0 16px 40px rgba(0, 4, 15, 0.65), 0 0 0 1px rgba(96, 165, 250, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(96, 165, 250, 0.15);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   z-index: 1000;
