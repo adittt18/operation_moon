@@ -1806,7 +1806,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #163668 !important;
 }
 
-/* PRD / Docs */
+/* Architecture / Docs */
 [data-theme="light"] .doc-section {
   background: #f8fbff;
   border: 1px solid rgba(195, 218, 245, 0.85);

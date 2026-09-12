@@ -69,6 +69,13 @@ const SEARCH_ENTRIES = [
     action: (handlers) => handlers.onNavigate?.('results'),
   },
   {
+    type: 'Technical',
+    title: 'Pipeline Architecture & Standards',
+    subtitle: 'SIFT, FLANN, RANSAC and cornerSubPix specifications',
+    tag: 'Architecture',
+    action: (handlers) => handlers.onNavigate?.('docs'),
+  },
+  {
     type: 'Feature',
     title: 'Settings & Algorithm Controls',
     subtitle: 'Audio chimes, themes, precision modes & API ping',

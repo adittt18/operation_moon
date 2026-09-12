@@ -1,5 +1,5 @@
 import {
-  Home, UploadCloud, BarChart3, Settings as SettingsIcon,
+  Home, UploadCloud, BarChart3, FileText, Settings as SettingsIcon,
 } from 'lucide-react';
 
 export function MoonGlobeIcon({ size = 24, strokeWidth = 2, className = '', ...props }) {
@@ -31,6 +31,7 @@ const NAV_ITEMS = [
   { id: 'upload', label: 'Upload & Register', icon: UploadCloud },
   { id: 'results', label: 'Analysis & Metrics', icon: BarChart3, requiresResult: true },
   { id: 'globe', label: '3D Moon Globe', icon: MoonGlobeIcon },
+  { id: 'docs', label: 'Architecture', icon: FileText },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
 
@@ -81,7 +82,7 @@ export function MobileNav({ currentTab, onNavigate, hasResult }) {
     <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
       {NAV_ITEMS.map(({ id, label, icon: Icon, requiresResult }) => {
         const disabled = requiresResult && !hasResult;
-        const shortLabel = id === 'upload' ? 'Upload' : id === 'results' ? 'Results' : id === 'globe' ? 'Globe' : label;
+        const shortLabel = id === 'upload' ? 'Upload' : id === 'results' ? 'Results' : id === 'globe' ? 'Globe' : id === 'docs' ? 'Arch' : label;
         return (
           <button
             key={id}
