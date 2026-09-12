@@ -1361,12 +1361,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.75));
-  animation: floatPulse 3.5s ease-in-out infinite alternate;
-}
-
-@keyframes floatPulse {
-  0% { transform: translateY(0px) scale(1); }
-  100% { transform: translateY(-4px) scale(1.02); }
 }
 
 .loading-modal-card {
