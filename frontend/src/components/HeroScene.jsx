@@ -545,7 +545,6 @@ function buildPhotorealisticEarth() {
       uSunDirection: { value: sunDirection },
       uCameraPosition: { value: new THREE.Vector3(0, 0.15, 5.4) },
       uCloudsOffset: { value: 0.0 },
-      uTime: { value: 0.0 },
     },
     vertexShader: `
       attribute vec4 tangent;
@@ -575,30 +574,12 @@ function buildPhotorealisticEarth() {
       uniform vec3 uSunDirection;
       uniform vec3 uCameraPosition;
       uniform float uCloudsOffset;
-      uniform float uTime;
 
       varying vec2 vUv;
       varying vec3 vWorldNormal;
       varying vec3 vWorldTangent;
       varying vec3 vWorldBitangent;
       varying vec3 vWorldPosition;
-
-      float hash1(float n) {
-        return fract(sin(n) * 43758.5453123);
-      }
-
-      // Procedural realistic multi-stroke lightning discharge
-      float getLightningStrike(float time, float period, float offset) {
-        float t = time + offset;
-        float cycle = mod(t, period);
-        if (cycle < 0.26) {
-          float pulse = sin(cycle * 48.0) * 0.5 + 0.5;
-          float env = sin((cycle / 0.26) * 3.14159265);
-          float jitter = hash1(floor(cycle * 55.0) + offset);
-          return pow(pulse * env, 1.3) * step(0.18, jitter) * 2.8;
-        }
-        return 0.0;
-      }
 
       void main() {
         // Water mask: White = ocean, Black = land
@@ -658,42 +639,10 @@ function buildPhotorealisticEarth() {
         vec3 atmosphericRim = vec3(0.32, 0.62, 0.96) * (limbFresnel * sunAlignment * 0.95);
         surfaceColor += atmosphericRim;
 
-        // Sunlight reflection on right side of Earth (illuminating towards the satellite)
+        // Steady, serene sunlight reflection on right side of Earth (illuminating towards the satellite)
         float sunLimbGlint = pow(max(dot(perturbedNormal, halfVec), 0.0), 10.0) * isWater * dayFactor;
-        vec3 rightSideSunlightGlint = vec3(0.95, 0.98, 1.0) * (sunLimbGlint * 0.32);
+        vec3 rightSideSunlightGlint = vec3(0.95, 0.98, 1.0) * (sunLimbGlint * 0.36);
         surfaceColor += rightSideSunlightGlint;
-
-        // ── ATMOSPHERIC LIGHTNING STORMS ON RIGHT SIDE OF EARTH ────────────────
-        // Focus lightning on the right hemisphere facing space & towards satellite (view-space X > 0)
-        float rightSideFactor = smoothstep(0.04, 0.65, vWorldNormal.x);
-
-        // Storm Cell 1: Tropical convective system on right limb
-        vec2 storm1 = vec2(0.66, 0.48);
-        float dist1 = length(vec2(fract(vUv.x + uCloudsOffset) - storm1.x, vUv.y - storm1.y));
-        float strike1 = getLightningStrike(uTime, 2.7, 0.1);
-        float flash1 = smoothstep(0.18, 0.02, dist1) * strike1;
-
-        // Storm Cell 2: Mid-latitude cyclone on upper-right limb
-        vec2 storm2 = vec2(0.74, 0.66);
-        float dist2 = length(vec2(fract(vUv.x + uCloudsOffset) - storm2.x, vUv.y - storm2.y));
-        float strike2 = getLightningStrike(uTime, 3.6, 1.35);
-        float flash2 = smoothstep(0.15, 0.02, dist2) * strike2;
-
-        // Storm Cell 3: Rapid twilight lightning cell
-        vec2 storm3 = vec2(0.60, 0.32);
-        float dist3 = length(vec2(fract(vUv.x + uCloudsOffset) - storm3.x, vUv.y - storm3.y));
-        float strike3 = getLightningStrike(uTime, 4.2, 2.4);
-        float flash3 = smoothstep(0.14, 0.02, dist3) * strike3;
-
-        // Cloud illumination from inside the storm
-        float stormGlow = (flash1 + flash2 + flash3) * rightSideFactor;
-        vec3 lightningColor = vec3(0.76, 0.92, 1.0) * (stormGlow * (0.85 + 1.8 * cloudVal) * 4.5);
-
-        // High-altitude atmospheric sheet flash along the right limb
-        float limbSheet = (strike1 * 0.38 + strike2 * 0.32 + strike3 * 0.28) * rightSideFactor * pow(limbFresnel, 1.8);
-        vec3 limbFlashColor = vec3(0.62, 0.86, 1.0) * (limbSheet * 3.0);
-
-        surfaceColor += lightningColor + limbFlashColor;
 
         gl_FragColor = vec4(surfaceColor, 1.0);
       }
@@ -711,7 +660,6 @@ function buildPhotorealisticEarth() {
     uniforms: {
       uCloudsMap: { value: cloudsTex },
       uSunDirection: { value: sunDirection },
-      uTime: { value: 0.0 },
     },
     vertexShader: `
       varying vec2 vUv;
@@ -725,25 +673,8 @@ function buildPhotorealisticEarth() {
     fragmentShader: `
       uniform sampler2D uCloudsMap;
       uniform vec3 uSunDirection;
-      uniform float uTime;
       varying vec2 vUv;
       varying vec3 vWorldNormal;
-
-      float hash1(float n) {
-        return fract(sin(n) * 43758.5453123);
-      }
-
-      float getLightningStrike(float time, float period, float offset) {
-        float t = time + offset;
-        float cycle = mod(t, period);
-        if (cycle < 0.26) {
-          float pulse = sin(cycle * 48.0) * 0.5 + 0.5;
-          float env = sin((cycle / 0.26) * 3.14159265);
-          float jitter = hash1(floor(cycle * 55.0) + offset);
-          return pow(pulse * env, 1.3) * step(0.18, jitter) * 2.8;
-        }
-        return 0.0;
-      }
 
       void main() {
         float cloudVal = texture2D(uCloudsMap, vUv).r;
@@ -757,23 +688,8 @@ function buildPhotorealisticEarth() {
         vec3 cloudDark = vec3(0.015, 0.02, 0.035);
         vec3 col = mix(cloudDark, cloudLit, dayFactor);
 
-        // Lightning flashes in the cloud volume on the right side
-        float rightSideFactor = smoothstep(0.04, 0.65, vWorldNormal.x);
-        vec2 storm1 = vec2(0.66, 0.48);
-        float dist1 = length(vec2(vUv.x - storm1.x, vUv.y - storm1.y));
-        float strike1 = getLightningStrike(uTime, 2.7, 0.1);
-        float flash1 = smoothstep(0.18, 0.02, dist1) * strike1;
-
-        vec2 storm2 = vec2(0.74, 0.66);
-        float dist2 = length(vec2(vUv.x - storm2.x, vUv.y - storm2.y));
-        float strike2 = getLightningStrike(uTime, 3.6, 1.35);
-        float flash2 = smoothstep(0.15, 0.02, dist2) * strike2;
-
-        float stormCloudGlow = (flash1 + flash2) * rightSideFactor;
-        col += vec3(0.80, 0.94, 1.0) * (stormCloudGlow * 4.0);
-
         // Soft, realistic cloud opacity allowing terrain and oceans below to be appreciated
-        float alpha = cloudVal * mix(0.10, 0.68, dayFactor) + stormCloudGlow * 0.45;
+        float alpha = cloudVal * mix(0.10, 0.68, dayFactor);
 
         gl_FragColor = vec4(col, min(alpha, 1.0));
       }
@@ -931,12 +847,24 @@ export default function HeroScene() {
     scene.add(sunLight);
 
     // Sunlight reflection from the right side of Earth falling across space onto the satellite
-    const earthReflectionLight = new THREE.DirectionalLight(0xa6d2ff, 0.42);
-    earthReflectionLight.position.set(2.2, 1.8, -2.0);
+    const earthReflectionLight = new THREE.DirectionalLight(0xa6d4ff, 0.65);
+    earthReflectionLight.position.set(2.4, 2.0, 2.2);
+    earthReflectionLight.target.position.set(-0.85, -0.60, 0.85);
+    scene.add(earthReflectionLight.target);
     scene.add(earthReflectionLight);
 
+    // Dedicated soft grazing light beam from the Earth/sun direction falling partially across the 2nd solar panel
+    const secondPanelLight = new THREE.SpotLight(0xa8d6ff, 2.5);
+    secondPanelLight.position.set(1.8, 1.4, 2.8);
+    secondPanelLight.target.position.set(-0.72, -0.58, 1.05); // aimed to fall partially across the 2nd panel
+    secondPanelLight.angle = 0.44;
+    secondPanelLight.penumbra = 0.85; // feathered edge creating a soft, natural partial light gradient
+    secondPanelLight.decay = 1.0;
+    scene.add(secondPanelLight.target);
+    scene.add(secondPanelLight);
+
     // Front-left warm cosmic fill light bringing out radiant light gold tones on the satellite
-    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.52);
+    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.48);
     satelliteFillLight.position.set(-3.5, 1.2, 3.2);
     scene.add(satelliteFillLight);
 
@@ -1072,21 +1000,11 @@ export default function HeroScene() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
-      const elapsedTime = clock.getElapsedTime();
 
-      // Majestic planetary rotation of 3D Earth & clouds
+      // Majestic steady planetary rotation of 3D Earth & clouds (calm, steady, no blinking)
       earthControls.earth.rotation.y += dt * 0.038;
       earthControls.clouds.rotation.y += dt * 0.048;
       earthControls.earthMat.uniforms.uCloudsOffset.value += dt * 0.007;
-      earthControls.earthMat.uniforms.uTime.value = elapsedTime;
-      earthControls.cloudsMat.uniforms.uTime.value = elapsedTime;
-
-      // Atmospheric lightning pulses on Earth reflecting onto the satellite
-      const s1 = (elapsedTime + 0.1) % 2.7 < 0.26 ? 1.0 : 0.0;
-      const s2 = (elapsedTime + 1.35) % 3.6 < 0.26 ? 1.0 : 0.0;
-      const s3 = (elapsedTime + 2.4) % 4.2 < 0.26 ? 1.0 : 0.0;
-      const lightningActive = Math.max(s1, Math.max(s2, s3));
-      earthReflectionLight.intensity = 0.42 + lightningActive * 0.38;
 
       // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
