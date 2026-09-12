@@ -130,7 +130,7 @@ export default function TopBar({
   theme,
   onToggleTheme,
   apiOnline,
-  teamName = 'Team CODE_CHAOS',
+  teamName = 'Team  CODE_CHAOS',
   initials = 'TC',
   notifications = [],
   onClearNotifications,
@@ -341,7 +341,7 @@ export default function TopBar({
         {/* Team Chip */}
         <div className="user-chip">
           <span className="user-chip-avatar">{initials}</span>
-          <span className="name">{teamName}</span>
+          <span className="name" style={{ whiteSpace: 'pre' }}>{teamName}</span>
         </div>
 
         <div className="status-chip">
