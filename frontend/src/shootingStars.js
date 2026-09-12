@@ -104,11 +104,11 @@ class CelestialStreak {
     if (isComet) {
       this.duration = 3.2 + Math.random() * 1.6; // 3.2s to 4.8s
       this.speed = 6.5 + Math.random() * 3.5;
-      this.baseWidth = 0.024 + Math.random() * 0.012;
+      this.baseWidth = 0.010 + Math.random() * 0.004;
     } else {
       this.duration = 0.75 + Math.random() * 0.65; // 0.75s to 1.4s
       this.speed = 18.0 + Math.random() * 10.0;
-      this.baseWidth = 0.012 + Math.random() * 0.006;
+      this.baseWidth = 0.0045 + Math.random() * 0.002;
     }
 
     // Direction angle: diagonal sweep from top-right to bottom-left (or top-left to bottom-right)
@@ -171,9 +171,9 @@ class CelestialStreak {
     this.history[0].copy(this.headPos);
 
     // Natural atmospheric flare: sin curve ramp-up and fade-out
-    // Head size tuned to match the pinpoint starfield size (~0.04-0.05)
+    // Fine pinpoint star-sized nucleus head (~0.015-0.023)
     const flare = Math.sin(progress * Math.PI);
-    const headScale = this.isComet ? (0.075 + flare * 0.035) : (0.042 + flare * 0.022);
+    const headScale = this.isComet ? (0.028 + flare * 0.014) : (0.015 + flare * 0.008);
     this.sprite.position.copy(this.headPos);
     this.sprite.scale.set(headScale, headScale, headScale);
     this.spriteMat.opacity = flare * 0.95;
