@@ -153,37 +153,36 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     window.addEventListener('resize', handleResize);
 
     // 2. Photorealistic Space Lighting (Collimated Sun + Earthshine reflection + Deep Void)
-    const ambientCosmic = new THREE.HemisphereLight(0x182438, 0x010307, 0.38);
+    const ambientCosmic = new THREE.HemisphereLight(0x142032, 0x010205, 0.28);
     scene.add(ambientCosmic);
 
-    // Hard, brilliant Sun lighting for authentic lunar relief and crater shadows
-    const sunLight = new THREE.DirectionalLight(0xfff8ee, 3.2);
-    sunLight.position.set(6, 2.5, 4.5);
+    // Hard, brilliant collimated Sun lighting for authentic lunar relief and crater shadows
+    const sunLight = new THREE.DirectionalLight(0xfff8ee, 2.5);
+    sunLight.position.set(5.5, 2.0, 3.8);
     scene.add(sunLight);
 
     // Authentic Earthshine: subtle cool bluish illumination on the night side
-    const earthshineLight = new THREE.DirectionalLight(0x224a78, 0.48);
-    earthshineLight.position.set(-6, -1.8, -4.5);
+    const earthshineLight = new THREE.DirectionalLight(0x1a3860, 0.38);
+    earthshineLight.position.set(-5.5, -1.8, -3.8);
     scene.add(earthshineLight);
 
     // Add photorealistic deep space background
     scene.add(makePhotorealisticSpace());
 
-    // 3. Moon sphere with the real equirectangular lunar texture, plus a
-    // normal map + roughness map derived from that same imagery so craters
-    // actually catch light instead of looking painted-on.
+    // 3. Moon sphere with real NASA equirectangular lunar textures:
+    // Pure matte diffuse lunar regolith: 0 metalness, roughness 1.0, zero specular shine
     const moonRadius = 1.5;
     const sphereGeo = new THREE.SphereGeometry(moonRadius, 128, 128);
     const moonMaterial = new THREE.MeshStandardMaterial({
-      roughness: 1,
-      metalness: 0.02,
-      normalScale: new THREE.Vector2(1.4, 1.4),
+      roughness: 1.0,
+      metalness: 0.0,
+      normalScale: new THREE.Vector2(1.6, 1.6),
     });
 
     const textureLoader = new THREE.TextureLoader();
     const applyMoonTexture = (texture) => {
       texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = 4;
+      texture.anisotropy = 8;
       moonMaterial.map = texture;
       moonMaterial.needsUpdate = true;
     };
@@ -192,11 +191,20 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
       textureLoader.load(`${API_BASE}/moon-texture`, applyMoonTexture);
     });
     textureLoader.load('/moon_normal_1024.jpg', (tex) => {
+      tex.anisotropy = 8;
       moonMaterial.normalMap = tex;
+      moonMaterial.normalScale.set(1.6, 1.6);
       moonMaterial.needsUpdate = true;
     });
     textureLoader.load('/moon_roughness_1024.jpg', (tex) => {
+      tex.anisotropy = 8;
       moonMaterial.roughnessMap = tex;
+      moonMaterial.roughness = 1.0;
+      moonMaterial.needsUpdate = true;
+    });
+    textureLoader.load('/moon_metalness_1024.jpg', (tex) => {
+      moonMaterial.metalnessMap = tex;
+      moonMaterial.metalness = 0.0;
       moonMaterial.needsUpdate = true;
     });
 
