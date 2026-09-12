@@ -1093,9 +1093,41 @@ export default function HeroScene() {
       container.style.cursor = 'default';
     };
 
+    const onTouchMove = (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      const touch = e.touches[0];
+      const rect = container.getBoundingClientRect();
+      const nx = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+      const ny = ((touch.clientY - rect.top) / rect.height) * 2 - 1;
+      const cx = Math.max(-1, Math.min(1, nx));
+      const cy = Math.max(-1, Math.min(1, ny));
+      mouse.x = nx;
+      mouse.y = -ny;
+      upperTargetRot.y = cx * 0.32;
+      upperTargetRot.x = -cy * 0.16;
+    };
+
+    const onTouchEnd = (e) => {
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        const rect = container.getBoundingClientRect();
+        mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(lander.children, true);
+        if (intersects.length > 0) {
+          isDeployed = !isDeployed;
+        }
+      }
+      upperTargetRot.y = 0;
+      upperTargetRot.x = 0;
+    };
+
     window.addEventListener('mousemove', onPointerMove);
     container.addEventListener('click', onClick);
     container.addEventListener('mouseleave', onPointerLeave);
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
 
     // Resize Observer
     const ro = new ResizeObserver((entries) => {
@@ -1158,6 +1190,8 @@ export default function HeroScene() {
       window.removeEventListener('mousemove', onPointerMove);
       container.removeEventListener('click', onClick);
       container.removeEventListener('mouseleave', onPointerLeave);
+      window.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', onTouchEnd);
       shootingStars.dispose();
       earthControls.dispose();
       landerControls.dispose();
