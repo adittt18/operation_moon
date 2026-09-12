@@ -175,15 +175,51 @@ function buildVikramLander() {
     roughness: 0.35,
   });
 
-  const solarPanelMaterial = new THREE.MeshStandardMaterial({
+  const solarPanelMaterial = new THREE.MeshPhysicalMaterial({
     map: solarDiffuseMap,
     normalMap: solarNormalMap,
-    normalScale: new THREE.Vector2(1.5, 1.5),
+    normalScale: new THREE.Vector2(0.5, 0.5),
     roughnessMap: solarRoughnessMap,
-    metalness: 0.65,
-    roughness: 0.45,
+    metalness: 0.82,
+    roughness: 0.22,
+    clearcoat: 1.0,           // Aerospace quartz protective coverglass
+    clearcoatRoughness: 0.12,  // Crystal-clear coverglass reflection
+    reflectivity: 0.98,
+    sheen: 1.0,               // Micro-grooved photovoltaic cell sheen
+    sheenColor: new THREE.Color(0xfff5d8),
+    sheenRoughness: 0.35,
+    specularIntensity: 1.0,
+    specularColor: new THREE.Color(0xffffff),
     side: THREE.DoubleSide,
   });
+
+  solarPanelMaterial.onBeforeCompile = (shader) => {
+    shader.uniforms.uSunWorldDir = { value: new THREE.Vector3(5.05, 5.40, 1.75).normalize() };
+    shader.fragmentShader = `
+      uniform vec3 uSunWorldDir;
+    ` + shader.fragmentShader;
+
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <dithering_fragment>',
+      `
+      // Aerospace quartz coverglass specular flare from single unified sun direction
+      vec3 sunViewDir = normalize((viewMatrix * vec4(uSunWorldDir, 0.0)).xyz);
+      vec3 viewV = normalize(vViewPosition);
+      vec3 halfV = normalize(sunViewDir + viewV);
+      vec3 nV = normalize(vNormal);
+      float nDotH = max(0.0, dot(nV, halfV));
+      float nDotL = max(0.0, dot(nV, sunViewDir));
+
+      if (nDotL > 0.02) {
+        float broadSheen = pow(nDotH, 5.0) * 0.72;
+        float sharpGlint = pow(nDotH, 32.0) * 1.95;
+        vec3 coverglassGlint = vec3(1.0, 0.96, 0.88) * (broadSheen + sharpGlint) * (0.35 + 0.65 * nDotL);
+        gl_FragColor.rgb += coverglassGlint;
+      }
+      #include <dithering_fragment>
+      `
+    );
+  };
 
   const engineMaterial = new THREE.MeshStandardMaterial({
     color: 0x222630,
@@ -459,14 +495,40 @@ function buildVikramLander() {
     diagonalBrace2.castShadow = true;
     legGroup.add(diagonalBrace2);
 
-    // Wide circular landing footpad
+    // Gimbal ball-joint connecting leg strut to footpad
+    const ballJoint = new THREE.Mesh(
+      new THREE.SphereGeometry(0.026, 12, 12),
+      chromeMaterial
+    );
+    ballJoint.position.set(0, -0.705, 0);
+    ballJoint.castShadow = true;
+    legGroup.add(ballJoint);
+
+    // Wide circular landing footpad dish (gimbaled flat against lunar regolith)
     const footPad = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.095, 0.105, 0.028, 16),
+      new THREE.CylinderGeometry(0.095, 0.115, 0.026, 24),
       brightGoldMaterial
     );
     footPad.position.set(0, -0.72, 0);
+    footPad.rotation.z = -0.50; // Gimbal leveled flat with lunar ground
     footPad.castShadow = true;
+    footPad.receiveShadow = true;
     legGroup.add(footPad);
+
+    // Regolith displacement rim (simulating heavy 1500kg contact footprint sinking into lunar soil)
+    const padRim = new THREE.Mesh(
+      new THREE.TorusGeometry(0.114, 0.012, 8, 24),
+      new THREE.MeshStandardMaterial({
+        color: 0x141822,
+        metalness: 0.85,
+        roughness: 0.65,
+      })
+    );
+    padRim.position.set(0, -0.730, 0);
+    padRim.rotation.x = Math.PI / 2;
+    padRim.rotation.y = -0.50;
+    padRim.castShadow = true;
+    legGroup.add(padRim);
 
     legGroup.rotation.z = 0.50;
     legGroup.position.set(Math.cos(ang) * 0.54, -0.06, Math.sin(ang) * 0.54);
@@ -757,36 +819,27 @@ function positionEarthToMatchReference(earthControls, width, height, camera) {
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
- *  LANDER SHADOW DECAL  (Crisp directional shadow cast on moon dust)
+ *  LANDER LEG WEIGHT & CONTACT FOOTPRINT SYSTEM
+ *  - High-mass contact occlusion footprints under each of the 4 landing pads
+ *  - Compressed lunar regolith crater rings around each footpad
+ *  - Directional leg strut and footpad shadow tails cast back-left on the lunar regolith
+ *  - Deep central body & thruster ambient occlusion
  * ───────────────────────────────────────────────────────────────────────────*/
-function makeLanderShadowDecal() {
-  const c = document.createElement('canvas');
-  c.width = 256;
-  c.height = 256;
-  const ctx = c.getContext('2d');
-
-  // Directional shadow cast to the left/back matching the sun angle
-  const grad = ctx.createRadialGradient(110, 130, 10, 110, 130, 110);
-  grad.addColorStop(0, 'rgba(0, 4, 12, 0.84)');
-  grad.addColorStop(0.5, 'rgba(0, 5, 14, 0.45)');
-  grad.addColorStop(1, 'rgba(0, 5, 14, 0)');
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.ellipse(110, 130, 105, 65, -0.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  const tex = new THREE.CanvasTexture(c);
+function makeLanderLegWeightDecal() {
+  const loader = new THREE.TextureLoader();
+  const tex = loader.load('/lander_ground_shadow.png');
+  tex.colorSpace = THREE.SRGBColorSpace;
   const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.3, 1.45),
+    new THREE.PlaneGeometry(3.8, 3.8),
     new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
-      opacity: 0.82,
+      opacity: 0.95,
       depthWrite: false,
     })
   );
-  mesh.rotation.x = -Math.PI / 2.3;
-  mesh.position.set(-0.85, -1.12, 0.85);
+  mesh.rotation.x = -Math.PI / 2 + 0.05;
+  mesh.position.set(-0.85, -1.338, 0.814);
   return mesh;
 }
 
@@ -821,16 +874,18 @@ export default function HeroScene() {
     container.appendChild(renderer.domElement);
 
     // ── LIGHTING ─────────────────────────────────────────────────────────────
-    // Deep cosmic space ambient light (guarantees one side in dramatic shadow like MoonGlobe)
-    scene.add(new THREE.AmbientLight(0x0e1b2e, 0.32));
+    // Deep cosmic space ambient light (dark shadows, authentic lunar contrast)
+    scene.add(new THREE.AmbientLight(0x0a121e, 0.28));
 
-    // Soft hemisphere fill light ensuring lightened gold foil details gleam without pitch-black dead zones
-    const hemiLight = new THREE.HemisphereLight(0xfff6e6, 0x182438, 0.40);
+    // Soft hemisphere cosmic fill ensuring gold MLI foil remains luminous and readable
+    const hemiLight = new THREE.HemisphereLight(0xfffaee, 0x121a28, 0.35);
     scene.add(hemiLight);
 
-    // Primary Sun — natural parallel directional light casting sharp space shadows across the satellite
-    const sunLight = new THREE.DirectionalLight(0xfffaee, 4.8);
-    sunLight.position.set(4.8, 4.2, 4.4);
+    // PRIMARY COSMIC SUN — The ONLY directional light source in the scene!
+    // Parallel sunlight coming from ONE unified cosmic direction (upper-right in space)
+    // Illuminating Earth, casting real-time shadows, and reflecting across both solar panels
+    const sunLight = new THREE.DirectionalLight(0xfffaee, 5.2);
+    sunLight.position.set(4.2, 4.8, 2.6);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -842,27 +897,15 @@ export default function HeroScene() {
     sunLight.shadow.camera.bottom = -2.2;
     sunLight.shadow.bias = -0.0006;
     sunLight.shadow.normalBias = 0.02;
-    sunLight.target.position.set(-0.85, -0.65, 0.85);
+    sunLight.target.position.set(-0.85, -0.60, 0.85);
     scene.add(sunLight.target);
     scene.add(sunLight);
 
-    // Natural directional sunlight reflection from Earth falling across space onto both satellite panels
-    const earthReflectionLight = new THREE.DirectionalLight(0xa6d8ff, 0.95);
-    earthReflectionLight.position.set(3.4, 2.2, 3.8);
-    earthReflectionLight.target.position.set(-0.85, -0.60, 0.85);
-    scene.add(earthReflectionLight.target);
-    scene.add(earthReflectionLight);
-
-    // Front-left warm cosmic fill light bringing out radiant light gold tones on the satellite
-    const satelliteFillLight = new THREE.DirectionalLight(0xffeed0, 0.42);
-    satelliteFillLight.position.set(-3.5, 1.2, 3.2);
-    satelliteFillLight.target.position.set(-0.85, -0.60, 0.85);
-    scene.add(satelliteFillLight.target);
-    scene.add(satelliteFillLight);
-
-    // Subtle lunar surface diffuse bounce from below
-    const lunarBounce = new THREE.DirectionalLight(0x9a8060, 0.22);
-    lunarBounce.position.set(0, -3, 2);
+    // Very subtle lunar regolith diffuse ground bounce (diffuse only, strictly no directional shadows)
+    const lunarBounce = new THREE.DirectionalLight(0x403525, 0.18);
+    lunarBounce.position.set(-0.85, -4.0, 0.85);
+    lunarBounce.target.position.set(-0.85, -0.60, 0.85);
+    scene.add(lunarBounce.target);
     scene.add(lunarBounce);
 
     // ── STARFIELD ────────────────────────────────────────────────────────────
@@ -887,19 +930,20 @@ export default function HeroScene() {
     // from the 4 legs, body, solar wings, and thrusters of the satellite
     const shadowReceiverGeo = new THREE.PlaneGeometry(8, 6);
     const shadowReceiverMat = new THREE.ShadowMaterial({
-      opacity: 0.72,
+      opacity: 0.86,
       depthWrite: false,
     });
     const shadowReceiver = new THREE.Mesh(shadowReceiverGeo, shadowReceiverMat);
-    shadowReceiver.position.set(-0.85, -1.33, 0.85);
-    shadowReceiver.rotation.x = -Math.PI / 2 + 0.12;
+    shadowReceiver.position.set(-0.85, -1.342, 0.814);
+    shadowReceiver.rotation.x = -Math.PI / 2 + 0.05;
     shadowReceiver.receiveShadow = true;
     scene.add(shadowReceiver);
 
-    // Soft contact ambient occlusion decal directly under the landing feet
-    const shadowDecal = makeLanderShadowDecal();
-    shadowDecal.position.set(-0.85, -1.32, 0.85);
-    scene.add(shadowDecal);
+    // ── PHYSICAL LEG CONTACT OCCLUSION & WEIGHT DECAL ────────────────────────
+    // High-contrast circular contact patches under the 4 footpads,
+    // compressed regolith rims, directional leg strut shadow tails, and thruster AO
+    const legWeightDecal = makeLanderLegWeightDecal();
+    scene.add(legWeightDecal);
 
     // ── CHANDRAYAAN-2 LANDER ─────────────────────────────────────────────────
     const landerControls = buildVikramLander();
