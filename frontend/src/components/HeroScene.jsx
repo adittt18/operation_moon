@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { createShootingStarSystem } from '../shootingStars';
 
 /* ─────────────────────────────────────────────────────────────────────────────
  *  STARFIELD
@@ -428,7 +429,7 @@ function buildVikramLander() {
  * ───────────────────────────────────────────────────────────────────────────*/
 function buildEarth() {
   const group = new THREE.Group();
-  const radius = 1.05; // slightly smaller as requested, perfectly balanced
+  const radius = 0.95; // realistic distant earth scale
   const loader = new THREE.TextureLoader();
 
   // Natural Earth material with specular reflection
@@ -600,7 +601,7 @@ function buildLunarTerrain() {
 
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2.3;
-  terrain.position.set(0.4, -1.30, -0.3);
+  terrain.position.set(0.4, -1.75, -0.3);
   terrain.receiveShadow = true;
   group.add(terrain);
 
@@ -649,7 +650,7 @@ function buildLunarTerrain() {
 
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
   ridge.rotation.x = -Math.PI / 2.6;
-  ridge.position.set(0, -0.75, -3.2);
+  ridge.position.set(0, -1.45, -3.5);
   ridge.receiveShadow = true;
   group.add(ridge);
 
@@ -662,17 +663,17 @@ function buildLunarTerrain() {
     flatShading: true,
   });
   const rockCoords = [
-    [0.9, -1.02, 0.4],
-    [-0.3, -1.06, 0.2],
-    [1.5, -0.98, -0.2],
-    [2.3, -1.12, 0.5],
-    [-1.7, -1.02, 0.3],
-    [0.2, -1.16, 0.8],
-    [-0.9, -0.88, 1.0],
-    [1.9, -0.92, 0.2],
-    [3.1, -1.04, -0.3],
-    [-0.5, -1.08, 0.6],
-    [0.6, -1.14, 0.3],
+    [0.9, -1.47, 0.4],
+    [-0.3, -1.51, 0.2],
+    [1.5, -1.43, -0.2],
+    [2.3, -1.57, 0.5],
+    [-1.7, -1.47, 0.3],
+    [0.2, -1.61, 0.8],
+    [-0.9, -1.33, 1.0],
+    [1.9, -1.37, 0.2],
+    [3.1, -1.49, -0.3],
+    [-0.5, -1.53, 0.6],
+    [0.6, -1.59, 0.3],
   ];
   rockCoords.forEach(([rx, ry, rz], idx) => {
     const rock = new THREE.Mesh(rockGeo, rockMat);
@@ -719,7 +720,7 @@ function makeLanderShadowDecal() {
     })
   );
   mesh.rotation.x = -Math.PI / 2.3;
-  mesh.position.set(-0.20, -0.74, 0.75);
+  mesh.position.set(-0.20, -1.19, 0.75);
   return mesh;
 }
 
@@ -786,9 +787,17 @@ export default function HeroScene() {
     const stars = makeStarfield();
     scene.add(stars);
 
-    // ── EARTH (Placed backward of the moon surface in the background) ────────
+    // ── CELESTIAL SHOOTING STARS & COMETS ────────────────────────────────────
+    const shootingStars = createShootingStarSystem({
+      scene,
+      camera,
+      bounds: { minX: -5.0, maxX: 5.5, minY: 1.0, maxY: 3.5, minZ: -12.0, maxZ: -4.0 },
+      poolSize: 4,
+    });
+
+    // ── EARTH (Placed backward of the moon surface in deep background) ────────
     const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(2.05, 1.15, -4.5);
+    earthGroup.position.set(2.35, 1.48, -9.0);
     scene.add(earthGroup);
 
     // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
@@ -807,8 +816,8 @@ export default function HeroScene() {
       roverRamp,
     } = buildVikramLander();
 
-    // Positioned firmly on the lunar surface
-    const landerBase = { x: 0.05, y: -0.12, z: 0.75 };
+    // Positioned firmly on the lowered lunar surface
+    const landerBase = { x: 0.05, y: -0.57, z: 0.75 };
     const landerBaseRot = { x: 0.06, y: -0.24 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
@@ -891,6 +900,9 @@ export default function HeroScene() {
       clouds.rotation.y += dt * 0.055;
       stars.rotation.y += dt * 0.0012;
 
+      // Realistic shooting stars & comets crossing space
+      shootingStars.update(dt, camera);
+
       // Lander: smooth rotation tilt towards cursor, position stays fixed
       lander.rotation.y += (targetRot.y - lander.rotation.y) * 0.07;
       lander.rotation.x += (targetRot.x - lander.rotation.x) * 0.07;
@@ -919,6 +931,7 @@ export default function HeroScene() {
       window.removeEventListener('mousemove', onPointerMove);
       container.removeEventListener('click', onClick);
       container.removeEventListener('mouseleave', onPointerLeave);
+      shootingStars.dispose();
       renderer.dispose();
       scene.traverse((obj) => {
         if (obj.geometry) obj.geometry.dispose();

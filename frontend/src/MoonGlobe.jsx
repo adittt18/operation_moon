@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Pause, Play, MapPin, X, Rocket } from 'lucide-react';
+import { createShootingStarSystem } from './shootingStars';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -164,6 +165,15 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
 
     // Add photorealistic deep space background
     scene.add(makePhotorealisticSpace());
+
+    // Add photorealistic shooting stars & majestic comets
+    const shootingStars = createShootingStarSystem({
+      scene,
+      camera,
+      bounds: { minX: -14, maxX: 14, minY: -8, maxY: 9, minZ: -16, maxZ: -4 },
+      poolSize: 5,
+    });
+    const clock = new THREE.Clock();
 
     // 3. Moon sphere with real NASA equirectangular lunar textures:
     // Pure matte diffuse lunar regolith: specular is strictly 0x000000 and shininess 0
@@ -341,6 +351,8 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
     let reqId;
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      shootingStars.update(dt, camera);
       if (autoRotate && !isDragging) {
         moonMesh.rotation.y += 0.0014;
       }
@@ -359,6 +371,7 @@ export default function MoonGlobe({ sites = [], onSiteSelect, selectedSite }) {
       dom.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
+      shootingStars.dispose();
       renderer.dispose();
     };
   }, [sites, autoRotate]);
