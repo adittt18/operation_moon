@@ -3,14 +3,14 @@ import React from 'react';
 export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isSm = size === 'sm';
   const isLg = size === 'lg';
-  const width = isSm ? 44 : isLg ? 160 : 88;
-  const height = isSm ? 28 : isLg ? 100 : 54;
+  const isXl = size === 'xl';
+  const dim = isSm ? 32 : isLg ? 160 : isXl ? 220 : 84;
 
   return (
     <div className={`chandrayaan-topview-loader size-${size}`}>
-      <div className="topview-orbit-stage" style={{ width, height }}>
-        {/* Top-view Elliptical Orbit Track */}
-        <div className="topview-orbit-ellipse" />
+      <div className="topview-orbit-stage" style={{ width: dim, height: dim }}>
+        {/* Top-view Circular Orbit Track */}
+        <div className="topview-orbit-circle" />
 
         {/* Central Moon Sphere */}
         <div className="topview-moon">
@@ -19,7 +19,7 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
           <div className="topview-crater c3" />
         </div>
 
-        {/* Rotating Carrier on Elliptical Path */}
+        {/* Rotating Carrier on Circular Path */}
         <div className="topview-satellite-carrier">
           {/* Top-View Chandrayaan Spacecraft */}
           <div className="topview-satellite">
@@ -36,26 +36,12 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   );
 }
 
-export function RegistrationLoadingModal({ isProcessing, sensor = 'Chandrayaan-2' }) {
+export function RegistrationLoadingModal({ isProcessing }) {
   if (!isProcessing) return null;
 
   return (
-    <div className="loading-modal-backdrop page-fade">
-      <div className="loading-modal-card glass-card">
-        <ChandrayaanLoader size="lg" />
-        <div className="loading-modal-content">
-          <span className="loading-badge">CHANDRAYAAN-2 · PIPELINE ORCHESTRATION</span>
-          <h3>Sub-Pixel Lunar Image Registration</h3>
-          <p className="loading-sub">
-            Executing CLAHE illumination normalization, multi-scale grid SIFT extraction, FLANN tie-point matching, and cornerSubPix sub-pixel refinement...
-          </p>
-
-          <div className="orbiting-status-pill">
-            <span className="pulse-dot" />
-            <span>Targeting &lt; 1.0 px RMSE with NASA LRO NAC Reference</span>
-          </div>
-        </div>
-      </div>
+    <div className="loading-modal-backdrop page-fade" role="status" aria-label="Executing Sub-Pixel Registration">
+      <ChandrayaanLoader size="xl" />
     </div>
   );
 }
