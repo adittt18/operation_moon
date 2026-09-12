@@ -557,9 +557,15 @@ p { margin: 0; }
 }
 .hero-pill svg { width: 15px; height: 15px; color: #60a5fa; }
 
-.hero-scene-wrap { position: relative; width: 50%; min-height: 440px; overflow: hidden; }
+.hero-scene-wrap {
+  position: relative;
+  width: 50%;
+  min-height: 440px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 75% 25%, #08162d 0%, #030712 60%, #010308 100%);
+}
 .hero-scene-wrap::before {
-  display: none;
+  display: none !important;
 }
 .hero-scene-canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: default; }
 .hero-scene-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -1628,6 +1634,19 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   box-shadow: 0 20px 45px rgba(0, 4, 15, 0.6); z-index: 120; overflow: hidden;
   backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
 }
+@media (max-width: 768px) {
+  .notif-dropdown {
+    position: fixed !important;
+    top: 56px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 16px 45px rgba(0, 4, 15, 0.75) !important;
+    z-index: 1200 !important;
+  }
+}
 .notif-header {
   display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;
   border-bottom: 1px solid var(--divider); background: rgba(255, 255, 255, 0.03);
@@ -1968,13 +1987,10 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #3282db;
 }
 [data-theme="light"] .hero-scene-wrap {
-  background: #040a16;
+  background: radial-gradient(ellipse at 75% 25%, #08162d 0%, #030712 60%, #010308 100%);
 }
 [data-theme="light"] .hero-scene-wrap::before {
-  display: block;
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 220px;
-  background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 20%, rgba(240, 246, 255, 0.70) 45%, rgba(225, 238, 255, 0.30) 75%, transparent 100%);
-  z-index: 3; pointer-events: none;
+  display: none !important;
 }
 [data-theme="light"] .hero-status-badge {
   background: rgba(8, 20, 38, 0.85);
