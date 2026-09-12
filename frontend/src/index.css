@@ -427,50 +427,21 @@ p { margin: 0; }
 
 .team-members-popover {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 230px;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
   background: rgba(10, 24, 46, 0.96);
   border: 1px solid rgba(96, 165, 250, 0.35);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.15);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 1000;
-  padding: 10px 8px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.team-members-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px 8px;
-  border-bottom: 1px solid rgba(96, 165, 250, 0.15);
-  margin-bottom: 4px;
-}
-
-.team-members-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #93c5fd;
-  text-transform: uppercase;
-}
-
-.team-members-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: #60a5fa;
-  background: rgba(96, 165, 250, 0.15);
-  padding: 2px 7px;
-  border-radius: 999px;
-  border: 1px solid rgba(96, 165, 250, 0.25);
+  gap: 3px;
 }
 
 .team-members-list {
@@ -482,10 +453,11 @@ p { margin: 0; }
 .team-member-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 10px;
-  border-radius: 10px;
-  transition: background 0.15s ease;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  cursor: default;
 }
 
 .team-member-row:hover {
@@ -502,8 +474,8 @@ p { margin: 0; }
 }
 
 .member-avatar-chip {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background: #2465ab;
   color: #ffffff;
@@ -515,6 +487,7 @@ p { margin: 0; }
   letter-spacing: 0.3px;
   line-height: 1;
   flex-shrink: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 .is-captain .member-avatar-chip {
@@ -522,22 +495,19 @@ p { margin: 0; }
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
-.member-details {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .member-name-text {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #e2edfa;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .is-captain .member-name-text {
   color: #fbbf24;
+  font-weight: 700;
 }
 
 .status-chip { display: flex; flex-direction: column; gap: 1px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--border-subtle); background: var(--input-bg); flex-shrink: 0; }
@@ -1766,17 +1736,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   border: 1px solid rgba(195, 218, 245, 0.95);
   box-shadow: 0 16px 40px rgba(30, 70, 140, 0.15), 0 0 0 1px rgba(195, 218, 245, 0.5);
 }
-[data-theme="light"] .team-members-header {
-  border-bottom: 1px solid rgba(195, 218, 245, 0.8);
-}
-[data-theme="light"] .team-members-title {
-  color: #2465ab;
-}
-[data-theme="light"] .team-members-badge {
-  color: #2465ab;
-  background: rgba(36, 101, 171, 0.1);
-  border: 1px solid rgba(36, 101, 171, 0.25);
-}
 [data-theme="light"] .team-member-row:hover {
   background: rgba(36, 101, 171, 0.08);
 }
@@ -1792,7 +1751,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #ffffff;
 }
 [data-theme="light"] .member-name-text {
-  color: #1e3a8a;
+  color: #2465ab;
 }
 [data-theme="light"] .is-captain .member-name-text {
   color: #b45309;

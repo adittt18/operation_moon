@@ -369,13 +369,6 @@ export default function TopBar({
 
           {showTeamDropdown && (
             <div className="team-members-popover glass-card page-fade" role="menu">
-              <div className="team-members-header">
-                <div className="team-members-title">
-                  <Users size={13} />
-                  <span>Team CODE_CHAOS</span>
-                </div>
-                <span className="team-members-badge">4 Members</span>
-              </div>
               <div className="team-members-list">
                 {TEAM_MEMBERS.map((m, idx) => (
                   <div
@@ -384,11 +377,9 @@ export default function TopBar({
                     role="menuitem"
                   >
                     <span className="member-avatar-chip">{m.initials}</span>
-                    <div className="member-details">
-                      <span className="member-name-text">
-                        {m.name}
-                      </span>
-                    </div>
+                    <span className="member-name-text">
+                      {m.name}
+                    </span>
                   </div>
                 ))}
               </div>
