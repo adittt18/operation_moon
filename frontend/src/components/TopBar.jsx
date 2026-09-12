@@ -193,8 +193,11 @@ export default function TopBar({
   return (
     <div className="topbar">
       <div className="topbar-mobile-brand">
-        <img src="/isro_logo.png" alt="ISRO" className="mobile-brand-logo-img" />
-        <span className="mobile-brand-title">Pixel-Moon</span>
+        <img src="/moon_brand_logo.png" alt="Pixel-Moon" className="mobile-brand-logo-img" />
+        <div className="mobile-brand-text">
+          <span className="mobile-brand-title">Pixel-Moon</span>
+          <span className="mobile-brand-sub">HackerVilla / CODE_CHAOS</span>
+        </div>
       </div>
 
       {/* Interactive Global Search Bar */}
