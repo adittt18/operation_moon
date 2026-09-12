@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { MoonGlobeIcon } from './components/Sidebar';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
@@ -7,7 +7,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
   const [activeTab, setActiveTab] = useState('slider'); // 'slider', 'sidebyside', 'matches', 'checkerboard'
   const [sliderPos, setSliderPos] = useState(50); // 0% to 100%
-  const lastTapRef = useRef(0);
 
   if (!result || result.status !== 'success') {
     return (
@@ -27,41 +26,13 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
   const source_preprocessed_url = `${API_BASE}${result.source_preprocessed_url}`;
   const reference_preprocessed_url = `${API_BASE}${result.reference_preprocessed_url}`;
 
-  const handleSliderDoubleClick = (e) => {
-    // If double-clicking the handle directly, toggle between key positions
-    if (e.target.closest('.slider-handle')) {
-      if (Math.abs(sliderPos - 50) < 5) {
-        setSliderPos(20);
-      } else if (sliderPos < 50) {
-        setSliderPos(80);
-      } else {
-        setSliderPos(50);
-      }
-      return;
-    }
 
-    const container = e.currentTarget;
-    const rect = container.getBoundingClientRect();
-    const clientX = e.clientX;
+  const handleSliderMove = (e) => {
+    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
     if (clientX === undefined) return;
+    const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setSliderPos(Math.round((x / rect.width) * 1000) / 10);
-  };
-
-  const handleTouchEnd = (e) => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 350) {
-      if (e.changedTouches && e.changedTouches.length > 0) {
-        const touch = e.changedTouches[0];
-        const container = e.currentTarget;
-        const rect = container.getBoundingClientRect();
-        const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
-        setSliderPos(Math.round((x / rect.width) * 1000) / 10);
-      }
-      lastTapRef.current = 0;
-    } else {
-      lastTapRef.current = now;
-    }
+    setSliderPos((x / rect.width) * 100);
   };
 
   return (
@@ -194,31 +165,27 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
         <div className="viewer-stage">
           {/* Tab 1: Interactive Curtain Slider */}
           {activeTab === 'slider' && (
-            <div className="slider-tab-wrapper">
-              <div
-                className="curtain-slider-container"
-                onDoubleClick={handleSliderDoubleClick}
-                onTouchEnd={handleTouchEnd}
-                title="Double-click anywhere on the image to position the curtain slider"
-              >
-                <div className="image-underlay">
-                  <img src={reference_preprocessed_url} alt="Reference LRO NAC" draggable="false" />
-                  <span className="curtain-tag tag-right">NASA LRO NAC (Reference)</span>
-                </div>
-                <div
-                  className="image-overlay"
-                  style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
-                >
-                  <img src={registered_image_url} alt="Registered Chandrayaan-2" draggable="false" />
-                  <span className="curtain-tag tag-left">Chandrayaan-2 (Registered)</span>
-                </div>
-                <div className="slider-divider" style={{ left: `${sliderPos}%` }}>
-                  <div className="slider-handle" title="Double-click to toggle view">↔</div>
-                </div>
+            <div
+              className="curtain-slider-container"
+              onMouseMove={handleSliderMove}
+              onTouchMove={handleSliderMove}
+              onTouchStart={handleSliderMove}
+              onClick={handleSliderMove}
+            >
+              <div className="image-underlay">
+                <img src={reference_preprocessed_url} alt="Reference LRO NAC" />
+                <span className="curtain-tag tag-right">NASA LRO NAC (Reference)</span>
               </div>
-              <p className="caption" style={{ textAlign: 'center', marginTop: '12px' }}>
-                💡 <b>Double-click</b> anywhere on the image to move the split curtain to that point, or double-click the <b>↔</b> handle to toggle views.
-              </p>
+              <div
+                className="image-overlay"
+                style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
+              >
+                <img src={registered_image_url} alt="Registered Chandrayaan-2" />
+                <span className="curtain-tag tag-left">Chandrayaan-2 (Registered)</span>
+              </div>
+              <div className="slider-divider" style={{ left: `${sliderPos}%` }}>
+                <div className="slider-handle">↔</div>
+              </div>
             </div>
           )}
 
