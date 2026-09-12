@@ -312,39 +312,8 @@ function buildVikramLander() {
     });
   });
 
-  // 3. Deployable Lateral Solar Wings (in upperGroup)
+  // 3. Deployable Lateral Solar Wings (Removed lateral bars piercing through solar panels per user screenshot)
   const topWings = [];
-  [-1, 1].forEach((dir) => {
-    const wingHinge = new THREE.Group();
-    wingHinge.position.set(dir * 0.32, 0.32, 0);
-
-    const wingMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.38, 0.016, 0.32),
-      solarPanelMaterial
-    );
-    wingMesh.position.set(dir * 0.19, 0, 0);
-    wingMesh.castShadow = true;
-    wingHinge.add(wingMesh);
-
-    // Gold edge rim
-    const edgeTrim = new THREE.Mesh(
-      new THREE.BoxGeometry(0.02, 0.024, 0.32),
-      brightGoldMaterial
-    );
-    edgeTrim.position.set(dir * 0.38, 0, 0);
-    edgeTrim.castShadow = true;
-    wingHinge.add(edgeTrim);
-
-    wingHinge.rotation.z = dir * 0.12;
-    upperGroup.add(wingHinge);
-
-    topWings.push({
-      hinge: wingHinge,
-      dir,
-      openRotZ: dir * 0.55,
-      closedRotZ: dir * 0.12,
-    });
-  });
 
   // 4. Pragyan Rover Deployment Ramp (in upperGroup)
   const rampHinge = new THREE.Group();
@@ -494,15 +463,6 @@ function buildVikramLander() {
     const pCollarRim = new THREE.Vector3(0.165, -0.079, 0);
     const verticalSupporter = createTrussStrut(pJunction, pCollarRim, 0.012, chromeMaterial);
     legGroup.add(verticalSupporter);
-
-    // Small mounting bracket connecting vertical supporter top to gold collar rim
-    const verticalBracket = new THREE.Mesh(
-      new THREE.BoxGeometry(0.030, 0.020, 0.024),
-      darkGoldMaterial
-    );
-    verticalBracket.position.set(0.155, -0.079, 0);
-    verticalBracket.castShadow = true;
-    legGroup.add(verticalBracket);
 
     // 2. DIAGONAL WHITE SUPPORTER ROD (matching user screenshot 1: goes from leg junction up to underside of lander body)
     const pUnderbody = new THREE.Vector3(-0.327, 0.110, 0);
