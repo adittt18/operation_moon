@@ -921,7 +921,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 /* Active clickable button in dark mode: Navy blue with NO glow */
 .fit-btn.active {
-  background: #11284b !important; /* Navy blue */
+  background: rgba(17, 40, 75, 0.45) !important; /* Reduced inner navy color */
   color: #ffffff !important;
   border: 1px solid rgba(56, 115, 185, 0.35) !important;
   box-shadow: none !important; /* Glow removed */
