@@ -126,65 +126,79 @@ function buildVikramLander() {
   const metalNormalMap = loadTex('/lander_metal_normal.jpg', 1, 2, false);
   const metalRoughnessMap = loadTex('/lander_metal_roughness.jpg', 1, 2, false);
 
-  // Materials with authentic space MLI gold foil roughness and brushed metal
+  const solarDiffuseMap = loadTex('/solar_panel_diffuse.jpg', 1, 1, true);
+  const solarNormalMap = loadTex('/solar_panel_normal.jpg', 1, 1, false);
+  const solarRoughnessMap = loadTex('/solar_panel_roughness.jpg', 1, 1, false);
+
+  // Materials with authentic space MLI gold foil roughness and tactile relief
   const goldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(1.6, 1.6),
+    normalScale: new THREE.Vector2(2.8, 2.8),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.94,
-    roughness: 0.38,
+    metalness: 0.82,
+    roughness: 0.64,
   });
 
   const darkGoldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
-    color: 0xb87e1e,
+    color: 0x9a6515,
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(1.4, 1.4),
+    normalScale: new THREE.Vector2(2.4, 2.4),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.88,
-    roughness: 0.44,
+    metalness: 0.78,
+    roughness: 0.72,
   });
 
   const brightGoldMaterial = new THREE.MeshStandardMaterial({
     map: goldColorMap,
-    color: 0xffdf78,
+    color: 0xf2be4b,
     normalMap: goldNormalMap,
-    normalScale: new THREE.Vector2(1.1, 1.1),
+    normalScale: new THREE.Vector2(2.0, 2.0),
     roughnessMap: goldRoughnessMap,
-    metalness: 0.96,
-    roughness: 0.26,
+    metalness: 0.86,
+    roughness: 0.52,
   });
 
   const chromeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xd0d8e2,
+    color: 0xb8c4d2,
     normalMap: metalNormalMap,
-    normalScale: new THREE.Vector2(0.8, 0.8),
+    normalScale: new THREE.Vector2(1.4, 1.4),
     roughnessMap: metalRoughnessMap,
-    metalness: 0.92,
-    roughness: 0.34,
+    metalness: 0.80,
+    roughness: 0.56,
   });
 
   const solarPanelMaterial = new THREE.MeshStandardMaterial({
-    map: solarTex,
-    normalMap: metalNormalMap,
-    normalScale: new THREE.Vector2(0.4, 0.4),
-    metalness: 0.72,
-    roughness: 0.30,
+    map: solarDiffuseMap,
+    normalMap: solarNormalMap,
+    normalScale: new THREE.Vector2(1.5, 1.5),
+    roughnessMap: solarRoughnessMap,
+    metalness: 0.65,
+    roughness: 0.45,
     side: THREE.DoubleSide,
   });
 
   const engineMaterial = new THREE.MeshStandardMaterial({
-    color: 0x222730,
+    color: 0x1c2028,
     normalMap: metalNormalMap,
-    normalScale: new THREE.Vector2(1.5, 1.5),
+    normalScale: new THREE.Vector2(2.2, 2.2),
     roughnessMap: metalRoughnessMap,
-    metalness: 0.88,
-    roughness: 0.52,
+    metalness: 0.74,
+    roughness: 0.78,
   });
 
   const dispose = () => {
-    [goldColorMap, goldNormalMap, goldRoughnessMap, metalNormalMap, metalRoughnessMap, solarTex].forEach((t) => t.dispose());
+    [
+      goldColorMap,
+      goldNormalMap,
+      goldRoughnessMap,
+      metalNormalMap,
+      metalRoughnessMap,
+      solarDiffuseMap,
+      solarNormalMap,
+      solarRoughnessMap,
+    ].forEach((t) => t.dispose());
   };
 
   // 1. Main Core: Octagonal / Pyramidal gold foil superstructure
