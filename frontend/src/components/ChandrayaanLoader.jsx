@@ -5,7 +5,7 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
   const isSpinner = size === 'spinner' || size === 'modal';
   const isLg = size === 'lg';
   const isXl = size === 'xl';
-  const dim = isSm ? 24 : isSpinner ? 52 : isLg ? 140 : isXl ? 200 : 72;
+  const dim = isSm ? 26 : isSpinner ? 60 : isLg ? 140 : isXl ? 200 : 76;
 
   return (
     <div className={`chandrayaan-mature-loader size-${size}`} style={{ width: dim, height: dim }}>
@@ -54,16 +54,16 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
           </filter>
         </defs>
 
-        {/* 1. Circular Orbit Track (100% True Geometric Circle from Top View) */}
+        {/* 1. Circular Orbit Track (Closer to the Moon & 100% True Geometric Circle) */}
         <circle
           cx="140"
           cy="140"
-          r="102"
+          r="82"
           fill="none"
           stroke="#3b82f6"
-          strokeWidth="1.8"
-          strokeDasharray="5.5 6.5"
-          strokeOpacity="0.75"
+          strokeWidth="2.0"
+          strokeDasharray="5 6"
+          strokeOpacity="0.8"
           filter={`url(#orbitGlow-${size})`}
         />
 
@@ -84,18 +84,18 @@ export default function ChandrayaanLoader({ size = 'md', label = '' }) {
           <circle cx="148" cy="164" r="4.5" fill="#3b4858" fillOpacity="0.45" />
         </g>
 
-        {/* 3. Orbiting Mature Chandrayaan Satellite (Locked to 360° Circular Orbit) */}
+        {/* 3. Orbiting Mature Chandrayaan Satellite (Locked Directly ON Orbit Line & Scaled Up) */}
         <g className="mature-satellite-orbit-carrier">
           <animateTransform
             attributeName="transform"
             type="rotate"
             from="0 140 140"
             to="360 140 140"
-            dur="3.4s"
+            dur="3.2s"
             repeatCount="indefinite"
           />
-          {/* Positioned precisely at radius 102 on orbit circle (140, 38) */}
-          <g transform="translate(140, 38)">
+          {/* Positioned precisely ON the orbit circle r=82 at (140, 58) and scaled up for prominence */}
+          <g transform="translate(140, 58) scale(1.35)">
             {/* Left Solar Array Wing with Photovoltaic Cells & Gold Frame */}
             <rect x="-14" y="-2" width="3" height="4" rx="0.5" fill="#71717a" stroke="#d4d4d8" strokeWidth="0.5" />
             <rect x="-37" y="-9" width="23" height="18" rx="1.5" fill="#0b1e3d" stroke="#d49b1a" strokeWidth="0.9" />
