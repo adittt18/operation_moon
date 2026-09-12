@@ -54,6 +54,15 @@
   --scrollbar-thumb: rgba(148, 163, 184, 0.35);
 }
 
+/* ===== EYE-COMFORT SHIELD (LIGHT THEME) =====
+ * Softens harsh blue-light glare and relieves digital eye strain (TrueTone effect)
+ * without altering any layout, text string, or CSS color definition.
+ */
+html[data-theme="light"] {
+  filter: sepia(0.06) brightness(0.985) contrast(0.98);
+  transition: filter 0.3s ease;
+}
+
 [data-theme="light"] {
   --bg-page-1: #f4f8ff;
   --bg-page-2: #e5f0fe;
