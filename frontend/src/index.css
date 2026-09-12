@@ -45,8 +45,8 @@
   --accent-green: #34d399;
   --accent-red: #f87171;
   --grad-brand: linear-gradient(90deg, #93c5fd 0%, #60a5fa 35%, #8b5cf6 100%);
-  --grad-btn: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  --grad-btn-hover: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --grad-btn: linear-gradient(135deg, #2465ab 0%, #3282db 100%);
+  --grad-btn-hover: linear-gradient(135deg, #1d5794 0%, #2465ab 100%);
 
   --border-subtle: rgba(255, 255, 255, 0.09);
   --divider: rgba(255, 255, 255, 0.08);
@@ -359,7 +359,7 @@ p { margin: 0; }
   border: 1px solid var(--border-subtle); background: var(--input-bg); cursor: pointer; flex-shrink: 0;
 }
 .user-chip-avatar {
-  width: 25px; height: 25px; border-radius: 50%; background: var(--grad-btn); color: #fff;
+  width: 25px; height: 25px; border-radius: 50%; background: #2465ab; color: #fff;
   font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; letter-spacing: 0.3px;
 }
 .user-chip span.name { font-size: 12px; font-weight: 600; color: #bfe0fb; letter-spacing: 0.2px; white-space: nowrap; }
@@ -537,7 +537,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-size: 11.5px; font-weight: 700; background: rgba(255, 255, 255, 0.06); color: #bfe0fb; border: 1px solid rgba(120, 178, 255, 0.2);
 }
-.step-pill.active .step-num { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; border-color: transparent; }
+.step-pill.active .step-num { background: #2465ab; color: #fff; border-color: transparent; }
 .step-pill span.step-label { font-size: 13px; font-weight: 600; color: #bfe0fb; opacity: 0.8; }
 .step-pill.active span.step-label { color: #bfe0fb; opacity: 1; font-weight: 700; }
 .step-chevron { color: #4a688d; width: 14px; height: 14px; }
