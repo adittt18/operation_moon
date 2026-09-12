@@ -421,274 +421,8 @@ function buildVikramLander() {
   return { group, sidePanels, topWings, roverRamp };
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- *  EARTH  — Natural Blue Marble Earth, enlarged & floating high in starry sky
- * ───────────────────────────────────────────────────────────────────────────*/
-/* ─────────────────────────────────────────────────────────────────────────────
- *  EARTH  — Natural Blue Marble Earth, background placement behind moon surface
- * ───────────────────────────────────────────────────────────────────────────*/
-function buildEarth() {
-  const group = new THREE.Group();
-  const radius = 1.30; // prominent cosmic Earth scale matching reference
-  const loader = new THREE.TextureLoader();
+/* (Note: Authentic lunar surface and Earth are photorealistically provided by the reference background image /real_moon_surface.png) */
 
-  // Natural Earth material with specular reflection
-  const earthMat = new THREE.MeshPhongMaterial({
-    roughness: 0.55,
-    metalness: 0.10,
-    shininess: 22,
-  });
-
-  loader.load('/earth_atmos_2048.jpg', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    earthMat.map = tex;
-    earthMat.specularMap = tex;
-    earthMat.needsUpdate = true;
-  });
-
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(radius, 48, 48), earthMat);
-  earth.rotation.y = 1.25; // face the sunlit blue ocean and clouds forward
-  group.add(earth);
-
-  // Natural rotating cloud layer
-  const cloudMat = new THREE.MeshLambertMaterial({
-    transparent: true,
-    opacity: 0.82,
-    depthWrite: false,
-  });
-
-  loader.load('/earth_clouds_1024.png', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    cloudMat.map = tex;
-    cloudMat.needsUpdate = true;
-  });
-
-  const clouds = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.018, 48, 48), cloudMat);
-  clouds.rotation.y = 1.25;
-  group.add(clouds);
-
-  // Atmospheric Fresnel Rim Glow (Soft atmospheric blue rim)
-  const glowMat = new THREE.ShaderMaterial({
-    uniforms: {
-      glowColor: { value: new THREE.Color(0x60a5fa) },
-    },
-    vertexShader: `
-      varying vec3 vNormal;
-      varying vec3 vPositionNormal;
-      void main() {
-        vNormal = normalize(normalMatrix * normal);
-        vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      varying vec3 vNormal;
-      varying vec3 vPositionNormal;
-      uniform vec3 glowColor;
-      void main() {
-        float intensity = pow(0.58 - dot(vNormal, vPositionNormal), 3.0);
-        gl_FragColor = vec4(glowColor, 1.0) * intensity;
-      }
-    `,
-    side: THREE.BackSide,
-    blending: THREE.AdditiveBlending,
-    transparent: true,
-    depthWrite: false,
-  });
-
-  const glow = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.20, 48, 48), glowMat);
-  group.add(glow);
-
-  return { group, earth, clouds };
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
- *  REALISTIC LUNAR TERRAIN  — Craters, ridges, rocks & NASA textures matching SS
- * ───────────────────────────────────────────────────────────────────────────*/
-function buildLunarTerrain() {
-  const group = new THREE.Group();
-  const loader = new THREE.TextureLoader();
-
-  // High-res subdivided lunar ground plane (foreground terrain)
-  const terrainGeo = new THREE.PlaneGeometry(28, 10, 90, 45);
-  const pos = terrainGeo.attributes.position;
-
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i);
-    const y = pos.getY(i);
-
-    // Multi-frequency rolling lunar highland hills
-    let roll =
-      Math.sin(x * 0.38) * 0.32 +
-      Math.cos(y * 0.60) * 0.22 +
-      Math.sin(x * 1.1 + y * 0.85) * 0.12 +
-      Math.sin(x * 2.8 - y * 2.2) * 0.04;
-
-    // Real impact craters with depressed bowls and elevated ejecta rims!
-    const craters = [
-      { cx: -1.2, cy: 0.6, r: 2.0, depth: 0.32 },
-      { cx: 1.8, cy: -0.4, r: 1.5, depth: 0.24 },
-      { cx: 3.2, cy: 1.1, r: 2.6, depth: 0.36 },
-      { cx: -2.6, cy: -0.6, r: 1.4, depth: 0.20 },
-      { cx: 0.4, cy: 1.5, r: 1.1, depth: 0.16 },
-      { cx: -0.5, cy: -0.7, r: 0.85, depth: 0.14 },
-    ];
-    for (const c of craters) {
-      const dist = Math.hypot(x - c.cx, y - c.cy);
-      if (dist < c.r * 1.6) {
-        const norm = dist / c.r;
-        if (norm < 1.0) {
-          roll -= (1 - norm * norm) * c.depth;
-        } else if (norm < 1.35) {
-          const rim = 1 - (norm - 1.0) / 0.35;
-          roll += rim * rim * (c.depth * 0.40);
-        }
-      }
-    }
-
-    pos.setZ(i, roll);
-  }
-  terrainGeo.computeVertexNormals();
-
-  // Crisp silvery-grey lunar regolith: pure matte, zero shine, authentic planetary dust
-  const terrainMat = new THREE.MeshStandardMaterial({
-    color: 0xb2c2d4, // silvery lunar regolith with high-contrast sunlight
-    roughness: 1.0,
-    metalness: 0.0,
-    flatShading: false,
-  });
-
-  // Load NASA Lunar Maps with high-frequency repeat for fine dust detail
-  loader.load('/moon_1024.jpg', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 5);
-    terrainMat.map = tex;
-    terrainMat.needsUpdate = true;
-  });
-
-  loader.load('/moon_normal_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 5);
-    terrainMat.normalMap = tex;
-    terrainMat.normalScale.set(2.2, 2.2);
-    terrainMat.needsUpdate = true;
-  });
-
-  loader.load('/moon_bump_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 5);
-    terrainMat.bumpMap = tex;
-    terrainMat.bumpScale = 0.06;
-    terrainMat.needsUpdate = true;
-  });
-
-  loader.load('/moon_roughness_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 5);
-    terrainMat.roughnessMap = tex;
-    terrainMat.roughness = 1.0;
-    terrainMat.needsUpdate = true;
-  });
-
-  loader.load('/moon_metalness_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 5);
-    terrainMat.metalnessMap = tex;
-    terrainMat.metalness = 0.0;
-    terrainMat.needsUpdate = true;
-  });
-
-  const terrain = new THREE.Mesh(terrainGeo, terrainMat);
-  terrain.rotation.x = -Math.PI / 2.3;
-  terrain.position.set(0.4, -1.70, -0.2);
-  terrain.receiveShadow = true;
-  group.add(terrain);
-
-  // Background rugged crater ridge along horizon (sharp jagged peaks matching SS2)
-  const ridgeGeo = new THREE.PlaneGeometry(36, 6, 80, 24);
-  const rPos = ridgeGeo.attributes.position;
-  for (let i = 0; i < rPos.count; i++) {
-    const rx = rPos.getX(i);
-    // Jagged mountain peaks with sharp crests
-    let h = Math.abs(Math.sin(rx * 0.40 + 0.85)) * 0.95;
-    h += Math.abs(Math.sin(rx * 0.90 - 0.55)) * 0.55;
-    h += Math.abs(Math.sin(rx * 2.2 + 1.1)) * 0.28;
-    h += Math.sin(rx * 4.6) * 0.12;
-    // Edge fade
-    const fade = Math.cos(Math.min(Math.PI / 2, (Math.abs(rx) / 18) * (Math.PI / 2)));
-    rPos.setZ(i, Math.max(0, h * fade));
-  }
-  ridgeGeo.computeVertexNormals();
-
-  const ridgeMat = new THREE.MeshStandardMaterial({
-    color: 0x90a2b6, // sunlit silvery mountain ridge peaks
-    roughness: 1.0,
-    metalness: 0.0,
-  });
-  loader.load('/moon_1024.jpg', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(8, 2.5);
-    ridgeMat.map = tex;
-    ridgeMat.needsUpdate = true;
-  });
-  loader.load('/moon_normal_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(8, 2.5);
-    ridgeMat.normalMap = tex;
-    ridgeMat.normalScale.set(2.0, 2.0);
-    ridgeMat.needsUpdate = true;
-  });
-  loader.load('/moon_metalness_1024.jpg', (tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(8, 2.5);
-    ridgeMat.metalnessMap = tex;
-    ridgeMat.metalness = 0.0;
-    ridgeMat.needsUpdate = true;
-  });
-
-  const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
-  ridge.rotation.x = -Math.PI / 2.6;
-  ridge.position.set(0, -1.15, -3.2);
-  ridge.receiveShadow = true;
-  group.add(ridge);
-
-  // Faceted angular lunar rocks (flat shaded to catch crisp planar sun glints, NOT smooth balls!)
-  const rockGeo = new THREE.DodecahedronGeometry(0.09, 0);
-  const rockMat = new THREE.MeshStandardMaterial({
-    color: 0x7c8c9e,
-    roughness: 0.90,
-    metalness: 0.10,
-    flatShading: true,
-  });
-  const rockCoords = [
-    [0.9, -1.42, 0.4],
-    [-0.3, -1.46, 0.2],
-    [1.5, -1.38, -0.2],
-    [2.3, -1.52, 0.5],
-    [-1.7, -1.42, 0.3],
-    [0.2, -1.56, 0.8],
-    [-0.9, -1.28, 1.0],
-    [1.9, -1.32, 0.2],
-    [3.1, -1.44, -0.3],
-    [-0.5, -1.48, 0.6],
-    [0.6, -1.54, 0.3],
-  ];
-  rockCoords.forEach(([rx, ry, rz], idx) => {
-    const rock = new THREE.Mesh(rockGeo, rockMat);
-    const s = 0.55 + (idx % 4) * 0.35;
-    // Irregular jagged scale
-    rock.scale.set(s * 1.35, s * 0.75, s * 1.1);
-    rock.position.set(rx, ry, rz);
-    rock.rotation.set(idx * 0.85, idx * 1.25, idx * 0.45);
-    rock.castShadow = true;
-    rock.receiveShadow = true;
-    group.add(rock);
-  });
-
-  return group;
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
  *  LANDER SHADOW DECAL  (Crisp directional shadow cast on moon dust)
@@ -720,7 +454,7 @@ function makeLanderShadowDecal() {
     })
   );
   mesh.rotation.x = -Math.PI / 2.3;
-  mesh.position.set(-1.38, -1.18, 0.85);
+  mesh.position.set(-0.85, -1.12, 0.85);
   return mesh;
 }
 
@@ -795,15 +529,6 @@ export default function HeroScene() {
       poolSize: 4,
     });
 
-    // ── EARTH (Placed backward of the moon surface in mid-right sky matching reference image) ────────
-    const { group: earthGroup, earth, clouds } = buildEarth();
-    earthGroup.position.set(1.42, 0.62, -4.5);
-    scene.add(earthGroup);
-
-    // ── LUNAR TERRAIN ────────────────────────────────────────────────────────
-    const terrain = buildLunarTerrain();
-    scene.add(terrain);
-
     // ── CONTACT SHADOW DECAL ─────────────────────────────────────────────────
     const shadowDecal = makeLanderShadowDecal();
     scene.add(shadowDecal);
@@ -816,8 +541,8 @@ export default function HeroScene() {
       roverRamp,
     } = buildVikramLander();
 
-    // Positioned firmly on the lunar surface on the left side matching reference image
-    const landerBase = { x: -1.22, y: -0.60, z: 0.85 };
+    // Positioned firmly on the real lunar surface on the left side matching reference image
+    const landerBase = { x: -0.85, y: -0.60, z: 0.85 };
     const landerBaseRot = { x: 0.05, y: -0.18 };
     lander.position.set(landerBase.x, landerBase.y, landerBase.z);
     lander.rotation.set(landerBaseRot.x, landerBaseRot.y, 0);
@@ -895,9 +620,7 @@ export default function HeroScene() {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
 
-      // Earth & clouds rotate naturally — zero cursor interference
-      earth.rotation.y += dt * 0.04;
-      clouds.rotation.y += dt * 0.055;
+      // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
 
       // Realistic shooting stars & comets crossing space
