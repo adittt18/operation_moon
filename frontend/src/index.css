@@ -562,7 +562,7 @@ p { margin: 0; }
   width: 50%;
   min-height: 440px;
   overflow: hidden;
-  background: #000208 url('/real_moon_surface.png') no-repeat right center / cover;
+  background: #000208 url('/real_moon_surface_v2.png') no-repeat right center / cover;
 }
 .hero-scene-wrap::before {
   display: none !important;
@@ -2009,7 +2009,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   color: #3282db;
 }
 [data-theme="light"] .hero-scene-wrap {
-  background: #000208 url('/real_moon_surface.png') no-repeat right center / cover;
+  background: #000208 url('/real_moon_surface_v2.png') no-repeat right center / cover;
 }
 [data-theme="light"] .hero-scene-wrap::before {
   display: none !important;
