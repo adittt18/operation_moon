@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MoonGlobeIcon } from './components/Sidebar';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -44,8 +45,8 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
           <span className="sensor-tag">Sensor: {sensor}</span>
         </div>
         <div className="header-actions">
-          <button className="btn btn-accent" onClick={onNavigateToGlobe}>
-            🌐 View on 3D Moon Globe
+          <button className="btn btn-accent" onClick={onNavigateToGlobe} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <MoonGlobeIcon size={16} strokeWidth={2} /> View on 3D Moon Globe
           </button>
           <a
             href={registered_image_url}
