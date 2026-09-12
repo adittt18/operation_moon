@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MoonGlobeIcon } from './components/Sidebar';
+import { Shrink, Expand } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -7,6 +8,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
   const [activeTab, setActiveTab] = useState('slider'); // 'slider', 'sidebyside', 'matches', 'checkerboard'
   const [sliderPos, setSliderPos] = useState(50); // 0% to 100%
+  const [imageFitMode, setImageFitMode] = useState('fit'); // 'fit' or 'expanded'
 
   if (!result || result.status !== 'success') {
     return (
@@ -136,33 +138,55 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
       {/* Comparison View Tabs */}
       <div className="view-mode-tabs glass-card">
         <div className="tabs-header">
-          <button
-            className={`tab-btn ${activeTab === 'slider' ? 'active' : ''}`}
-            onClick={() => setActiveTab('slider')}
-          >
-            ↔ Interactive Split Curtain (Registered vs Reference)
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'sidebyside' ? 'active' : ''}`}
-            onClick={() => setActiveTab('sidebyside')}
-          >
-            ⊞ Side-by-Side View
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'matches' ? 'active' : ''}`}
-            onClick={() => setActiveTab('matches')}
-          >
-            ⚡ Feature Correspondences (FLANN)
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'checkerboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('checkerboard')}
-          >
-            🏁 Checkerboard Alignment Blend
-          </button>
+          <div className="tabs-group">
+            <button
+              className={`tab-btn ${activeTab === 'slider' ? 'active' : ''}`}
+              onClick={() => setActiveTab('slider')}
+            >
+              ↔ Interactive Split Curtain (Registered vs Reference)
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'sidebyside' ? 'active' : ''}`}
+              onClick={() => setActiveTab('sidebyside')}
+            >
+              ⊞ Side-by-Side View
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'matches' ? 'active' : ''}`}
+              onClick={() => setActiveTab('matches')}
+            >
+              ⚡ Feature Correspondences (FLANN)
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'checkerboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('checkerboard')}
+            >
+              🏁 Checkerboard Alignment Blend
+            </button>
+          </div>
+
+          <div className="image-fit-toggle" role="group" aria-label="Image Display Sizing">
+            <span className="fit-toggle-label">Image:</span>
+            <button
+              type="button"
+              className={`fit-btn ${imageFitMode === 'fit' ? 'active' : ''}`}
+              onClick={() => setImageFitMode('fit')}
+              title="Fit result image to screen without vertical scrolling"
+            >
+              <Shrink size={13} strokeWidth={2.2} /> Fit to Screen
+            </button>
+            <button
+              type="button"
+              className={`fit-btn ${imageFitMode === 'expanded' ? 'active' : ''}`}
+              onClick={() => setImageFitMode('expanded')}
+              title="Expand result image to original full width"
+            >
+              <Expand size={13} strokeWidth={2.2} /> Expand
+            </button>
+          </div>
         </div>
 
-        <div className="viewer-stage">
+        <div className={`viewer-stage ${imageFitMode === 'fit' ? 'fit-mode' : 'expanded-mode'}`}>
           {/* Tab 1: Interactive Curtain Slider */}
           {activeTab === 'slider' && (
             <div
