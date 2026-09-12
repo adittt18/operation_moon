@@ -54,14 +54,7 @@
   --scrollbar-thumb: rgba(148, 163, 184, 0.35);
 }
 
-/* ===== EYE-COMFORT SHIELD (LIGHT THEME) =====
- * Softens harsh blue-light glare and relieves digital eye strain (TrueTone effect)
- * without altering any layout, text string, or CSS color definition.
- */
-html[data-theme="light"] {
-  filter: sepia(0.06) brightness(0.985) contrast(0.98);
-  transition: filter 0.3s ease;
-}
+/* Clean, instant root theme switching without whole-page filter blinking */
 
 [data-theme="light"] {
   --bg-page-1: #f4f8ff;
@@ -113,7 +106,7 @@ body {
   font-family: var(--font-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  transition: color 0.25s ease;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 ::selection { background: rgba(59, 130, 246, 0.35); }
@@ -135,6 +128,19 @@ p { margin: 0; }
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
 }
+
+/* Smooth, flicker-free box transitions between light and dark themes */
+.glass-card,
+.settings-section-card,
+.dataset-card,
+.showcase-dataset-card,
+.topbar,
+.processing-bar,
+.page-card,
+.team-members-popover {
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
 .mono { font-family: var(--font-mono); }
 
 /* ===== APP SHELL ===== */
@@ -147,6 +153,7 @@ p { margin: 0; }
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  transition: background-color 0.25s ease;
 }
 [data-theme="light"] .app-main-column {
   background: var(--bg-page);

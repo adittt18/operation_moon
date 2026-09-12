@@ -21,12 +21,19 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
   }
 
   const { metrics, compliance, targets, sensor, homography } = result;
-  // Prefix result image paths with backend URL so they load from Render, not Vercel
-  const registered_image_url = `${API_BASE}${result.registered_image_url}`;
-  const match_map_url = `${API_BASE}${result.match_map_url}`;
-  const blend_image_url = `${API_BASE}${result.blend_image_url}`;
-  const source_preprocessed_url = `${API_BASE}${result.source_preprocessed_url}`;
-  const reference_preprocessed_url = `${API_BASE}${result.reference_preprocessed_url}`;
+  const resolveAssetUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+    if (API_BASE) return `${API_BASE}${url}`;
+    const base = import.meta.env.BASE_URL || './';
+    const rel = url.replace(/^\//, '');
+    return `${base}${rel}`;
+  };
+  const registered_image_url = resolveAssetUrl(result.registered_image_url);
+  const match_map_url = resolveAssetUrl(result.match_map_url);
+  const blend_image_url = resolveAssetUrl(result.blend_image_url);
+  const source_preprocessed_url = resolveAssetUrl(result.source_preprocessed_url);
+  const reference_preprocessed_url = resolveAssetUrl(result.reference_preprocessed_url);
 
 
   const handleSliderMove = (e) => {
