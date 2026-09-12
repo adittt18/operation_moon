@@ -421,7 +421,114 @@ function buildVikramLander() {
   return { group, sidePanels, topWings, roverRamp };
 }
 
-/* (Note: Authentic lunar surface and Earth are photorealistically provided by the reference background image /real_moon_surface.png) */
+/* ─────────────────────────────────────────────────────────────────────────────
+ *  3D EARTH MODEL  (Matching the texture, vibrant blue oceans & clouds of reference)
+ * ───────────────────────────────────────────────────────────────────────────*/
+function buildPhotorealisticEarth() {
+  const group = new THREE.Group();
+  const radius = 0.52;
+  const loader = new THREE.TextureLoader();
+
+  // 1. Earth Surface Mesh with authentic vibrant blue oceans & continents
+  const earthMat = new THREE.MeshStandardMaterial({
+    roughness: 0.65,
+    metalness: 0.08,
+  });
+
+  loader.load('/earth_surface_vivid.jpg', (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    earthMat.map = tex;
+    earthMat.needsUpdate = true;
+  });
+
+  loader.load('/earth_specular_2048.jpg', (tex) => {
+    earthMat.roughnessMap = tex;
+    earthMat.roughness = 0.65;
+    earthMat.needsUpdate = true;
+  });
+
+  const earth = new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), earthMat);
+  earth.rotation.y = 2.15; // default orientation matching reference
+  group.add(earth);
+
+  // 2. High-Res 3D Atmospheric Clouds Layer
+  const cloudMat = new THREE.MeshLambertMaterial({
+    transparent: true,
+    opacity: 0.85,
+    depthWrite: false,
+    blending: THREE.NormalBlending,
+  });
+
+  loader.load('/earth_clouds_layer.png', (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    cloudMat.map = tex;
+    cloudMat.needsUpdate = true;
+  });
+
+  const clouds = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.014, 64, 64), cloudMat);
+  clouds.rotation.y = 2.15;
+  group.add(clouds);
+
+  // 3. Atmospheric Fresnel Rim Glow (Luminous cyan-blue aura matching imaged Earth)
+  const glowMat = new THREE.ShaderMaterial({
+    uniforms: {
+      glowColor: { value: new THREE.Color(0x60a5fa) },
+    },
+    vertexShader: `
+      varying vec3 vNormal;
+      varying vec3 vPositionNormal;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vNormal;
+      varying vec3 vPositionNormal;
+      uniform vec3 glowColor;
+      void main() {
+        float intensity = pow(0.62 - dot(vNormal, vPositionNormal), 3.2);
+        gl_FragColor = vec4(glowColor, 1.0) * intensity;
+      }
+    `,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    depthWrite: false,
+  });
+
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.18, 48, 48), glowMat);
+  group.add(glow);
+
+  return { group, earth, clouds };
+}
+
+function positionEarthToMatchReference(earthGroup, width, height, camera) {
+  const scale = Math.max(width / 1024, height / 576);
+  // Distance from right edge in 1024x576 reference image is 270.38
+  const screenX = width - 270.38 * scale;
+  // Distance from top in 1024x576 reference image is 95.24
+  const screenY = (height - 576 * scale) / 2 + 95.24 * scale;
+  const screenR = 62.27 * scale;
+
+  const ndcX = (screenX / width) * 2 - 1;
+  const ndcY = 1 - (screenY / height) * 2;
+
+  const ez = -2.5;
+  const distZ = camera.position.z - ez;
+  const fovRad = (camera.fov * Math.PI) / 180;
+  const f = 1.0 / Math.tan(fovRad / 2);
+  const aspect = width / height;
+
+  const ex = ndcX * distZ * (aspect / f) + camera.position.x;
+  const ey = ndcY * distZ * (1.0 / f) + camera.position.y;
+  const r3d = (screenR * distZ) / (f * (height / 2));
+
+  earthGroup.position.set(ex, ey, ez);
+  const scaleFactor = r3d / 0.52;
+  earthGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
+}
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -529,6 +636,11 @@ export default function HeroScene() {
       poolSize: 4,
     });
 
+    // ── 3D EARTH MODEL (Matching imaged Earth texture, slow rotation) ─────────
+    const { group: earthGroup, earth, clouds } = buildPhotorealisticEarth();
+    positionEarthToMatchReference(earthGroup, width, height, camera);
+    scene.add(earthGroup);
+
     // ── CONTACT SHADOW DECAL ─────────────────────────────────────────────────
     const shadowDecal = makeLanderShadowDecal();
     scene.add(shadowDecal);
@@ -610,6 +722,7 @@ export default function HeroScene() {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
+      positionEarthToMatchReference(earthGroup, width, height, camera);
     });
     ro.observe(container);
 
@@ -619,6 +732,10 @@ export default function HeroScene() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
+
+      // Very slow, majestic planetary rotation of 3D Earth & clouds
+      earth.rotation.y += dt * 0.016;
+      clouds.rotation.y += dt * 0.022;
 
       // Starfield subtle cosmic drift
       stars.rotation.y += dt * 0.0012;
