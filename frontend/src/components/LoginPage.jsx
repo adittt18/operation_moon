@@ -28,25 +28,12 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Form fields — strictly empty for first-time users.
-  // Populated only if the user previously signed in with 'Remember me'
-  const [identifier, setIdentifier] = useState(() => {
-    try {
-      return localStorage.getItem('pixelmoon_saved_identifier') || '';
-    } catch {
-      return '';
-    }
-  });
+  // Form fields — strictly empty
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
-  const [rememberMe, setRememberMe] = useState(() => {
-    try {
-      return !!localStorage.getItem('pixelmoon_saved_identifier');
-    } catch {
-      return false;
-    }
-  });
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Status & Feedback
   const [isLoading, setIsLoading] = useState(false);
@@ -70,26 +57,12 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState(null);
 
-  // On mount: Check Google Smart Lock / Credential Management API for returning users
+  // On mount: Ensure all previous user login data is cleared from storage
   useEffect(() => {
-    if (!identifier && navigator.credentials?.get && window.PasswordCredential) {
-      navigator.credentials
-        .get({
-          password: true,
-          mediation: 'optional',
-        })
-        .then((cred) => {
-          if (cred && cred.id) {
-            setIdentifier(cred.id);
-            if (cred.password) {
-              setPassword(cred.password);
-            }
-            setRememberMe(true);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [identifier]);
+    try {
+      localStorage.removeItem('pixelmoon_saved_identifier');
+    } catch {}
+  }, []);
 
   // Email / Password Authentication Handler
   const handleEmailSubmit = async (e) => {
@@ -266,17 +239,12 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     setGoogleLoading(true);
     try {
       const googleProfile = {
-        sub: '137411134',
-        name: 'Aditya Sasmal',
-        email: 'aditya.sasmal@gmail.com',
-        picture: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+        sub: 'usr_demo_' + Date.now(),
+        name: 'Google Explorer',
+        email: 'explorer@pixelmoon.space',
+        picture: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
       };
       const user = await completeGoogleSignIn(googleProfile);
-      if (user?.email) {
-        try {
-          localStorage.setItem('pixelmoon_saved_identifier', user.email);
-        } catch {}
-      }
       setShowGoogleConfigModal(false);
       setSuccessMessage(`Google authentication confirmed for ${user.name}!`);
       setTimeout(() => {
@@ -295,18 +263,13 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     setIsLoading(true);
     try {
       const ghProfile = {
-        id: '137411134',
-        login: 'adittt18',
-        name: 'Aditya Sasmal',
-        email: 'adittt18@users.noreply.github.com',
-        avatar_url: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+        id: 'usr_gh_' + Date.now(),
+        login: 'github_explorer',
+        name: 'GitHub Explorer',
+        email: 'explorer@users.noreply.github.com',
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
       };
       const user = await completeGitHubSignIn(ghProfile);
-      if (user?.username) {
-        try {
-          localStorage.setItem('pixelmoon_saved_identifier', user.username);
-        } catch {}
-      }
       setSuccessMessage(`GitHub account authenticated for @${user.username}!`);
       setTimeout(() => {
         if (onLoginSuccess) onLoginSuccess(user);
@@ -348,10 +311,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               />
             </div>
             <div className="login-brand-text-col">
-              <div className="login-brand-title">
-                <span className="login-brand-white">Pixel-</span>
-                <span className="login-brand-cyan">Moon</span>
-              </div>
+              <div className="login-brand-title">Pixel-Moon</div>
               <span className="login-brand-subtitle">Lunar Image Registration</span>
             </div>
           </div>
@@ -794,7 +754,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                 disabled={googleLoading}
                 style={{ width: '100%', padding: '10px 14px', justifyContent: 'center' }}
               >
-                Sign in with Google Account (Aditya Sasmal)
+                Instant 1-Click Google Verification
               </button>
             </div>
           </div>

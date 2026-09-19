@@ -34,12 +34,12 @@ async function getMasterPasswordHash() {
 }
 
 export const MASTER_USER = {
-  id: 'usr_aditya_18',
-  name: 'Aditya Sasmal',
-  email: 'aditya.sasmal@pixelmoon.space',
-  username: 'adittt18',
-  avatar: 'https://avatars.githubusercontent.com/u/137411134?v=4',
-  initials: 'AS',
+  id: 'usr_pixelmoon_admin',
+  name: 'Mission Controller',
+  email: 'admin@pixelmoon.space',
+  username: 'admin',
+  avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+  initials: 'MC',
   authProvider: 'email',
   twoFactorEnabled: true,
   encryptionMethod: 'AES-256-GCM',
@@ -123,9 +123,8 @@ export async function signInWithEmail(identifier, password, rememberMe = true) {
     targetSalt = found.salt;
     targetHash = found.passwordHash;
   } else if (
-    cleanId === 'adittt18' ||
-    cleanId === 'aditya.sasmal@pixelmoon.space' ||
-    cleanId === 'aditya'
+    cleanId === 'admin' ||
+    cleanId === 'admin@pixelmoon.space'
   ) {
     // Master account
     targetUser = MASTER_USER;
@@ -173,8 +172,8 @@ export async function signUpWithEmail(fullName, email, password, rememberMe = tr
 
   if (
     existing ||
-    cleanEmail === 'aditya.sasmal@pixelmoon.space' ||
-    username === 'adittt18'
+    cleanEmail === 'admin@pixelmoon.space' ||
+    username === 'admin'
   ) {
     throw new Error('An account with this email address or username already exists. Please sign in instead.');
   }

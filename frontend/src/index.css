@@ -2955,10 +2955,11 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 .login-brand-title {
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 19px;
+  font-family: 'Silkscreen', 'Press Start 2P', monospace;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   margin: 0;
@@ -2966,20 +2967,20 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 }
 
 .login-brand-white {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .login-brand-cyan {
-  color: #00d2ff;
+  color: #ffffff !important;
 }
 
 .login-brand-subtitle {
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 11px;
+  font-family: 'Silkscreen', 'Press Start 2P', monospace;
+  font-size: 10px;
   font-weight: 400;
-  color: #8ea5c8;
-  letter-spacing: 0.25px;
-  margin-top: 2px;
+  color: #8ea5c8 !important;
+  letter-spacing: 0.02em;
+  margin-top: 3px;
   white-space: nowrap;
 }
 
