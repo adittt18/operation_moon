@@ -13,13 +13,17 @@ import SettingsPage from './components/Settings';
 import UploadForm from './UploadForm';
 import ResultsPanel from './ResultsPanel';
 import MoonGlobe from './MoonGlobe';
+import LoginPage from './components/LoginPage';
 import { RegistrationLoadingModal } from './components/ChandrayaanLoader';
 import { playNotificationSound } from './audio';
 import { readJsonResponse } from './api';
+import { getCurrentUser, signOut as authSignOut } from './auth';
 import { DEMO_SITES, DEMO_SAMPLE_RESULTS } from './demoData';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
+  const [currentUser, setCurrentUser] = useState(() => getCurrentUser());
+  const [isGuestMode, setIsGuestMode] = useState(false);
   const [registrationResult, setRegistrationResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingType, setProcessingType] = useState(null); // 'sample' (Run Registration) | 'upload' (Execute Sub-Pixel Registration)
@@ -143,9 +147,48 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    const handleAuthChange = (e) => {
+      setCurrentUser(e.detail);
+    };
+    window.addEventListener('pixelmoon_auth_change', handleAuthChange);
+    return () => window.removeEventListener('pixelmoon_auth_change', handleAuthChange);
+  }, []);
+
   const handleGlobeSiteSelect = (site) => {
     if (site.sample_pair) handleSampleSelect(site.sample_pair);
   };
+
+  // If not authenticated and not in temporary guest preview mode, show the full-screen Login interface
+  if (!currentUser && !isGuestMode) {
+    return (
+      <LoginPage
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsGuestMode(false);
+          addNotification({
+            id: 'login-' + Date.now(),
+            title: 'Authenticated Session Active',
+            desc: `Welcome back, ${user.name}! 256-bit AES session verified.`,
+            time: 'Just now',
+            unread: true,
+            type: 'success',
+          });
+        }}
+        onExploreAsGuest={() => {
+          setIsGuestMode(true);
+          addNotification({
+            id: 'guest-' + Date.now(),
+            title: 'Guest Preview Active',
+            desc: 'Exploring Pixel-Moon workspace in Guest Mode.',
+            time: 'Just now',
+            unread: true,
+            type: 'satellite',
+          });
+        }}
+      />
+    );
+  }
 
   return (
     <div className="pixel-moon-app">
@@ -156,6 +199,16 @@ export default function App() {
           theme={theme}
           onToggleTheme={toggleTheme}
           apiOnline={apiOnline}
+          currentUser={currentUser}
+          onSignOut={() => {
+            authSignOut();
+            setCurrentUser(null);
+            setIsGuestMode(false);
+          }}
+          onOpenLogin={() => {
+            setIsGuestMode(false);
+            setCurrentUser(null);
+          }}
           notifications={notifications}
           onClearNotifications={() => setNotifications([])}
           onSelectNotification={(n) => {

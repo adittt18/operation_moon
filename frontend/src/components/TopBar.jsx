@@ -14,7 +14,10 @@ import {
   Radio,
   Compass,
   ChevronDown,
-  Users,
+  ExternalLink,
+  LogOut,
+  User,
+  ShieldCheck,
 } from 'lucide-react';
 
 const TEAM_MEMBERS = [
@@ -141,6 +144,9 @@ export default function TopBar({
   apiOnline,
   teamName = 'Team  CODE_CHAOS',
   initials = 'TC',
+  currentUser = null,
+  onSignOut,
+  onOpenLogin,
   notifications = [],
   onClearNotifications,
   onSelectNotification,
@@ -355,7 +361,7 @@ export default function TopBar({
           </span>
         </button>
 
-        {/* Team Chip with Clickable Dropdown */}
+        {/* User / Team Chip with Clickable Dropdown */}
         <div className="team-chip-container" ref={teamRef}>
           <button
             type="button"
@@ -363,15 +369,56 @@ export default function TopBar({
             onClick={() => setShowTeamDropdown((prev) => !prev)}
             aria-expanded={showTeamDropdown}
             aria-haspopup="true"
-            title="Team CODE_CHAOS Members"
+            title={currentUser ? `${currentUser.name} · ${currentUser.role}` : "Team CODE_CHAOS Members"}
           >
-            <span className="user-chip-avatar">{initials}</span>
-            <span className="name" style={{ whiteSpace: 'pre' }}>{teamName}</span>
+            {currentUser?.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                className="user-chip-avatar"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <span className="user-chip-avatar">{currentUser?.initials || initials}</span>
+            )}
+            <span className="name" style={{ whiteSpace: 'pre' }}>
+              {currentUser?.name || teamName}
+            </span>
             <ChevronDown className={`chev ${showTeamDropdown ? 'open' : ''}`} size={12} />
           </button>
 
           {showTeamDropdown && (
             <div className="team-members-popover glass-card page-fade" role="menu">
+              {currentUser && (
+                <div className="auth-user-dropdown-header">
+                  <div className="auth-user-dropdown-profile">
+                    {currentUser.avatar ? (
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser.name}
+                        className="auth-dropdown-avatar-img"
+                      />
+                    ) : (
+                      <span className="member-avatar-chip">{currentUser.initials || 'PM'}</span>
+                    )}
+                    <div className="auth-dropdown-text">
+                      <strong>{currentUser.name}</strong>
+                      <span>{currentUser.email}</span>
+                      <small className="auth-dropdown-role">{currentUser.role}</small>
+                    </div>
+                  </div>
+                  <div className="auth-dropdown-security-badge">
+                    <ShieldCheck size={13} color="#38bdf8" />
+                    <span>256-bit AES · 2FA Active</span>
+                  </div>
+                  <div className="auth-dropdown-divider" />
+                </div>
+              )}
+
+              <div className="team-members-title-bar">
+                <span>Team Members</span>
+              </div>
+
               <div className="team-members-list">
                 {TEAM_MEMBERS.map((m, idx) => (
                   <div
@@ -380,11 +427,37 @@ export default function TopBar({
                     role="menuitem"
                   >
                     <span className="member-avatar-chip">{m.initials}</span>
-                    <span className="member-name-text">
-                      {m.name}
-                    </span>
+                    <span className="member-name-text">{m.name}</span>
                   </div>
                 ))}
+              </div>
+
+              <div className="auth-dropdown-divider" />
+
+              <div className="auth-dropdown-footer-actions">
+                {currentUser ? (
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm auth-signout-btn"
+                    onClick={() => {
+                      setShowTeamDropdown(false);
+                      if (onSignOut) onSignOut();
+                    }}
+                  >
+                    <LogOut size={14} /> Sign Out / Switch Account
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm auth-signout-btn"
+                    onClick={() => {
+                      setShowTeamDropdown(false);
+                      if (onOpenLogin) onOpenLogin();
+                    }}
+                  >
+                    <User size={14} /> Sign In to Workspace
+                  </button>
+                )}
               </div>
             </div>
           )}
