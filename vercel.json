@@ -1,6 +1,7 @@
 {
   "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
+  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" = \"gh-pages\" ] || [ ! -f \"frontend/package.json\" ]; then exit 0; else exit 1; fi",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
