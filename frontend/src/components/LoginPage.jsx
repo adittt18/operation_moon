@@ -24,25 +24,6 @@ import {
   MASTER_USER,
 } from '../auth';
 
-const DEFAULT_GOOGLE_ACCOUNTS = [
-  {
-    id: 'usr_aditya_google',
-    name: 'ADITYA SASMAL',
-    email: 'liverocky38@gmail.com',
-    avatar: 'https://avatars.githubusercontent.com/u/137411134?v=4',
-    initials: 'AS',
-    sub: '137411134',
-  },
-  {
-    id: 'usr_rocky_google',
-    name: 'Rocky',
-    email: 'rawkeybhai0018@gmail.com',
-    avatar: null,
-    initials: 'R',
-    sub: 'usr_rocky_0018',
-  },
-];
-
 export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -72,13 +53,8 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // Authentic Google Identity Services & Account Chooser flow
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleStep, setGoogleStep] = useState('choose_account'); // 'choose_account' | 'consent' | 'custom_account'
-  const [selectedGoogleAccount, setSelectedGoogleAccount] = useState(DEFAULT_GOOGLE_ACCOUNTS[0]);
-  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
-  const [customGoogleName, setCustomGoogleName] = useState('');
-  const [customGoogleError, setCustomGoogleError] = useState('');
+  // Authentic Google Identity Services & OAuth 2.0 State
+  const [showGoogleConfigModal, setShowGoogleConfigModal] = useState(false);
   const [googleClientIdInput, setGoogleClientIdInput] = useState(() => {
     try {
       return localStorage.getItem('pixelmoon_google_client_id') || '';
@@ -191,128 +167,24 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     }
   };
 
-  // Trigger Google OAuth 2.0 popup using Google Identity Services (GIS)
-  const triggerGoogleOAuthFlow = (clientId) => {
-    if (!window.google?.accounts?.oauth2) {
-      setErrorMessage('Google Identity Services SDK is loading. Please check your network or retry.');
-      return;
-    }
-
-    try {
-      setGoogleLoading(true);
-      setErrorMessage(null);
-
-      const tokenClient = window.google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: 'openid email profile',
-        callback: async (tokenResponse) => {
-          if (tokenResponse.error) {
-            setErrorMessage(
-              `Google sign-in error: ${tokenResponse.error_description || tokenResponse.error}`
-            );
-            setGoogleLoading(false);
-            return;
-          }
-
-          try {
-            // Fetch authentic user profile from Google's UserInfo endpoint
-            const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-              headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-            });
-            if (!res.ok) throw new Error('Could not retrieve user profile from Google.');
-            const profile = await res.json();
-            const user = await completeGoogleSignIn(profile);
-            if (user?.email) {
-              try {
-                localStorage.setItem('pixelmoon_saved_identifier', user.email);
-              } catch {}
-            }
-            setShowGoogleConfigModal(false);
-            setSuccessMessage(`Google authentication verified for ${user.name}!`);
-            setTimeout(() => {
-              if (onLoginSuccess) onLoginSuccess(user);
-            }, 400);
-          } catch (err) {
-            setErrorMessage(err.message || 'Google account verification failed.');
-          } finally {
-            setGoogleLoading(false);
-          }
-        },
-        error_callback: (err) => {
-          setGoogleLoading(false);
-          setErrorMessage(err?.message || 'Google sign-in popup was canceled.');
-        },
-      });
-
-      // Opens the official Google Accounts login & 2-Step Verification popup window
-      tokenClient.requestAccessToken({ prompt: 'select_account' });
-    } catch (err) {
-      setGoogleLoading(false);
-      setErrorMessage(err.message || 'Failed to initialize Google Sign-In.');
-    }
-  };
-
-  const openGoogleAuth = () => {
-    setErrorMessage(null);
-    setGoogleStep('choose_account');
-    setSelectedGoogleAccount(DEFAULT_GOOGLE_ACCOUNTS[0]);
-    setShowGoogleModal(true);
-  };
-
-  const handleSelectGoogleAccount = (acc) => {
-    setSelectedGoogleAccount(acc);
-    setGoogleStep('consent');
-  };
-
-  const handleCustomGoogleSubmit = (e) => {
-    e?.preventDefault();
-    if (!customGoogleEmail || !customGoogleEmail.includes('@')) {
-      setCustomGoogleError('Please enter a valid Google email address.');
-      return;
-    }
-    const cleanEmail = customGoogleEmail.trim().toLowerCase();
-    const cleanName = customGoogleName.trim() || cleanEmail.split('@')[0];
-    const newAccount = {
-      id: 'usr_custom_' + Date.now(),
-      name: cleanName,
-      email: cleanEmail,
-      avatar: null,
-      initials: cleanName.slice(0, 2).toUpperCase(),
-      sub: 'usr_custom_sub_' + Date.now(),
-    };
-    setSelectedGoogleAccount(newAccount);
-    setCustomGoogleError('');
-    setGoogleStep('consent');
-  };
-
-  const handleConfirmGoogleSignIn = async () => {
-    if (!selectedGoogleAccount) return;
+  // Handle Google OAuth 2.0 Access Token
+  const handleGoogleAccessToken = async (accessToken) => {
     setGoogleLoading(true);
+    setErrorMessage(null);
     try {
-      const googleProfile = {
-        sub: selectedGoogleAccount.sub || ('usr_google_' + Date.now()),
-        name: selectedGoogleAccount.name,
-        email: selectedGoogleAccount.email,
-        picture: selectedGoogleAccount.avatar || undefined,
-      };
-      const user = await completeGoogleSignIn(googleProfile);
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) throw new Error('Could not retrieve user profile from Google.');
+      const profile = await res.json();
+      const user = await completeGoogleSignIn(profile);
       if (user?.email) {
         try {
           localStorage.setItem('pixelmoon_saved_identifier', user.email);
         } catch {}
       }
-      if (window.PasswordCredential && navigator.credentials?.store) {
-        try {
-          const cred = new window.PasswordCredential({
-            id: user.email,
-            name: user.name,
-            password: 'GoogleOAuth2_Verified_Session',
-          });
-          await navigator.credentials.store(cred);
-        } catch {}
-      }
-      setShowGoogleModal(false);
-      setSuccessMessage(`Google authentication verified for ${user.name}!`);
+      setShowGoogleConfigModal(false);
+      setSuccessMessage(`Google authentication confirmed for ${user.name}!`);
       setTimeout(() => {
         if (onLoginSuccess) onLoginSuccess(user);
       }, 400);
@@ -321,6 +193,93 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     } finally {
       setGoogleLoading(false);
     }
+  };
+
+  // Launch official Google Authentication Window (accounts.google.com)
+  const launchRealGoogleAuth = (clientId) => {
+    setGoogleLoading(true);
+    setErrorMessage(null);
+
+    // 1. First priority: Google Identity Services (GSI) official popup
+    if (window.google?.accounts?.oauth2) {
+      try {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'openid email profile',
+          callback: async (tokenResponse) => {
+            if (tokenResponse.error) {
+              setErrorMessage(
+                `Google sign-in error: ${tokenResponse.error_description || tokenResponse.error}`
+              );
+              setGoogleLoading(false);
+              return;
+            }
+            if (tokenResponse.access_token) {
+              await handleGoogleAccessToken(tokenResponse.access_token);
+            }
+          },
+          error_callback: (err) => {
+            setGoogleLoading(false);
+            setErrorMessage(err?.message || 'Google sign-in popup was closed.');
+          },
+        });
+
+        // Opens official Google Accounts page (accounts.google.com/v3/signin/accountchooser)
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
+        return;
+      } catch (err) {
+        console.warn('GSI token client initialization issue, falling back to direct OAuth 2.0 URL:', err);
+      }
+    }
+
+    // 2. Direct Official Google OAuth 2.0 redirect / popup
+    const redirectUri = window.location.origin;
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
+      clientId
+    )}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&response_type=token&scope=openid%20email%20profile&prompt=select_account`;
+
+    const popup = window.open(authUrl, 'GoogleSignInPopup', 'width=520,height=640,top=100,left=100');
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      // If popup blocked by browser, redirect current window to Google
+      window.location.href = authUrl;
+    } else {
+      setGoogleLoading(false);
+    }
+  };
+
+  const openGoogleAuth = () => {
+    setErrorMessage(null);
+    const configuredId =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      (() => {
+        try {
+          return localStorage.getItem('pixelmoon_google_client_id');
+        } catch {
+          return '';
+        }
+      })();
+
+    if (configuredId && configuredId.trim()) {
+      launchRealGoogleAuth(configuredId.trim());
+    } else {
+      setShowGoogleConfigModal(true);
+    }
+  };
+
+  const handleSaveGoogleClientIdAndLaunch = (e) => {
+    e?.preventDefault();
+    if (!googleClientIdInput || !googleClientIdInput.trim()) {
+      setErrorMessage('Please enter a valid Google OAuth Client ID.');
+      return;
+    }
+    const cleanId = googleClientIdInput.trim();
+    try {
+      localStorage.setItem('pixelmoon_google_client_id', cleanId);
+    } catch {}
+    setShowGoogleConfigModal(false);
+    launchRealGoogleAuth(cleanId);
   };
 
   // Direct authentic GitHub Sign-In
@@ -734,283 +693,108 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
       {/* ─────────────────────────────────────────────────────────────
        * GOOGLE ACCOUNT CHOOSER & CONSENT MODAL (Matches user screenshots)
        * ──────────────────────────────────────────────────────────── */}
-      {showGoogleModal && (
-        <div
-          className="google-auth-overlay page-fade"
-          onClick={() => !googleLoading && setShowGoogleModal(false)}
-        >
-          <div
-            className="google-auth-card"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="google-auth-title"
-          >
-            {/* Top Google branding header */}
-            <div className="google-auth-header">
-              <div className="google-auth-brand-badge">
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span className="google-auth-header-text">Sign in with Google</span>
-              </div>
-              <button
-                type="button"
-                className="google-auth-close-btn"
-                onClick={() => !googleLoading && setShowGoogleModal(false)}
-                aria-label="Close"
-                disabled={googleLoading}
-              >
-                <X size={18} />
-              </button>
+      {/* ─────────────────────────────────────────────────────────────
+       * REAL GOOGLE OAUTH 2.0 LAUNCH & CONFIGURATION MODAL
+       * Launches accounts.google.com (Official Google Identity Services)
+       * ──────────────────────────────────────────────────────────── */}
+      {showGoogleConfigModal && (
+        <div className="login-modal-backdrop page-fade" onClick={() => !googleLoading && setShowGoogleConfigModal(false)}>
+          <div className="google-auth-config-card glass-card" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="oauth-modal-close"
+              onClick={() => setShowGoogleConfigModal(false)}
+            >
+              <X size={18} />
+            </button>
+
+            {/* Google G Header */}
+            <div className="google-modal-header" style={{ textAlign: 'center', marginBottom: 16 }}>
+              <svg width="36" height="36" viewBox="0 0 24 24" style={{ marginBottom: 8 }}>
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <h3 style={{ color: '#ffffff', fontSize: 20, fontWeight: 700, margin: '0 0 6px' }}>
+                Official Google Authentication
+              </h3>
+              <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>
+                Direct integration with <code style={{ color: '#38bdf8' }}>accounts.google.com</code>
+              </p>
             </div>
 
-            {/* STEP 1: CHOOSE AN ACCOUNT */}
-            {googleStep === 'choose_account' && (
-              <div className="google-auth-body">
-                <div className="google-auth-col-left">
-                  <h1 id="google-auth-title" className="google-auth-heading">
-                    Choose an account
-                  </h1>
-                  <p className="google-auth-subtext">
-                    to continue to <span className="google-auth-app-highlight">Pixel-Moon</span>
-                  </p>
-                </div>
-
-                <div className="google-auth-col-right">
-                  <div className="google-accounts-list">
-                    {DEFAULT_GOOGLE_ACCOUNTS.map((acc) => (
-                      <React.Fragment key={acc.id}>
-                        <button
-                          type="button"
-                          className="google-account-row"
-                          onClick={() => handleSelectGoogleAccount(acc)}
-                        >
-                          <div className="google-account-avatar-wrap">
-                            {acc.avatar ? (
-                              <img
-                                src={acc.avatar}
-                                alt={acc.name}
-                                className="google-account-img"
-                              />
-                            ) : (
-                              <div className="google-account-purple-circle">
-                                {acc.initials || 'R'}
-                              </div>
-                            )}
-                          </div>
-                          <div className="google-account-info">
-                            <div className="google-account-name">{acc.name}</div>
-                            <div className="google-account-email">{acc.email}</div>
-                          </div>
-                        </button>
-                        <div className="google-account-divider" />
-                      </React.Fragment>
-                    ))}
-
-                    <button
-                      type="button"
-                      className="google-account-row"
-                      onClick={() => setGoogleStep('custom_account')}
-                    >
-                      <div className="google-account-avatar-wrap">
-                        <div className="google-account-icon-circle">
-                          <User size={18} />
-                        </div>
-                      </div>
-                      <div className="google-account-info">
-                        <div className="google-account-name" style={{ fontWeight: 400 }}>
-                          Use another account
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
+            <div className="google-config-body" style={{ marginTop: 16 }}>
+              <div
+                style={{
+                  background: 'rgba(14, 165, 233, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: 10,
+                  padding: '12px 14px',
+                  marginBottom: 16,
+                  fontSize: 12.5,
+                  color: '#cbd5e1',
+                  lineHeight: 1.5,
+                }}
+              >
+                Google’s authentic login page requires your <strong>Google OAuth 2.0 Client ID</strong> from Google Cloud Console.
               </div>
-            )}
 
-            {/* STEP 1b: USE ANOTHER ACCOUNT (Custom Account Form) */}
-            {googleStep === 'custom_account' && (
-              <div className="google-auth-body">
-                <div className="google-auth-col-left">
-                  <h1 id="google-auth-title" className="google-auth-heading">
-                    Sign in
-                  </h1>
-                  <p className="google-auth-subtext">
-                    to continue to <span className="google-auth-app-highlight">Pixel-Moon</span>
-                  </p>
+              <form onSubmit={handleSaveGoogleClientIdAndLaunch}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+                  <label style={{ fontSize: 12, color: '#94a3b8' }}>
+                    Google OAuth Client ID:
+                  </label>
+                  <input
+                    type="text"
+                    className="login-input"
+                    placeholder="e.g. 123456789-xyz.apps.googleusercontent.com"
+                    value={googleClientIdInput}
+                    onChange={(e) => setGoogleClientIdInput(e.target.value)}
+                    style={{ width: '100%', boxSizing: 'border-box' }}
+                    required
+                  />
+                  <small style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                    Authorized Origin: {typeof window !== 'undefined' ? window.location.origin : 'https://frontend-tawny-gamma-66.vercel.app'}
+                  </small>
                 </div>
 
-                <div className="google-auth-col-right">
-                  <form onSubmit={handleCustomGoogleSubmit} className="google-custom-form">
-                    {customGoogleError && (
-                      <div className="google-custom-error">{customGoogleError}</div>
-                    )}
-                    <div className="google-custom-field">
-                      <label className="google-field-label">Email or phone</label>
-                      <input
-                        type="email"
-                        className="google-custom-input"
-                        placeholder="name@gmail.com"
-                        value={customGoogleEmail}
-                        onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                        autoFocus
-                        required
-                      />
-                    </div>
-
-                    <div className="google-custom-field" style={{ marginTop: 14 }}>
-                      <label className="google-field-label">Full Name (optional)</label>
-                      <input
-                        type="text"
-                        className="google-custom-input"
-                        placeholder="e.g. Explorer Name"
-                        value={customGoogleName}
-                        onChange={(e) => setCustomGoogleName(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="google-custom-actions">
-                      <button
-                        type="button"
-                        className="google-btn-cancel"
-                        onClick={() => setGoogleStep('choose_account')}
-                      >
-                        Back
-                      </button>
-                      <button type="submit" className="google-btn-continue">
-                        Next
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2: CONSENT & AUTHORIZATION */}
-            {googleStep === 'consent' && selectedGoogleAccount && (
-              <div className="google-auth-body">
-                <div className="google-auth-col-left">
-                  <h1 id="google-auth-title" className="google-auth-heading">
-                    Sign in to Pixel-Moon
-                  </h1>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 18 }}>
                   <button
                     type="button"
-                    className="google-account-pill"
-                    onClick={() => setGoogleStep('choose_account')}
-                    title="Switch account"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setShowGoogleConfigModal(false)}
+                    disabled={googleLoading}
                   >
-                    <div className="google-pill-avatar-wrap">
-                      {selectedGoogleAccount.avatar ? (
-                        <img
-                          src={selectedGoogleAccount.avatar}
-                          alt={selectedGoogleAccount.name}
-                          className="google-pill-avatar-img"
-                        />
-                      ) : (
-                        <div className="google-pill-purple-circle">
-                          {selectedGoogleAccount.initials || 'R'}
-                        </div>
-                      )}
-                    </div>
-                    <span className="google-pill-email">{selectedGoogleAccount.email}</span>
-                    <span className="google-pill-caret">▾</span>
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-sm"
+                    disabled={googleLoading}
+                  >
+                    {googleLoading ? (
+                      <>
+                        <Activity className="spin-icon" size={15} /> Opening accounts.google.com...
+                      </>
+                    ) : (
+                      'Open accounts.google.com →'
+                    )}
                   </button>
                 </div>
-
-                <div className="google-auth-col-right">
-                  <div className="google-consent-intro">
-                    Google will allow <strong className="google-auth-app-highlight">Pixel-Moon</strong> to access this info about you
-                  </div>
-
-                  <div className="google-permissions-box">
-                    <div className="google-permission-row">
-                      <div className="google-permission-icon-circle">
-                        <User size={18} />
-                      </div>
-                      <div className="google-permission-info">
-                        <div className="google-permission-name">{selectedGoogleAccount.name}</div>
-                        <div className="google-permission-sub">Name and profile picture</div>
-                      </div>
-                    </div>
-
-                    <div className="google-permission-row">
-                      <div className="google-permission-icon-circle">
-                        <Mail size={18} />
-                      </div>
-                      <div className="google-permission-info">
-                        <div className="google-permission-name">{selectedGoogleAccount.email}</div>
-                        <div className="google-permission-sub">Email address</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="google-consent-legal">
-                    <p>
-                      Review Pixel-Moon's privacy policy and Terms of Service to understand how Pixel-Moon will process and protect your data.
-                    </p>
-                    <p>
-                      To make changes at any time, go to your <span className="google-link-blue">Google Account</span>.
-                    </p>
-                    <p>
-                      Learn more about <span className="google-link-blue">Sign in with Google</span>.
-                    </p>
-                  </div>
-
-                  <div className="google-consent-actions">
-                    <button
-                      type="button"
-                      className="google-btn-cancel"
-                      onClick={() => setShowGoogleModal(false)}
-                      disabled={googleLoading}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="google-btn-continue"
-                      onClick={handleConfirmGoogleSignIn}
-                      disabled={googleLoading}
-                    >
-                      {googleLoading ? (
-                        <span className="google-btn-loading">
-                          <Activity size={15} className="spin-icon" /> Continuing...
-                        </span>
-                      ) : (
-                        'Continue'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Google dialog footer */}
-            <div className="google-auth-footer">
-              <div className="google-footer-left">
-                <span>English (United Kingdom)</span>
-                <span style={{ fontSize: 10, marginLeft: 4 }}>▼</span>
-              </div>
-              <div className="google-footer-right">
-                <span>Help</span>
-                <span>Privacy</span>
-                <span>Terms</span>
-              </div>
+              </form>
             </div>
           </div>
         </div>
