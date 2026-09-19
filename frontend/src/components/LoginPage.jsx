@@ -51,6 +51,40 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   });
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Forgot password modal
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState(null);
+
+  // Email / Password Authentication Handler
+  const handleEmailSubmit = async (e) => {
+    e?.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsLoading(true);
+
+    try {
+      if (isRegisterMode) {
+        const user = await signUpWithEmail(fullName, regEmail, password, rememberMe);
+        setSuccessMessage(`Account created successfully for ${user.name}!`);
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(user);
+        }, 400);
+      } else {
+        const user = await signInWithEmail(identifier, password, rememberMe);
+        setSuccessMessage(`Welcome back, ${user.name}!`);
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(user);
+        }, 400);
+      }
+    } catch (err) {
+      setErrorMessage(err.message || 'Authentication error. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Trigger Google OAuth 2.0 popup using Google Identity Services (GIS)
   const triggerGoogleOAuthFlow = (clientId) => {
     if (!window.google?.accounts?.oauth2) {
