@@ -2891,7 +2891,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  background: #00040a url('/login_cosmic_bg.jpg') no-repeat center center / cover;
+  background: linear-gradient(rgba(0, 2, 8, 0.68), rgba(0, 2, 8, 0.84)), #00040a url('/login_cosmic_bg.jpg') no-repeat center center / cover;
   color: #ffffff;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -2909,7 +2909,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
   justify-content: space-between;
   z-index: 30;
-  background: rgba(3, 10, 24, 0.75);
+  background: rgba(3, 10, 24, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -2936,8 +2936,9 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   user-select: none;
 }
 
+/* Light Navy Blue for 2nd pic (CODE_CHAOS) */
 .login-topbar-team {
-  color: #00d2ff;
+  color: #6ba3eb;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -2989,7 +2990,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .login-ecg-icon {
   width: 22px;
   height: 12px;
-  stroke: #00d2ff;
+  stroke: #6ba3eb;
   margin-left: 2px;
 }
 
@@ -3034,30 +3035,13 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   z-index: 10;
 }
 
-/* Left Hero Section */
+/* Left Hero Section (Floating moon orb removed) */
 .login-hero-side {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 22px;
   padding-left: 12px;
-}
-
-/* Lunar Sphere without glow halo */
-.login-moon-sphere-container {
-  position: relative;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 4px;
-}
-
-.login-moon-sphere-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  box-shadow: none; /* NO glow */
 }
 
 .login-hero-typography {
@@ -3106,6 +3090,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   margin: 0;
 }
 
+/* Signature in Light Navy Blue (Matching 2nd pic) */
 .login-hero-signature {
   display: flex;
   align-items: center;
@@ -3116,16 +3101,29 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .login-sig-line {
   width: 36px;
   height: 2px;
-  background: #00d2ff;
+  background: #6ba3eb;
   box-shadow: none; /* NO glow */
 }
 
 .login-sig-text {
-  color: #00d2ff;
+  color: #6ba3eb;
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.04em;
   text-shadow: none; /* NO glow */
+}
+
+/* Exact Brand styling matching 4th pic (Dark Mode UI) */
+.brand-prefix {
+  color: #bfe0fb;
+  font-weight: 700;
+}
+
+.brand-suffix {
+  background: linear-gradient(90deg, #60a5fa 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
 }
 
 /* Right Auth Card */
@@ -3139,7 +3137,7 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .login-auth-card {
   width: 100%;
   max-width: 470px;
-  background: rgba(6, 18, 38, 0.82);
+  background: rgba(6, 18, 38, 0.86);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(2, 132, 199, 0.45);
@@ -3172,12 +3170,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 
 .login-card-title-prefix {
   color: #ffffff;
-}
-
-.login-brand-cyan {
-  color: #00d2ff;
-  font-weight: 700;
-  text-shadow: none; /* NO glow - matching dark mode UI */
 }
 
 .login-card-subtitle {
@@ -3668,3 +3660,322 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   gap: 8px;
   font-size: 12px;
 }
+
+/* =============================================================================
+ * GOOGLE 2-STEP VERIFICATION & GITHUB OAUTH MODALS
+ * ============================================================================= */
+
+.google-auth-card,
+.github-auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: #08162c;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 16px;
+  padding: 28px 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+}
+
+.oauth-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.oauth-modal-close:hover {
+  color: #ffffff;
+}
+
+.google-modal-header,
+.github-modal-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.google-modal-header svg,
+.github-modal-header svg {
+  margin-bottom: 8px;
+}
+
+.google-modal-header h3,
+.github-modal-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.google-modal-header p,
+.github-modal-header p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.google-accounts-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.google-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.google-account-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(4, 14, 30, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.google-account-row:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: #38bdf8;
+}
+
+.google-avatar-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.google-generic-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-account-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.google-account-text strong {
+  font-size: 13.5px;
+  color: #ffffff;
+}
+
+.google-account-text span {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.google-2fa-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  margin-bottom: 16px;
+}
+
+.google-2fa-icon {
+  color: #38bdf8;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.google-2fa-info h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.google-2fa-info p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.google-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.google-input-wrap label {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.google-text-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(4, 14, 30, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.google-prompt-box {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(3, 10, 24, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  margin-bottom: 14px;
+}
+
+.google-prompt-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.google-prompt-sub {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.google-code-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.google-code-icon {
+  position: absolute;
+  left: 14px;
+  color: #38bdf8;
+}
+
+.google-code-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background: rgba(4, 14, 30, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  outline: none;
+}
+
+.google-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.github-user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(4, 14, 30, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  margin-bottom: 16px;
+}
+
+.github-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.github-user-info strong {
+  display: block;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.github-user-info span {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.github-permissions-box {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(3, 10, 24, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  margin-bottom: 16px;
+}
+
+.github-perm-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.github-permissions-box ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.github-permissions-box li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.github-2fa-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #6ba3eb;
+  margin-bottom: 20px;
+}
+
+.github-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+

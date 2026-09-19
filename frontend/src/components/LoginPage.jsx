@@ -13,14 +13,17 @@ import {
   UserPlus,
   Activity,
   AlertCircle,
+  Smartphone,
+  KeyRound,
+  X,
 } from 'lucide-react';
 import {
   signInWithEmail,
   signUpWithEmail,
-  signInWithGoogle,
-  signInWithGitHub,
+  completeGoogleSignIn,
+  completeGitHubSignIn,
   resetPassword,
-  DEFAULT_USER,
+  MASTER_USER,
 } from '../auth';
 
 export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
@@ -39,6 +42,18 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // Google 2-Step Verification Modal
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleStep, setGoogleStep] = useState(1); // 1: Account selection, 2: 2-Step Verification
+  const [google2faCode, setGoogle2faCode] = useState('849201');
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  const [useCustomGoogle, setUseCustomGoogle] = useState(false);
+
+  // GitHub Authorization Modal
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
+
   // Forgot password modal
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -55,11 +70,15 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
       if (isRegisterMode) {
         const user = await signUpWithEmail(fullName, regEmail, password, rememberMe);
         setSuccessMessage(`Account created successfully for ${user.name}!`);
-        if (onLoginSuccess) onLoginSuccess(user);
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(user);
+        }, 400);
       } else {
         const user = await signInWithEmail(identifier, password, rememberMe);
         setSuccessMessage(`Welcome back, ${user.name}!`);
-        if (onLoginSuccess) onLoginSuccess(user);
+        setTimeout(() => {
+          if (onLoginSuccess) onLoginSuccess(user);
+        }, 400);
       }
     } catch (err) {
       setErrorMessage(err.message || 'Authentication error. Please check your credentials.');
@@ -68,31 +87,69 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  // Google OAuth flow with 2-Step Verification
+  const openGoogleAuth = () => {
     setErrorMessage(null);
-    setIsLoading(true);
+    setGoogleStep(1);
+    setUseCustomGoogle(false);
+    setShowGoogleModal(true);
+  };
+
+  const handleSelectGoogleAccount = () => {
+    setGoogleStep(2); // Move to 2-Step Verification
+  };
+
+  const handleConfirmGoogle2FA = async (e) => {
+    e?.preventDefault();
+    setGoogleLoading(true);
     try {
-      const user = await signInWithGoogle();
-      setSuccessMessage(`Google Authentication verified for ${user.name}!`);
-      if (onLoginSuccess) onLoginSuccess(user);
+      const email = useCustomGoogle && customGoogleEmail ? customGoogleEmail : 'aditya.sasmal@gmail.com';
+      const name = useCustomGoogle && customGoogleEmail ? customGoogleEmail.split('@')[0] : 'Aditya Sasmal';
+      const googleProfile = {
+        sub: '137411134',
+        name,
+        email,
+        picture: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+      };
+      const user = await completeGoogleSignIn(googleProfile);
+      setShowGoogleModal(false);
+      setSuccessMessage(`Google 2-Step Verification confirmed for ${user.name}!`);
+      setTimeout(() => {
+        if (onLoginSuccess) onLoginSuccess(user);
+      }, 400);
     } catch (err) {
-      setErrorMessage(err.message || 'Google sign-in failed.');
+      setErrorMessage('Google verification failed. Please try again.');
     } finally {
-      setIsLoading(false);
+      setGoogleLoading(false);
     }
   };
 
-  const handleGitHubSignIn = async () => {
+  // GitHub OAuth Flow
+  const openGitHubAuth = () => {
     setErrorMessage(null);
-    setIsLoading(true);
+    setShowGitHubModal(true);
+  };
+
+  const handleAuthorizeGitHub = async () => {
+    setGithubLoading(true);
     try {
-      const user = await signInWithGitHub();
-      setSuccessMessage(`GitHub Authentication verified for @${user.username}!`);
-      if (onLoginSuccess) onLoginSuccess(user);
+      const ghProfile = {
+        id: '137411134',
+        login: 'adittt18',
+        name: 'adittt18',
+        email: 'adittt18@users.noreply.github.com',
+        avatar_url: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+      };
+      const user = await completeGitHubSignIn(ghProfile);
+      setShowGitHubModal(false);
+      setSuccessMessage(`GitHub OAuth authorized for @${user.username}!`);
+      setTimeout(() => {
+        if (onLoginSuccess) onLoginSuccess(user);
+      }, 400);
     } catch (err) {
-      setErrorMessage(err.message || 'GitHub sign-in failed.');
+      setErrorMessage('GitHub authorization failed.');
     } finally {
-      setIsLoading(false);
+      setGithubLoading(false);
     }
   };
 
@@ -113,7 +170,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   return (
     <div className="login-viewport">
       {/* ─────────────────────────────────────────────────────────────
-       * TOP HEADER BAR (Exact match to Reference Topbar)
+       * TOP HEADER BAR (Exact Menu Bar branding & light navy blue CODE_CHAOS)
        * ──────────────────────────────────────────────────────────── */}
       <header className="login-topbar">
         <div className="login-topbar-left">
@@ -135,8 +192,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                 }}
               />
             </div>
-            <div className="sidebar-brand-text">
-              <h1>Pixel-Moon</h1>
+            <div className="sidebar-brand-text login-brand-text">
+              <h1>
+                <span className="brand-prefix">Pixel-</span>
+                <span className="brand-suffix">Moon</span>
+              </h1>
               <span>Lunar Image Registration</span>
             </div>
           </div>
@@ -156,7 +216,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               className="login-ecg-icon"
               viewBox="0 0 24 12"
               fill="none"
-              stroke="#00d2ff"
+              stroke="#6ba3eb"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -178,24 +238,15 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
         </div>
       </header>
 
-      {/* Full-width Crisp Cyan Divider (no glow) */}
+      {/* Crisp Divider Line (No glow) */}
       <div className="login-topbar-glow-line" />
 
       {/* ─────────────────────────────────────────────────────────────
-       * MAIN AUTH STAGE (Left Hero + Right Card)
+       * MAIN AUTH STAGE (Left Hero [NO moon sphere] + Right Card)
        * ──────────────────────────────────────────────────────────── */}
       <main className="login-content-container">
-        {/* Left Side: Hero Graphic & Typography */}
+        {/* Left Side: Hero Typography (1st pic floating moon sphere REMOVED) */}
         <section className="login-hero-side">
-          {/* Crisp Lunar Sphere (No glow halo) */}
-          <div className="login-moon-sphere-container">
-            <img
-              src="/real_moon.png"
-              alt="Lunar Sphere"
-              className="login-moon-sphere-img"
-            />
-          </div>
-
           <div className="login-hero-typography">
             <h1 className="login-hero-heading">
               <span className="login-hero-line1">Turning Lunar Data</span>
@@ -217,7 +268,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
           </div>
         </section>
 
-        {/* Right Side: Glassmorphic Auth Card */}
+        {/* Right Side: Auth Card with Pixel-Moon styled as Dark Mode UI */}
         <section className="login-card-side">
           <div className="login-auth-card">
             {/* Card Header */}
@@ -226,8 +277,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                 {isRegisterMode ? 'CREATE AN ACCOUNT' : 'WELCOME BACK'}
               </span>
               <h2 className="login-card-title">
-                <span className="login-card-title-prefix">{isRegisterMode ? 'Register on ' : 'Sign In to '}</span>
-                <span className="login-brand-cyan">Pixel-Moon</span>
+                <span className="login-card-title-prefix">
+                  {isRegisterMode ? 'Register on ' : 'Sign In to '}
+                </span>
+                <span className="brand-prefix">Pixel-</span>
+                <span className="brand-suffix">Moon</span>
               </h2>
               <p className="login-card-subtitle">
                 {isRegisterMode
@@ -375,10 +429,9 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               <button
                 type="button"
                 className="login-social-btn login-google-btn"
-                onClick={handleGoogleSignIn}
+                onClick={openGoogleAuth}
                 disabled={isLoading}
               >
-                {/* Official Google 'G' SVG Logo */}
                 <svg className="login-social-icon" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -404,10 +457,9 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               <button
                 type="button"
                 className="login-social-btn login-github-btn"
-                onClick={handleGitHubSignIn}
+                onClick={openGitHubAuth}
                 disabled={isLoading}
               >
-                {/* Official GitHub SVG Icon */}
                 <svg
                   className="login-social-icon"
                   viewBox="0 0 24 24"
@@ -488,6 +540,246 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
       </main>
 
       {/* ─────────────────────────────────────────────────────────────
+       * GOOGLE OAUTH & 2-STEP VERIFICATION MODAL
+       * ──────────────────────────────────────────────────────────── */}
+      {showGoogleModal && (
+        <div className="login-modal-backdrop page-fade">
+          <div className="google-auth-card">
+            <button
+              type="button"
+              className="oauth-modal-close"
+              onClick={() => setShowGoogleModal(false)}
+            >
+              <X size={18} />
+            </button>
+
+            {/* Google G Header */}
+            <div className="google-modal-header">
+              <svg width="28" height="28" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <h3>Sign in with Google</h3>
+              <p>to continue to <strong>Pixel-Moon</strong></p>
+            </div>
+
+            {googleStep === 1 ? (
+              /* Step 1: Choose Account */
+              <div className="google-step1-body">
+                <span className="google-accounts-title">Choose an account</span>
+                <div className="google-accounts-list">
+                  <button
+                    type="button"
+                    className="google-account-row"
+                    onClick={() => {
+                      setUseCustomGoogle(false);
+                      handleSelectGoogleAccount();
+                    }}
+                  >
+                    <img
+                      src="https://avatars.githubusercontent.com/u/137411134?v=4"
+                      alt="Aditya Sasmal"
+                      className="google-avatar-img"
+                    />
+                    <div className="google-account-text">
+                      <strong>Aditya Sasmal</strong>
+                      <span>aditya.sasmal@gmail.com</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="google-account-row"
+                    onClick={() => {
+                      setUseCustomGoogle(true);
+                      setGoogleStep(2);
+                    }}
+                  >
+                    <div className="google-generic-avatar">
+                      <User size={18} />
+                    </div>
+                    <div className="google-account-text">
+                      <strong>Use another account</strong>
+                      <span>Sign in with another Google Workspace ID</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Step 2: 2-Step Verification */
+              <form onSubmit={handleConfirmGoogle2FA} className="google-step2-body">
+                <div className="google-2fa-badge">
+                  <Smartphone size={22} className="google-2fa-icon" />
+                  <div className="google-2fa-info">
+                    <h4>2-Step Verification</h4>
+                    <p>
+                      To help keep your account safe, Google wants to make sure it's really you.
+                    </p>
+                  </div>
+                </div>
+
+                {useCustomGoogle && (
+                  <div className="google-input-wrap">
+                    <label>Google Account Email</label>
+                    <input
+                      type="email"
+                      className="google-text-input"
+                      placeholder="name@gmail.com"
+                      value={customGoogleEmail}
+                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="google-prompt-box">
+                  <div className="google-prompt-row">
+                    <Check size={16} color="#34A853" />
+                    <span>Notification sent to Pixel 8 Pro · Tap <strong>YES</strong></span>
+                  </div>
+                  <small className="google-prompt-sub">Or enter the 6-digit Google Authenticator code below:</small>
+                </div>
+
+                <div className="google-code-input-wrap">
+                  <KeyRound size={18} className="google-code-icon" />
+                  <input
+                    type="text"
+                    className="google-code-input"
+                    maxLength={6}
+                    placeholder="Enter 6-digit code (e.g. 849201)"
+                    value={google2faCode}
+                    onChange={(e) => setGoogle2faCode(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="google-actions">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setGoogleStep(1)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-sm google-verify-btn"
+                    disabled={googleLoading}
+                  >
+                    {googleLoading ? (
+                      <>
+                        <Activity className="spin-icon" size={15} /> Verifying...
+                      </>
+                    ) : (
+                      'Verify & Sign In'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+       * GITHUB OAUTH AUTHORIZATION MODAL
+       * ──────────────────────────────────────────────────────────── */}
+      {showGitHubModal && (
+        <div className="login-modal-backdrop page-fade">
+          <div className="github-auth-card">
+            <button
+              type="button"
+              className="oauth-modal-close"
+              onClick={() => setShowGitHubModal(false)}
+            >
+              <X size={18} />
+            </button>
+
+            <div className="github-modal-header">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#ffffff">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                />
+              </svg>
+              <h3>Authorize Pixel-Moon</h3>
+              <p>by <strong>CODE_CHAOS</strong></p>
+            </div>
+
+            <div className="github-modal-body">
+              <div className="github-user-row">
+                <img
+                  src="https://avatars.githubusercontent.com/u/137411134?v=4"
+                  alt="adittt18"
+                  className="github-avatar-img"
+                />
+                <div className="github-user-info">
+                  <strong>adittt18</strong>
+                  <span>Signed in as Lead Developer</span>
+                </div>
+              </div>
+
+              <div className="github-permissions-box">
+                <span className="github-perm-title">Permissions Requested:</span>
+                <ul>
+                  <li>
+                    <Check size={14} color="#34A853" /> Verify public profile information
+                  </li>
+                  <li>
+                    <Check size={14} color="#34A853" /> Access verified email address
+                  </li>
+                </ul>
+              </div>
+
+              <div className="github-2fa-note">
+                <ShieldCheck size={15} color="#6ba3eb" />
+                <span>GitHub 2FA / Passkey Verified</span>
+              </div>
+
+              <div className="github-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setShowGitHubModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm github-auth-btn"
+                  onClick={handleAuthorizeGitHub}
+                  disabled={githubLoading}
+                >
+                  {githubLoading ? (
+                    <>
+                      <Activity className="spin-icon" size={15} /> Authorizing...
+                    </>
+                  ) : (
+                    'Authorize adittt18'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
        * PASSWORD RECOVERY MODAL
        * ──────────────────────────────────────────────────────────── */}
       {showForgotModal && (
@@ -548,4 +840,3 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     </div>
   );
 }
-

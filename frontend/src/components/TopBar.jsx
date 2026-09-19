@@ -403,8 +403,6 @@ export default function TopBar({
                     )}
                     <div className="auth-dropdown-text">
                       <strong>{currentUser.name}</strong>
-                      <span>{currentUser.email}</span>
-                      <small className="auth-dropdown-role">{currentUser.role}</small>
                     </div>
                   </div>
                   <div className="auth-dropdown-security-badge">

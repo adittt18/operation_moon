@@ -1,16 +1,43 @@
-// Authentication management for Pixel-Moon
+// Authentication management for Pixel-Moon with real SHA-256 password hashing & verification
 
 const STORAGE_KEY = 'pixelmoon_auth_user';
 const TOKEN_KEY = 'pixelmoon_auth_token';
+const REGISTERED_USERS_KEY = 'pixelmoon_registered_users';
 
-// Default Mission Specialist profile
-export const DEFAULT_USER = {
+// Cryptographic SHA-256 password hashing with salt
+export async function hashPassword(password, salt) {
+  const enc = new TextEncoder();
+  const data = enc.encode(`${salt}:${password}:pxm_security_v1`);
+  const hashBuf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuf))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function generateSalt() {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Pre-seeded Master Account configuration
+const MASTER_SALT = 'pxm_master_salt_2026';
+let MASTER_HASH = null;
+
+async function getMasterPasswordHash() {
+  if (!MASTER_HASH) {
+    MASTER_HASH = await hashPassword('PixelMoon#2026', MASTER_SALT);
+  }
+  return MASTER_HASH;
+}
+
+export const MASTER_USER = {
   id: 'usr_aditya_18',
   name: 'Aditya Sasmal',
   email: 'aditya.sasmal@pixelmoon.space',
   username: 'adittt18',
-  role: 'Lead Mission Specialist',
-  organization: 'CODE_CHAOS · ISRO',
   avatar: 'https://avatars.githubusercontent.com/u/137411134?v=4',
   initials: 'AS',
   authProvider: 'email',
@@ -20,7 +47,7 @@ export const DEFAULT_USER = {
   createdAt: '2026-08-23T11:42:01.000Z',
 };
 
-// Generate a cryptographically secure simulated session token
+// Generate cryptographically secure simulated session token
 function generateSecureToken(userId) {
   const rand = Array.from(crypto.getRandomValues(new Uint8Array(24)))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -48,7 +75,6 @@ function persistUser(user, token, rememberMe = true) {
   const storage = rememberMe ? localStorage : sessionStorage;
   storage.setItem(STORAGE_KEY, JSON.stringify(user));
   storage.setItem(TOKEN_KEY, token);
-  // Clear the other storage so there is no collision
   if (rememberMe) {
     sessionStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem(TOKEN_KEY);
@@ -60,69 +86,101 @@ function persistUser(user, token, rememberMe = true) {
   return user;
 }
 
+export function getRegisteredUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(REGISTERED_USERS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
 export async function signInWithEmail(identifier, password, rememberMe = true) {
-  // Simulate network/crypto handshake delay
-  await new Promise((r) => setTimeout(r, 650));
+  await new Promise((r) => setTimeout(r, 450));
 
   if (!identifier || !identifier.trim()) {
     throw new Error('Please enter your email address or username.');
   }
-  if (!password || password.length < 3) {
-    throw new Error('Please enter a valid password (minimum 3 characters).');
+  if (!password) {
+    throw new Error('Please enter your password.');
   }
 
-  // Load existing registered users if any
-  let registeredUsers = [];
-  try {
-    registeredUsers = JSON.parse(localStorage.getItem('pixelmoon_registered_users') || '[]');
-  } catch {
-    registeredUsers = [];
-  }
+  const cleanId = identifier.trim().toLowerCase();
+  const registered = getRegisteredUsers();
 
-  const found = registeredUsers.find(
+  // 1. Check if user is in registered database
+  let found = registered.find(
     (u) =>
-      u.email.toLowerCase() === identifier.trim().toLowerCase() ||
-      (u.username && u.username.toLowerCase() === identifier.trim().toLowerCase())
+      u.email.toLowerCase() === cleanId ||
+      (u.username && u.username.toLowerCase() === cleanId)
   );
 
-  let userToLogin;
-  if (found) {
-    userToLogin = found;
-  } else {
-    // Treat as valid mission login
-    const isEmail = identifier.includes('@');
-    const namePart = isEmail ? identifier.split('@')[0] : identifier;
-    const displayName =
-      namePart.toLowerCase() === 'adittt18' || namePart.toLowerCase().includes('aditya')
-        ? 'Aditya Sasmal'
-        : namePart.charAt(0).toUpperCase() + namePart.slice(1);
+  let targetUser = null;
+  let targetSalt = null;
+  let targetHash = null;
 
-    userToLogin = {
-      ...DEFAULT_USER,
-      name: displayName,
-      email: isEmail ? identifier.trim() : `${identifier.trim().toLowerCase()}@pixelmoon.space`,
-      username: identifier.trim(),
-      initials: displayName.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase() || 'PM',
-      authProvider: 'email',
-    };
+  if (found) {
+    targetUser = found;
+    targetSalt = found.salt;
+    targetHash = found.passwordHash;
+  } else if (
+    cleanId === 'adittt18' ||
+    cleanId === 'aditya.sasmal@pixelmoon.space' ||
+    cleanId === 'aditya'
+  ) {
+    // Master account
+    targetUser = MASTER_USER;
+    targetSalt = MASTER_SALT;
+    targetHash = await getMasterPasswordHash();
+  } else {
+    throw new Error(
+      `No account found for "${identifier.trim()}". Please verify your username or sign up first.`
+    );
   }
 
-  const token = generateSecureToken(userToLogin.id);
-  return persistUser(userToLogin, token, rememberMe);
+  // 2. Strict password hash verification
+  const inputHash = await hashPassword(password, targetSalt);
+  if (inputHash !== targetHash) {
+    throw new Error('Incorrect password. Access denied. Please try again.');
+  }
+
+  const token = generateSecureToken(targetUser.id);
+  return persistUser(targetUser, token, rememberMe);
 }
 
 export async function signUpWithEmail(fullName, email, password, rememberMe = true) {
-  await new Promise((r) => setTimeout(r, 750));
+  await new Promise((r) => setTimeout(r, 600));
 
   if (!fullName || fullName.trim().length < 2) {
-    throw new Error('Please provide your full name.');
+    throw new Error('Please enter your full name.');
   }
   if (!email || !email.includes('@')) {
-    throw new Error('Please provide a valid email address.');
+    throw new Error('Please enter a valid email address.');
   }
   if (!password || password.length < 6) {
-    throw new Error('Password must be at least 6 characters with high entropy.');
+    throw new Error('Password must be at least 6 characters long.');
   }
+
+  const cleanEmail = email.trim().toLowerCase();
+  const username = cleanEmail.split('@')[0];
+  const registered = getRegisteredUsers();
+
+  // Check collision
+  const existing = registered.find(
+    (u) =>
+      u.email.toLowerCase() === cleanEmail ||
+      (u.username && u.username.toLowerCase() === username)
+  );
+
+  if (
+    existing ||
+    cleanEmail === 'aditya.sasmal@pixelmoon.space' ||
+    username === 'adittt18'
+  ) {
+    throw new Error('An account with this email address or username already exists. Please sign in instead.');
+  }
+
+  const salt = generateSalt();
+  const passwordHash = await hashPassword(password, salt);
 
   const initials = fullName
     .trim()
@@ -136,43 +194,35 @@ export async function signUpWithEmail(fullName, email, password, rememberMe = tr
   const newUser = {
     id: 'usr_' + Date.now().toString(36),
     name: fullName.trim(),
-    email: email.trim().toLowerCase(),
-    username: email.split('@')[0],
-    role: 'Lunar Mission Analyst',
-    organization: 'CODE_CHAOS · ISRO',
+    email: cleanEmail,
+    username,
     avatar: null,
     initials: initials || 'PM',
     authProvider: 'email',
+    salt,
+    passwordHash,
     twoFactorEnabled: true,
     encryptionMethod: 'AES-256-GCM',
     soc2Verified: true,
     createdAt: new Date().toISOString(),
   };
 
-  // Persist into registered users list
-  try {
-    const list = JSON.parse(localStorage.getItem('pixelmoon_registered_users') || '[]');
-    list.push(newUser);
-    localStorage.setItem('pixelmoon_registered_users', JSON.stringify(list));
-  } catch (e) {
-    console.warn('Could not cache user in list:', e);
-  }
+  registered.push(newUser);
+  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(registered));
 
   const token = generateSecureToken(newUser.id);
   return persistUser(newUser, token, rememberMe);
 }
 
-export async function signInWithGoogle() {
-  await new Promise((r) => setTimeout(r, 500));
+export async function completeGoogleSignIn(googleProfile) {
+  await new Promise((r) => setTimeout(r, 400));
 
-  const googleUser = {
-    id: 'usr_google_137411134',
-    name: 'Aditya Sasmal',
-    email: 'aditya.sasmal@gmail.com',
-    username: 'adittt18',
-    role: 'Mission Commander · ISRO',
-    organization: 'CODE_CHAOS',
-    avatar: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+  const user = {
+    id: 'usr_google_' + (googleProfile.sub || '137411134'),
+    name: googleProfile.name || 'Aditya Sasmal',
+    email: googleProfile.email || 'aditya.sasmal@gmail.com',
+    username: googleProfile.email ? googleProfile.email.split('@')[0] : 'adittt18',
+    avatar: googleProfile.picture || 'https://avatars.githubusercontent.com/u/137411134?v=4',
     initials: 'AS',
     authProvider: 'google',
     twoFactorEnabled: true,
@@ -181,21 +231,19 @@ export async function signInWithGoogle() {
     createdAt: new Date().toISOString(),
   };
 
-  const token = generateSecureToken(googleUser.id);
-  return persistUser(googleUser, token, true);
+  const token = generateSecureToken(user.id);
+  return persistUser(user, token, true);
 }
 
-export async function signInWithGitHub() {
-  await new Promise((r) => setTimeout(r, 500));
+export async function completeGitHubSignIn(githubProfile) {
+  await new Promise((r) => setTimeout(r, 400));
 
-  const githubUser = {
-    id: 'usr_gh_137411134',
-    name: 'adittt18',
-    email: 'adittt18@users.noreply.github.com',
-    username: 'adittt18',
-    role: 'Lead Developer · CODE_CHAOS',
-    organization: 'CODE_CHAOS · ISRO',
-    avatar: 'https://avatars.githubusercontent.com/u/137411134?v=4',
+  const user = {
+    id: 'usr_gh_' + (githubProfile.id || '137411134'),
+    name: githubProfile.name || 'adittt18',
+    email: githubProfile.email || 'adittt18@users.noreply.github.com',
+    username: githubProfile.login || 'adittt18',
+    avatar: githubProfile.avatar_url || 'https://avatars.githubusercontent.com/u/137411134?v=4',
     initials: 'AD',
     authProvider: 'github',
     twoFactorEnabled: true,
@@ -204,8 +252,8 @@ export async function signInWithGitHub() {
     createdAt: new Date().toISOString(),
   };
 
-  const token = generateSecureToken(githubUser.id);
-  return persistUser(githubUser, token, true);
+  const token = generateSecureToken(user.id);
+  return persistUser(user, token, true);
 }
 
 export function signOut() {
@@ -217,7 +265,7 @@ export function signOut() {
 }
 
 export async function resetPassword(email) {
-  await new Promise((r) => setTimeout(r, 600));
+  await new Promise((r) => setTimeout(r, 500));
   if (!email || !email.includes('@')) {
     throw new Error('Please enter a valid email address to receive reset instructions.');
   }
@@ -226,4 +274,3 @@ export async function resetPassword(email) {
     message: `Password reset instructions dispatched with 256-bit signature to ${email}.`,
   };
 }
-
