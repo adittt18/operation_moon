@@ -2919,7 +2919,24 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   align-items: center;
 }
 
-/* Exact match to Menu Bar (.sidebar-brand) */
+/* Exact match to Menu Bar & Image 1 (media_1789822327232.png) */
+.login-brand-exact-wrap {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.login-brand-exact-img {
+  height: 44px;
+  width: auto;
+  max-width: 175px;
+  object-fit: contain;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+}
+
 .login-sidebar-brand-match {
   display: flex;
   align-items: center;
@@ -3578,34 +3595,170 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   margin-top: 8px;
 }
 
-/* Responsive layout */
+/* =========================================================================
+   Responsive layout for Login & Auth Viewport
+   Supports:
+   - Desktop Mode on Mobile / Tablets (961px - 1200px)
+   - Standard Mobile / Tablet Portrait (< 960px)
+   - Smartphone Touch & Notch Comfort (< 600px)
+   ========================================================================= */
+
+/* Desktop site mode on mobile & tablets */
+@media (min-width: 961px) and (max-width: 1200px) {
+  .login-content-container {
+    grid-template-columns: 1fr 1.05fr;
+    padding: 28px 24px 36px;
+    gap: 24px;
+    max-width: 100%;
+  }
+  .login-topbar {
+    padding: 0 24px;
+  }
+  .login-auth-card {
+    max-width: 440px;
+    padding: 28px 24px 22px;
+  }
+  .login-hero-heading {
+    font-size: clamp(28px, 3.2vw, 36px);
+  }
+}
+
+/* Standard Mobile & Tablet Stacking Mode */
 @media (max-width: 960px) {
+  .login-viewport {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .login-topbar {
+    height: 60px;
+    padding: 0 16px;
+  }
+  .login-brand-exact-img {
+    height: 38px;
+    max-width: 155px;
+  }
+  .login-topbar-team {
+    font-size: 10px;
+  }
+  .login-topbar-sep {
+    margin: 0 8px;
+  }
   .login-content-container {
     grid-template-columns: 1fr;
-    padding: 24px 20px 40px;
-    gap: 28px;
+    padding: 20px 16px 40px;
+    gap: 20px;
+    max-width: 520px;
+    margin: 0 auto;
   }
   .login-hero-side {
     align-items: center;
     text-align: center;
     padding-left: 0;
+    gap: 12px;
+  }
+  .login-hero-heading {
+    font-size: clamp(24px, 5.5vw, 30px);
+    line-height: 1.2;
   }
   .login-hero-description {
-    max-width: 100%;
+    max-width: 440px;
+    font-size: 13.5px;
+    line-height: 1.5;
   }
   .login-card-side {
     align-items: center;
+    width: 100%;
   }
   .login-auth-card {
     max-width: 100%;
-    padding: 24px 20px 20px;
+    width: 100%;
+    padding: 24px 18px 20px;
   }
+}
+
+/* Mobile Phone Display (< 600px) */
+@media (max-width: 600px) {
   .login-topbar {
-    padding: 0 16px;
+    height: 56px;
+    padding: 0 12px;
   }
+  .login-topbar-right {
+    gap: 8px;
+  }
+  .login-status-pill {
+    padding: 4px 9px;
+  }
+  .login-status-label {
+    font-size: 10.5px;
+  }
+  .login-status-ver,
+  .login-ecg-icon {
+    display: none;
+  }
+  .login-guest-btn {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+  .login-auth-card {
+    padding: 20px 14px 16px;
+    border-radius: 18px;
+  }
+  .login-card-title {
+    font-size: 20px;
+  }
+  .login-card-subtitle {
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  /* Prevent iOS zoom on focus with 16px base font size */
+  .login-input {
+    font-size: 16px !important;
+    height: 46px;
+  }
+  .login-submit-btn,
+  .login-social-btn {
+    height: 46px;
+    font-size: 13.5px;
+  }
+  /* Clean 2x2 grid for security badges on mobile phones */
+  .login-security-strip {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 6px;
+    padding: 12px 4px;
+  }
+  .login-sec-sep {
+    display: none;
+  }
+  .login-sec-label {
+    font-size: 10px;
+  }
+  .login-sec-sub {
+    font-size: 9px;
+  }
+  .login-security-footer {
+    font-size: 9.5px;
+    margin-top: 10px;
+  }
+  .login-footer-nav {
+    font-size: 12.5px;
+  }
+}
+
+/* Extra Compact Phones (< 400px) */
+@media (max-width: 400px) {
   .login-topbar-team,
   .login-topbar-sep {
     display: none;
+  }
+  .login-brand-exact-img {
+    height: 34px;
+    max-width: 140px;
+  }
+  .login-content-container {
+    padding: 14px 10px 32px;
+  }
+  .login-auth-card {
+    padding: 16px 12px 14px;
   }
 }
 

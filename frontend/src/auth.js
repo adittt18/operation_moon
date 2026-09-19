@@ -217,13 +217,17 @@ export async function signUpWithEmail(fullName, email, password, rememberMe = tr
 export async function completeGoogleSignIn(googleProfile) {
   await new Promise((r) => setTimeout(r, 400));
 
+  const email = googleProfile.email || '';
+  const name = googleProfile.name || (email ? email.split('@')[0] : 'Explorer');
+  const username = email ? email.split('@')[0] : 'google_user';
+
   const user = {
-    id: 'usr_google_' + (googleProfile.sub || '137411134'),
-    name: googleProfile.name || 'Aditya Sasmal',
-    email: googleProfile.email || 'aditya.sasmal@gmail.com',
-    username: googleProfile.email ? googleProfile.email.split('@')[0] : 'adittt18',
+    id: 'usr_google_' + (googleProfile.sub || Math.random().toString(36).slice(2, 10)),
+    name: name,
+    email: email,
+    username: username,
     avatar: googleProfile.picture || 'https://avatars.githubusercontent.com/u/137411134?v=4',
-    initials: 'AS',
+    initials: name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'PM',
     authProvider: 'google',
     twoFactorEnabled: true,
     encryptionMethod: 'AES-256-GCM',
@@ -238,13 +242,17 @@ export async function completeGoogleSignIn(googleProfile) {
 export async function completeGitHubSignIn(githubProfile) {
   await new Promise((r) => setTimeout(r, 400));
 
+  const username = githubProfile.login || 'developer';
+  const name = githubProfile.name || username;
+  const email = githubProfile.email || `${username}@users.noreply.github.com`;
+
   const user = {
-    id: 'usr_gh_' + (githubProfile.id || '137411134'),
-    name: githubProfile.name || 'adittt18',
-    email: githubProfile.email || 'adittt18@users.noreply.github.com',
-    username: githubProfile.login || 'adittt18',
+    id: 'usr_gh_' + (githubProfile.id || Math.random().toString(36).slice(2, 10)),
+    name: name,
+    email: email,
+    username: username,
     avatar: githubProfile.avatar_url || 'https://avatars.githubusercontent.com/u/137411134?v=4',
-    initials: 'AD',
+    initials: name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'GH',
     authProvider: 'github',
     twoFactorEnabled: true,
     encryptionMethod: 'AES-256-GCM',

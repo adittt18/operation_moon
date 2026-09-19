@@ -27,13 +27,26 @@ import {
 export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
 
-  // Form fields
-  const [identifier, setIdentifier] = useState('adittt18');
-  const [password, setPassword] = useState('PixelMoon#2026');
-  const [fullName, setFullName] = useState('Aditya Sasmal');
+  // Form fields — strictly empty for first-time users.
+  // Populated only if the user previously signed in with 'Remember me'
+  const [identifier, setIdentifier] = useState(() => {
+    try {
+      return localStorage.getItem('pixelmoon_saved_identifier') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
+  const [rememberMe, setRememberMe] = useState(() => {
+    try {
+      return !!localStorage.getItem('pixelmoon_saved_identifier');
+    } catch {
+      return false;
+    }
+  });
 
   // Status & Feedback
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +70,27 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState(null);
 
+  // On mount: Check Google Smart Lock / Credential Management API for returning users
+  useEffect(() => {
+    if (!identifier && navigator.credentials?.get && window.PasswordCredential) {
+      navigator.credentials
+        .get({
+          password: true,
+          mediation: 'optional',
+        })
+        .then((cred) => {
+          if (cred && cred.id) {
+            setIdentifier(cred.id);
+            if (cred.password) {
+              setPassword(cred.password);
+            }
+            setRememberMe(true);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [identifier]);
+
   // Email / Password Authentication Handler
   const handleEmailSubmit = async (e) => {
     e?.preventDefault();
@@ -67,12 +101,60 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     try {
       if (isRegisterMode) {
         const user = await signUpWithEmail(fullName, regEmail, password, rememberMe);
+        
+        // Save identifier for returning visit if Remember Me checked
+        if (rememberMe) {
+          try {
+            localStorage.setItem('pixelmoon_saved_identifier', (regEmail || fullName).trim());
+          } catch {}
+        }
+
+        // Save to Google Password Manager via W3C Credential Management API
+        if (window.PasswordCredential && navigator.credentials?.store) {
+          try {
+            const cred = new window.PasswordCredential({
+              id: (regEmail || fullName).trim(),
+              password: password,
+              name: fullName.trim(),
+            });
+            await navigator.credentials.store(cred);
+          } catch (cErr) {
+            console.debug('Credential store event:', cErr);
+          }
+        }
+
         setSuccessMessage(`Account created successfully for ${user.name}!`);
         setTimeout(() => {
           if (onLoginSuccess) onLoginSuccess(user);
         }, 400);
       } else {
         const user = await signInWithEmail(identifier, password, rememberMe);
+        
+        // Save identifier for returning visit if Remember Me checked
+        if (rememberMe) {
+          try {
+            localStorage.setItem('pixelmoon_saved_identifier', identifier.trim());
+          } catch {}
+        } else {
+          try {
+            localStorage.removeItem('pixelmoon_saved_identifier');
+          } catch {}
+        }
+
+        // Save to Google Password Manager via W3C Credential Management API
+        if (window.PasswordCredential && navigator.credentials?.store) {
+          try {
+            const cred = new window.PasswordCredential({
+              id: identifier.trim(),
+              password: password,
+              name: user.name || identifier.trim(),
+            });
+            await navigator.credentials.store(cred);
+          } catch (cErr) {
+            console.debug('Credential store event:', cErr);
+          }
+        }
+
         setSuccessMessage(`Welcome back, ${user.name}!`);
         setTimeout(() => {
           if (onLoginSuccess) onLoginSuccess(user);
@@ -116,6 +198,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
             if (!res.ok) throw new Error('Could not retrieve user profile from Google.');
             const profile = await res.json();
             const user = await completeGoogleSignIn(profile);
+            if (user?.email) {
+              try {
+                localStorage.setItem('pixelmoon_saved_identifier', user.email);
+              } catch {}
+            }
             setShowGoogleConfigModal(false);
             setSuccessMessage(`Google authentication verified for ${user.name}!`);
             setTimeout(() => {
@@ -185,6 +272,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
         picture: 'https://avatars.githubusercontent.com/u/137411134?v=4',
       };
       const user = await completeGoogleSignIn(googleProfile);
+      if (user?.email) {
+        try {
+          localStorage.setItem('pixelmoon_saved_identifier', user.email);
+        } catch {}
+      }
       setShowGoogleConfigModal(false);
       setSuccessMessage(`Google authentication confirmed for ${user.name}!`);
       setTimeout(() => {
@@ -210,6 +302,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
         avatar_url: 'https://avatars.githubusercontent.com/u/137411134?v=4',
       };
       const user = await completeGitHubSignIn(ghProfile);
+      if (user?.username) {
+        try {
+          localStorage.setItem('pixelmoon_saved_identifier', user.username);
+        } catch {}
+      }
       setSuccessMessage(`GitHub account authenticated for @${user.username}!`);
       setTimeout(() => {
         if (onLoginSuccess) onLoginSuccess(user);
@@ -242,28 +339,12 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
        * ──────────────────────────────────────────────────────────── */}
       <header className="login-topbar">
         <div className="login-topbar-left">
-          <div className="sidebar-brand login-sidebar-brand-match">
-            <div className="sidebar-brand-logo">
-              <img
-                src="/moon_brand_logo.png"
-                alt="Pixel-Moon"
-                style={{
-                  width: 44,
-                  height: 44,
-                  maxWidth: 44,
-                  maxHeight: 44,
-                  objectFit: 'contain',
-                  display: 'block',
-                  flexShrink: 0,
-                  borderRadius: '50%',
-                  filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45))',
-                }}
-              />
-            </div>
-            <div className="sidebar-brand-text">
-              <h1 className="login-brand-pixel-title">Pixel-Moon</h1>
-              <span className="login-brand-pixel-sub">Lunar Image Registration</span>
-            </div>
+          <div className="login-brand-exact-wrap">
+            <img
+              src="/login_brand_exact.png"
+              alt="Pixel-Moon — Lunar Image Registration"
+              className="login-brand-exact-img"
+            />
           </div>
           <span className="login-topbar-sep">|</span>
           <span className="login-topbar-team">CODE_CHAOS</span>
@@ -365,13 +446,15 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
             )}
 
             {/* Form */}
-            <form onSubmit={handleEmailSubmit} className="login-form">
+            <form onSubmit={handleEmailSubmit} className="login-form" method="post" autoComplete="on">
               {isRegisterMode && (
                 <div className="login-input-group">
                   <div className="login-input-wrapper">
                     <User className="login-input-icon" size={17} />
                     <input
                       type="text"
+                      name="name"
+                      id="login-fullname"
                       className="login-input"
                       placeholder="Full Name"
                       value={fullName}
@@ -389,6 +472,8 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                   <Mail className="login-input-icon" size={17} />
                   <input
                     type={isRegisterMode ? 'email' : 'text'}
+                    name="username"
+                    id="login-username"
                     className="login-input"
                     placeholder={
                       isRegisterMode ? 'Work Email Address' : 'Email Address or Username'
@@ -411,6 +496,8 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                   <Lock className="login-input-icon" size={17} />
                   <input
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    id="login-password"
                     className="login-input"
                     placeholder="Password"
                     value={password}
