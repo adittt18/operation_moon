@@ -117,19 +117,28 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
        * ──────────────────────────────────────────────────────────── */}
       <header className="login-topbar">
         <div className="login-topbar-left">
-          <div className="login-brand-logo-wrap">
-            <img
-              src="/moon_brand_logo.png"
-              alt="Moon Brand Logo"
-              className="login-moon-logo-img"
-              onError={(e) => {
-                e.target.src = '/real_moon.png';
-              }}
-            />
-          </div>
-          <div className="login-brand-titles">
-            <span className="login-brand-title">Pixel-Moon</span>
-            <span className="login-brand-subtitle">Lunar Image Registration</span>
+          <div className="sidebar-brand login-sidebar-brand-match">
+            <div className="sidebar-brand-logo">
+              <img
+                src="/moon_brand_logo.png"
+                alt="Pixel-Moon"
+                style={{
+                  width: 44,
+                  height: 44,
+                  maxWidth: 44,
+                  maxHeight: 44,
+                  objectFit: 'contain',
+                  display: 'block',
+                  flexShrink: 0,
+                  borderRadius: '50%',
+                  filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45))',
+                }}
+              />
+            </div>
+            <div className="sidebar-brand-text">
+              <h1>Pixel-Moon</h1>
+              <span>Lunar Image Registration</span>
+            </div>
           </div>
           <span className="login-topbar-sep">|</span>
           <span className="login-topbar-team">CODE_CHAOS</span>
@@ -147,7 +156,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               className="login-ecg-icon"
               viewBox="0 0 24 12"
               fill="none"
-              stroke="#38bdf8"
+              stroke="#00d2ff"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -169,7 +178,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
         </div>
       </header>
 
-      {/* Full-width Glowing Cyan Divider */}
+      {/* Full-width Crisp Cyan Divider (no glow) */}
       <div className="login-topbar-glow-line" />
 
       {/* ─────────────────────────────────────────────────────────────
@@ -178,12 +187,11 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
       <main className="login-content-container">
         {/* Left Side: Hero Graphic & Typography */}
         <section className="login-hero-side">
-          {/* Glowing 3D Moon Sphere */}
+          {/* Crisp Lunar Sphere (No glow halo) */}
           <div className="login-moon-sphere-container">
-            <div className="login-moon-sphere-glow" />
             <img
               src="/real_moon.png"
-              alt="Glowing Moon"
+              alt="Lunar Sphere"
               className="login-moon-sphere-img"
             />
           </div>
@@ -191,7 +199,10 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
           <div className="login-hero-typography">
             <h1 className="login-hero-heading">
               <span className="login-hero-line1">Turning Lunar Data</span>
-              <span className="login-hero-line2">Into Deeper Insights</span>
+              <span className="login-hero-line2">
+                <span className="login-hero-white">Into Deeper </span>
+                <span className="login-hero-cyan">Insights</span>
+              </span>
             </h1>
             <p className="login-hero-description">
               Secure access to advanced lunar image registration
@@ -208,14 +219,14 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
 
         {/* Right Side: Glassmorphic Auth Card */}
         <section className="login-card-side">
-          <div className="login-auth-card glass-card">
+          <div className="login-auth-card">
             {/* Card Header */}
             <div className="login-card-header">
               <span className="login-card-eyebrow">
                 {isRegisterMode ? 'CREATE AN ACCOUNT' : 'WELCOME BACK'}
               </span>
               <h2 className="login-card-title">
-                {isRegisterMode ? 'Register on ' : 'Sign In to '}
+                <span className="login-card-title-prefix">{isRegisterMode ? 'Register on ' : 'Sign In to '}</span>
                 <span className="login-brand-cyan">Pixel-Moon</span>
               </h2>
               <p className="login-card-subtitle">
@@ -537,3 +548,4 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     </div>
   );
 }
+

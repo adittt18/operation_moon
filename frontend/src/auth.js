@@ -226,3 +226,4 @@ export async function resetPassword(email) {
     message: `Password reset instructions dispatched with 256-bit signature to ${email}.`,
   };
 }
+
