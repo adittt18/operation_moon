@@ -2930,18 +2930,39 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 
 .login-topbar-sep {
   color: rgba(255, 255, 255, 0.28);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 300;
-  margin: 0 16px;
+  margin: 0 14px;
   user-select: none;
 }
 
-/* Light Navy Blue for 2nd pic (CODE_CHAOS) */
+/* Light Navy Blue for CODE_CHAOS (reduced size) */
 .login-topbar-team {
   color: #6ba3eb;
-  font-size: 15px;
+  font-family: 'Silkscreen', 'Press Start 2P', monospace;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+}
+
+/* Brand styling strictly matching 1st pic (media_1789822327232.png) */
+.login-brand-pixel-title {
+  font-family: 'Silkscreen', 'Press Start 2P', monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff !important;
+  letter-spacing: 0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.login-brand-pixel-sub {
+  font-family: 'Silkscreen', 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #8ea5c8 !important;
+  letter-spacing: 0.02em;
+  display: block;
+  margin-top: 3px;
 }
 
 .login-topbar-right {

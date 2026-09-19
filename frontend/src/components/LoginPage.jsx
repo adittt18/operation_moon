@@ -245,26 +245,24 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
           <div className="sidebar-brand login-sidebar-brand-match">
             <div className="sidebar-brand-logo">
               <img
-                src="/real_moon.png"
+                src="/moon_brand_logo.png"
                 alt="Pixel-Moon"
                 style={{
-                  width: 40,
-                  height: 40,
-                  maxWidth: 40,
-                  maxHeight: 40,
-                  objectFit: 'cover',
+                  width: 44,
+                  height: 44,
+                  maxWidth: 44,
+                  maxHeight: 44,
+                  objectFit: 'contain',
                   display: 'block',
                   flexShrink: 0,
                   borderRadius: '50%',
+                  filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45))',
                 }}
               />
             </div>
-            <div className="sidebar-brand-text login-brand-text">
-              <h1>
-                <span className="brand-prefix">Pixel-</span>
-                <span className="brand-suffix">Moon</span>
-              </h1>
-              <span>Lunar Image Registration</span>
+            <div className="sidebar-brand-text">
+              <h1 className="login-brand-pixel-title">Pixel-Moon</h1>
+              <span className="login-brand-pixel-sub">Lunar Image Registration</span>
             </div>
           </div>
           <span className="login-topbar-sep">|</span>
