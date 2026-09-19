@@ -25,31 +25,17 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Form fields — strictly empty for first-time users.
-  // Populated only if the user previously signed in with 'Remember me'
-  const [identifier, setIdentifier] = useState(() => {
-    try {
-      return localStorage.getItem('pixelmoon_saved_identifier') || '';
-    } catch {
-      return '';
-    }
-  });
+  // Form fields — strictly empty. Never pre-fill or cache personal email.
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
-  const [rememberMe, setRememberMe] = useState(() => {
-    try {
-      return !!localStorage.getItem('pixelmoon_saved_identifier');
-    } catch {
-      return false;
-    }
-  });
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Status & Feedback
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
 
   // Forgot password modal
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -57,26 +43,16 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState(null);
 
-  // On mount: Check Google Smart Lock / Credential Management API for returning users
+  // On mount: Clean any stored/cached email so fields stay 100% blank
   useEffect(() => {
-    if (!identifier && navigator.credentials?.get && window.PasswordCredential) {
-      navigator.credentials
-        .get({
-          password: true,
-          mediation: 'optional',
-        })
-        .then((cred) => {
-          if (cred && cred.id) {
-            setIdentifier(cred.id);
-            if (cred.password) {
-              setPassword(cred.password);
-            }
-            setRememberMe(true);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [identifier]);
+    try {
+      localStorage.removeItem('pixelmoon_saved_identifier');
+      sessionStorage.removeItem('pixelmoon_saved_identifier');
+    } catch {}
+    setIdentifier('');
+    setPassword('');
+    setRememberMe(false);
+  }, []);
 
   // Email / Password Authentication Handler
   const handleEmailSubmit = async (e) => {
@@ -88,60 +64,12 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
     try {
       if (isRegisterMode) {
         const user = await signUpWithEmail(fullName, regEmail, password, rememberMe);
-        
-        // Save identifier for returning visit if Remember Me checked
-        if (rememberMe) {
-          try {
-            localStorage.setItem('pixelmoon_saved_identifier', (regEmail || fullName).trim());
-          } catch {}
-        }
-
-        // Save to Google Password Manager via W3C Credential Management API
-        if (window.PasswordCredential && navigator.credentials?.store) {
-          try {
-            const cred = new window.PasswordCredential({
-              id: (regEmail || fullName).trim(),
-              password: password,
-              name: fullName.trim(),
-            });
-            await navigator.credentials.store(cred);
-          } catch (cErr) {
-            console.debug('Credential store event:', cErr);
-          }
-        }
-
         setSuccessMessage(`Account created successfully for ${user.name}!`);
         setTimeout(() => {
           if (onLoginSuccess) onLoginSuccess(user);
         }, 400);
       } else {
         const user = await signInWithEmail(identifier, password, rememberMe);
-        
-        // Save identifier for returning visit if Remember Me checked
-        if (rememberMe) {
-          try {
-            localStorage.setItem('pixelmoon_saved_identifier', identifier.trim());
-          } catch {}
-        } else {
-          try {
-            localStorage.removeItem('pixelmoon_saved_identifier');
-          } catch {}
-        }
-
-        // Save to Google Password Manager via W3C Credential Management API
-        if (window.PasswordCredential && navigator.credentials?.store) {
-          try {
-            const cred = new window.PasswordCredential({
-              id: identifier.trim(),
-              password: password,
-              name: user.name || identifier.trim(),
-            });
-            await navigator.credentials.store(cred);
-          } catch (cErr) {
-            console.debug('Credential store event:', cErr);
-          }
-        }
-
         setSuccessMessage(`Welcome back, ${user.name}!`);
         setTimeout(() => {
           if (onLoginSuccess) onLoginSuccess(user);
@@ -291,21 +219,21 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
             )}
 
             {/* Form */}
-            <form onSubmit={handleEmailSubmit} className="login-form" method="post" autoComplete="on">
+            <form onSubmit={handleEmailSubmit} className="login-form" method="post" autoComplete="off">
               {isRegisterMode && (
                 <div className="login-input-group">
                   <div className="login-input-wrapper">
                     <User className="login-input-icon" size={17} />
                     <input
                       type="text"
-                      name="name"
+                      name="user_fullname"
                       id="login-fullname"
                       className="login-input"
                       placeholder="Full Name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
-                      autoComplete="name"
+                      autoComplete="off"
                     />
                   </div>
                 </div>
@@ -317,7 +245,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                   <Mail className="login-input-icon" size={17} />
                   <input
                     type={isRegisterMode ? 'email' : 'text'}
-                    name="username"
+                    name="user_login_identity"
                     id="login-username"
                     className="login-input"
                     placeholder={
@@ -330,7 +258,7 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                         : setIdentifier(e.target.value)
                     }
                     required
-                    autoComplete={isRegisterMode ? 'email' : 'username'}
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -341,14 +269,14 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                   <Lock className="login-input-icon" size={17} />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    name="password"
+                    name="user_login_credential"
                     id="login-password"
                     className="login-input"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"

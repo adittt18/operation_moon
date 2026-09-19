@@ -3701,17 +3701,23 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   }
 }
 
-/* Mobile Phone Display (< 600px) */
-@media (max-width: 600px) {
+/* Mobile Phone Display (< 640px) */
+@media (max-width: 640px) {
+  .login-viewport {
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    width: 100%;
+  }
   .login-topbar {
-    height: 56px;
+    height: 54px;
     padding: 0 12px;
   }
   .login-topbar-right {
     gap: 8px;
   }
   .login-status-pill {
-    padding: 4px 9px;
+    padding: 3px 8px;
   }
   .login-status-label {
     font-size: 10.5px;
@@ -3724,32 +3730,101 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
     padding: 5px 9px;
     font-size: 11px;
   }
+  .login-content-container {
+    padding: 12px 12px 24px;
+    gap: 12px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+  .login-hero-side {
+    padding: 0;
+    gap: 4px;
+    margin-bottom: 2px;
+    align-items: center;
+    text-align: center;
+  }
+  .login-hero-heading {
+    font-size: 19px;
+    line-height: 1.25;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+  .login-hero-line1 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #94a3b8;
+  }
+  .login-hero-line2 {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .login-hero-description {
+    display: none; /* Keeps phone screen compact and focuses directly on the login card */
+  }
+  .login-card-side {
+    width: 100%;
+    align-items: center;
+  }
   .login-auth-card {
-    padding: 20px 14px 16px;
-    border-radius: 18px;
+    padding: 18px 16px 16px;
+    border-radius: 14px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .login-card-header {
+    margin-bottom: 14px;
+  }
+  .login-card-eyebrow {
+    font-size: 10px;
+    margin-bottom: 4px;
   }
   .login-card-title {
-    font-size: 20px;
+    font-size: 21px;
+    margin: 0 0 4px;
   }
   .login-card-subtitle {
     font-size: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    line-height: 1.35;
+  }
+  .login-input-group {
+    margin-bottom: 12px;
   }
   /* Prevent iOS zoom on focus with 16px base font size */
   .login-input {
     font-size: 16px !important;
-    height: 46px;
+    height: 44px;
+    padding: 10px 38px;
+    border-radius: 8px;
   }
-  .login-submit-btn,
-  .login-social-btn {
-    height: 46px;
-    font-size: 13.5px;
+  .login-input-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+  .login-password-toggle {
+    right: 10px;
+  }
+  .login-submit-btn {
+    height: 44px;
+    font-size: 14px;
+  }
+  .login-options-row {
+    margin-bottom: 14px;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   /* Clean 2x2 grid for security badges on mobile phones */
   .login-security-strip {
     grid-template-columns: 1fr 1fr;
-    gap: 12px 6px;
-    padding: 12px 4px;
+    gap: 8px 6px;
+    padding: 10px 4px 6px;
   }
   .login-sec-sep {
     display: none;
@@ -3761,11 +3836,15 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
     font-size: 9px;
   }
   .login-security-footer {
-    font-size: 9.5px;
+    font-size: 9px;
+    margin-top: 8px;
+  }
+  .login-switch-container {
     margin-top: 10px;
   }
-  .login-footer-nav {
+  .login-switch-btn {
     font-size: 12.5px;
+    padding: 6px 10px;
   }
 }
 
@@ -3777,20 +3856,27 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   }
   .login-brand-moon,
   .login-brand-moon-img {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .login-brand-title {
-    font-size: 15.5px;
+    font-size: 15px;
   }
   .login-brand-subtitle {
-    font-size: 9.5px;
+    font-size: 9px;
   }
   .login-content-container {
-    padding: 14px 10px 32px;
+    padding: 10px 8px 24px;
   }
   .login-auth-card {
     padding: 16px 12px 14px;
+    border-radius: 12px;
+  }
+  .login-card-title {
+    font-size: 19px;
+  }
+  .login-card-subtitle {
+    font-size: 11.5px;
   }
 }
 
