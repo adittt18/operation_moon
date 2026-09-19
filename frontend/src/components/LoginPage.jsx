@@ -339,12 +339,21 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
        * ──────────────────────────────────────────────────────────── */}
       <header className="login-topbar">
         <div className="login-topbar-left">
-          <div className="login-brand-exact-wrap">
-            <img
-              src="/login_brand_exact.png"
-              alt="Pixel-Moon — Lunar Image Registration"
-              className="login-brand-exact-img"
-            />
+          <div className="login-brand-container">
+            <div className="login-brand-moon">
+              <img
+                src="/moon_brand_logo.png"
+                alt="Pixel-Moon"
+                className="login-brand-moon-img"
+              />
+            </div>
+            <div className="login-brand-text-col">
+              <div className="login-brand-title">
+                <span className="login-brand-white">Pixel-</span>
+                <span className="login-brand-cyan">Moon</span>
+              </div>
+              <span className="login-brand-subtitle">Lunar Image Registration</span>
+            </div>
           </div>
           <span className="login-topbar-sep">|</span>
           <span className="login-topbar-team">CODE_CHAOS</span>
