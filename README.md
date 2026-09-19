@@ -123,7 +123,7 @@ operation_moon/
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/dev-kunal01/operation_moon.git
+git clone https://github.com/adittt18/operation_moon.git
 cd operation_moon
 
 # Install dependencies
