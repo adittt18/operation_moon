@@ -43,6 +43,15 @@ export default function App() {
   ]);
   const [activeToast, setActiveToast] = useState(null);
 
+  // Auto-dismiss floating notification toast after exactly 3 seconds
+  useEffect(() => {
+    if (!activeToast) return;
+    const timer = setTimeout(() => {
+      setActiveToast(null);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [activeToast]);
+
   const addNotification = (notif) => {
     setNotifications((prev) => [notif, ...prev]);
     setActiveToast(notif);
