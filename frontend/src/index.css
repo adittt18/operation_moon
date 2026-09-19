@@ -3641,63 +3641,85 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   }
 }
 
-/* Standard Mobile & Tablet Stacking Mode */
+/* Responsive Stacking & Scaling for Tablets & Mobile (max-width: 960px) */
 @media (max-width: 960px) {
   .login-viewport {
     min-height: 100vh;
     min-height: 100dvh;
+    width: 100%;
+    overflow-x: hidden;
   }
   .login-topbar {
-    height: 60px;
-    padding: 0 16px;
+    height: auto;
+    min-height: 56px;
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .login-brand-moon,
   .login-brand-moon-img {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
   .login-brand-title {
-    font-size: 17px;
+    font-size: 16px;
   }
   .login-brand-subtitle {
     font-size: 10px;
   }
   .login-topbar-team {
-    font-size: 12px;
+    font-size: 11.5px;
+    display: inline-block;
   }
   .login-topbar-sep {
-    margin: 0 8px;
+    margin: 0 6px;
+    display: inline-block;
   }
   .login-content-container {
-    grid-template-columns: 1fr;
-    padding: 20px 16px 40px;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    gap: 22px;
     max-width: 520px;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0 auto;
   }
   .login-hero-side {
     align-items: center;
     text-align: center;
-    padding-left: 0;
-    gap: 12px;
+    padding: 0;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .login-hero-heading {
-    font-size: clamp(24px, 5.5vw, 30px);
+    font-size: clamp(24px, 5.2vw, 32px);
     line-height: 1.2;
+    text-align: center;
+    align-items: center;
   }
   .login-hero-description {
+    display: block !important;
     max-width: 440px;
     font-size: 13.5px;
     line-height: 1.5;
+    text-align: center;
+    margin: 0 auto;
+    word-break: break-word;
+    box-sizing: border-box;
   }
   .login-card-side {
     align-items: center;
     width: 100%;
+    box-sizing: border-box;
   }
   .login-auth-card {
-    max-width: 100%;
+    max-width: 460px;
     width: 100%;
-    padding: 24px 18px 20px;
+    box-sizing: border-box;
+    padding: 24px 22px 20px;
   }
 }
 
@@ -3706,177 +3728,404 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   .login-viewport {
     min-height: 100vh;
     min-height: 100dvh;
-    overflow-x: hidden;
     width: 100%;
+    overflow-x: hidden;
   }
   .login-topbar {
-    height: 54px;
-    padding: 0 12px;
+    min-height: 52px;
+    height: auto;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .login-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .login-brand-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .login-brand-moon,
+  .login-brand-moon-img {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .login-brand-text-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .login-brand-title {
+    font-size: 14.5px;
+    white-space: nowrap;
+    line-height: 1.15;
+  }
+  .login-brand-subtitle {
+    font-size: 8.5px;
+    white-space: nowrap;
+    line-height: 1.15;
+    color: #64748b;
+  }
+  .login-topbar-sep {
+    display: inline-block;
+    margin: 0 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+  }
+  .login-topbar-team {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #6ba3eb;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .login-topbar-right {
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
   }
   .login-status-pill {
-    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    flex-shrink: 0;
+  }
+  .login-status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+  }
+  .login-status-texts {
+    display: flex;
+    align-items: center;
+    gap: 3px;
   }
   .login-status-label {
-    font-size: 10.5px;
+    font-size: 9.5px;
+    color: #38bdf8;
+    font-weight: 600;
+    display: inline;
   }
-  .login-status-ver,
+  .login-status-ver {
+    font-size: 8.5px;
+    color: #64748b;
+    display: inline;
+  }
   .login-ecg-icon {
-    display: none;
+    display: block;
+    width: 14px;
+    height: 8px;
+    flex-shrink: 0;
   }
   .login-guest-btn {
-    padding: 5px 9px;
-    font-size: 11px;
+    padding: 4px 8px;
+    font-size: 10.5px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .login-content-container {
-    padding: 12px 12px 24px;
-    gap: 12px;
-    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 12px 28px;
+    gap: 16px;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     margin: 0 auto;
   }
   .login-hero-side {
-    padding: 0;
-    gap: 4px;
-    margin-bottom: 2px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     text-align: center;
-  }
-  .login-hero-heading {
-    font-size: 19px;
-    line-height: 1.25;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
-  }
-  .login-hero-line1 {
-    font-size: 15px;
-    font-weight: 500;
-    color: #94a3b8;
-  }
-  .login-hero-line2 {
-    font-size: 15px;
-    font-weight: 700;
-  }
-  .login-hero-description {
-    display: none; /* Keeps phone screen compact and focuses directly on the login card */
-  }
-  .login-card-side {
-    width: 100%;
-    align-items: center;
-  }
-  .login-auth-card {
-    padding: 18px 16px 16px;
-    border-radius: 14px;
-    max-width: 100%;
+    padding: 0 4px;
+    gap: 6px;
     width: 100%;
     box-sizing: border-box;
   }
+  .login-hero-typography {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .login-hero-heading {
+    font-size: clamp(20px, 5.5vw, 26px);
+    line-height: 1.2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    word-break: break-word;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .login-hero-line1 {
+    font-size: inherit;
+    font-weight: 500;
+    color: #ffffff;
+    display: block;
+  }
+  .login-hero-line2 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    font-size: inherit;
+    font-weight: 800;
+  }
+  .login-hero-description {
+    display: block !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #94a3b8;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    word-break: break-word;
+  }
+  .login-card-side {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .login-auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 20px 16px 18px;
+    border-radius: 14px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    overflow: hidden;
+  }
   .login-card-header {
     margin-bottom: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .login-card-eyebrow {
     font-size: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
+    display: block;
   }
   .login-card-title {
-    font-size: 21px;
+    font-size: clamp(19px, 5.2vw, 23px);
+    line-height: 1.25;
     margin: 0 0 4px;
+    word-break: break-word;
   }
   .login-card-subtitle {
     font-size: 12px;
-    margin-bottom: 12px;
-    line-height: 1.35;
+    margin: 0;
+    line-height: 1.4;
+    color: #94a3b8;
+    word-break: break-word;
   }
   .login-input-group {
-    margin-bottom: 12px;
+    margin-bottom: 11px;
+    width: 100%;
+    box-sizing: border-box;
   }
-  /* Prevent iOS zoom on focus with 16px base font size */
+  .login-input-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
   .login-input {
     font-size: 16px !important;
     height: 44px;
-    padding: 10px 38px;
+    padding: 10px 38px 10px 36px;
     border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .login-input-icon {
-    left: 12px;
+    left: 11px;
     width: 16px;
     height: 16px;
   }
   .login-password-toggle {
-    right: 10px;
+    right: 8px;
+    padding: 4px;
   }
   .login-submit-btn {
     height: 44px;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .login-options-row {
-    margin-bottom: 14px;
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
-  /* Clean 2x2 grid for security badges on mobile phones */
+  .login-remember-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .login-forgot-link {
+    font-size: 12px;
+    white-space: nowrap;
+  }
   .login-security-strip {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 6px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 10px;
     padding: 10px 4px 6px;
+    margin-top: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .login-sec-sep {
     display: none;
   }
+  .login-sec-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .login-sec-icon {
+    width: 15px;
+    height: 15px;
+    margin-bottom: 2px;
+  }
   .login-sec-label {
-    font-size: 10px;
+    font-size: 10.5px;
+    line-height: 1.2;
+    display: block;
+    word-break: break-word;
   }
   .login-sec-sub {
     font-size: 9px;
+    line-height: 1.2;
+    display: block;
+    word-break: break-word;
   }
   .login-security-footer {
-    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 10px;
     margin-top: 8px;
+    line-height: 1.35;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+  }
+  .login-sec-footer-lock {
+    flex-shrink: 0;
   }
   .login-switch-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
     margin-top: 10px;
+    box-sizing: border-box;
   }
   .login-switch-btn {
     font-size: 12.5px;
     padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    text-align: center;
   }
 }
 
-/* Extra Compact Phones (< 400px) */
-@media (max-width: 400px) {
-  .login-topbar-team,
-  .login-topbar-sep {
-    display: none;
+/* Extra Compact Phones (< 380px) */
+@media (max-width: 380px) {
+  .login-topbar {
+    padding: 6px 8px;
   }
   .login-brand-moon,
   .login-brand-moon-img {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
   }
   .login-brand-title {
-    font-size: 15px;
+    font-size: 13.5px;
   }
   .login-brand-subtitle {
-    font-size: 9px;
+    font-size: 8px;
+  }
+  .login-topbar-team {
+    font-size: 9.5px;
   }
   .login-content-container {
-    padding: 10px 8px 24px;
+    padding: 10px 8px 20px;
+    gap: 12px;
   }
   .login-auth-card {
     padding: 16px 12px 14px;
     border-radius: 12px;
   }
   .login-card-title {
-    font-size: 19px;
+    font-size: 18.5px;
   }
   .login-card-subtitle {
     font-size: 11.5px;
+  }
+  .login-input {
+    height: 42px;
+    padding: 8px 34px 8px 32px;
+  }
+  .login-submit-btn {
+    height: 42px;
+  }
+  .login-sec-label {
+    font-size: 10px;
+  }
+  .login-sec-sub {
+    font-size: 8.5px;
   }
 }
 
