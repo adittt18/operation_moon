@@ -393,7 +393,7 @@ export default function TopBar({
         <div className="status-chip">
           <span className="row">
             <span className="dot" />
-            <span className="label">{apiOnline ? 'FastAPI Online' : 'API Offline'}</span>
+            <span className="label">{apiOnline ? 'Online' : 'Offline'}</span>
           </span>
           <span className="version">v1.0.0 &nbsp;&nbsp; v1.0.0</span>
         </div>
