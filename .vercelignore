@@ -7,4 +7,9 @@ tests/
 results_test/
 __pycache__/
 *.pyc
-
+*.py
+requirements.txt
+Procfile
+render.yaml
+src/
+.venv/

@@ -157,3 +157,4 @@ export default function PrivacyPolicy({ onBack }) {
     </div>
   );
 }
+
