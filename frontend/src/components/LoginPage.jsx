@@ -22,6 +22,7 @@ import {
 } from '../auth';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsConditions from './TermsConditions';
+import LoginEarthBackground from './LoginEarthBackground';
 
 export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
@@ -101,6 +102,9 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
 
   return (
     <div className="login-viewport">
+      {/* 3D Realtime Rotating Earth Background */}
+      <LoginEarthBackground />
+
       {/* ─────────────────────────────────────────────────────────────
        * TOP HEADER BAR (Exact Menu Bar branding & light navy blue CODE_CHAOS)
        * ──────────────────────────────────────────────────────────── */}
