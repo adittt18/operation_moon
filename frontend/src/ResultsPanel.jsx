@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { MoonGlobeIcon } from './components/Sidebar';
-import { Shrink, Expand } from 'lucide-react';
+import {
+  Shrink,
+  Expand,
+  Download,
+  Columns,
+  LayoutGrid,
+  Crosshair,
+  Layers,
+  ArrowLeft,
+  MoveHorizontal,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -15,7 +27,13 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
       <div className="glass-card error-card">
         <h3>No Registration Results</h3>
         <p>Run a registration or select a pre-loaded sample dataset first.</p>
-        <button className="btn btn-secondary" onClick={onBack}>← Back to Upload</button>
+        <button
+          className="btn btn-secondary"
+          onClick={onBack}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+        >
+          <ArrowLeft size={16} /> Back to Upload
+        </button>
       </div>
     );
   }
@@ -49,7 +67,13 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
       {/* Top action bar */}
       <div className="results-header glass-card">
         <div className="header-left">
-          <button className="btn btn-secondary" onClick={onBack}>← Upload New Pair</button>
+          <button
+            className="btn btn-secondary"
+            onClick={onBack}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+          >
+            <ArrowLeft size={16} /> Upload New Pair
+          </button>
           <h2>Registration Analysis & Metric Evaluation</h2>
           <span className="sensor-tag">Sensor: {sensor}</span>
         </div>
@@ -61,8 +85,9 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
             href={registered_image_url}
             download={`registered_${sensor}.png`}
             className="btn btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
           >
-            💾 Download Registered Image
+            <Download size={16} /> Download Registered Image
           </a>
         </div>
       </div>
@@ -74,7 +99,7 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
           <div className="metric-header">
             <span className="metric-title">RMSE (Accuracy)</span>
             <span className={`status-pill ${compliance?.rmse_passed ? 'pill-pass' : 'pill-fail'}`}>
-              {compliance?.rmse_passed ? '✓ PASSED' : 'FAIL'}
+              {compliance?.rmse_passed ? 'PASSED' : 'FAIL'}
             </span>
           </div>
           <div className="metric-value">{metrics.rmse} <span className="unit">px</span></div>
@@ -92,7 +117,7 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
           <div className="metric-header">
             <span className="metric-title">Inlier Matches</span>
             <span className={`status-pill ${compliance?.inlier_count_passed ? 'pill-pass' : 'pill-fail'}`}>
-              {compliance?.inlier_count_passed ? '✓ PASSED' : 'FAIL'}
+              {compliance?.inlier_count_passed ? 'PASSED' : 'FAIL'}
             </span>
           </div>
           <div className="metric-value">{metrics.inlier_count} <span className="unit">pts</span></div>
@@ -110,7 +135,7 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
           <div className="metric-header">
             <span className="metric-title">Inlier Ratio</span>
             <span className={`status-pill ${compliance?.inlier_ratio_passed ? 'pill-pass' : 'pill-fail'}`}>
-              {compliance?.inlier_ratio_passed ? '✓ PASSED' : 'FAIL'}
+              {compliance?.inlier_ratio_passed ? 'PASSED' : 'FAIL'}
             </span>
           </div>
           <div className="metric-value">{(metrics.inlier_ratio * 100).toFixed(1)} <span className="unit">%</span></div>
@@ -128,7 +153,7 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
           <div className="metric-header">
             <span className="metric-title">Spatial Grid Coverage</span>
             <span className={`status-pill ${compliance?.grid_coverage_passed ? 'pill-pass' : 'pill-fail'}`}>
-              {compliance?.grid_coverage_passed ? '✓ PASSED' : 'FAIL'}
+              {compliance?.grid_coverage_passed ? 'PASSED' : 'FAIL'}
             </span>
           </div>
           <div className="metric-value">{(metrics.grid_coverage * 100).toFixed(1)} <span className="unit">%</span></div>
@@ -149,26 +174,30 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
             <button
               className={`tab-btn ${activeTab === 'slider' ? 'active' : ''}`}
               onClick={() => setActiveTab('slider')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              ↔ Interactive Split Curtain (Registered vs Reference)
+              <Columns size={16} /> Interactive Split Curtain (Registered vs Reference)
             </button>
             <button
               className={`tab-btn ${activeTab === 'sidebyside' ? 'active' : ''}`}
               onClick={() => setActiveTab('sidebyside')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              ⊞ Side-by-Side View
+              <LayoutGrid size={16} /> Side-by-Side View
             </button>
             <button
               className={`tab-btn ${activeTab === 'matches' ? 'active' : ''}`}
               onClick={() => setActiveTab('matches')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              ⚡ Feature Correspondences (FLANN)
+              <Crosshair size={16} /> Feature Correspondences (FLANN)
             </button>
             <button
               className={`tab-btn ${activeTab === 'checkerboard' ? 'active' : ''}`}
               onClick={() => setActiveTab('checkerboard')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              🏁 Checkerboard Alignment Blend
+              <Layers size={16} /> Checkerboard Alignment Blend
             </button>
           </div>
 
@@ -215,7 +244,9 @@ export default function ResultsPanel({ result, onBack, onNavigateToGlobe }) {
                 <span className="curtain-tag tag-left">Chandrayaan-2 (Registered)</span>
               </div>
               <div className="slider-divider" style={{ left: `${sliderPos}%` }}>
-                <div className="slider-handle">↔</div>
+                <div className="slider-handle">
+                  <MoveHorizontal size={15} />
+                </div>
               </div>
             </div>
           )}

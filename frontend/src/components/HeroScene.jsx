@@ -879,7 +879,7 @@ export default function HeroScene() {
     const hemiLight = new THREE.HemisphereLight(0xfffaee, 0x121a28, 0.35);
     scene.add(hemiLight);
 
-    // PRIMARY COSMIC SUN — The ONLY directional light source in the scene!
+    // PRIMARY COSMIC SUN - The ONLY directional light source in the scene!
     // Parallel sunlight coming from ONE unified cosmic direction (upper-right in space)
     // Illuminating Earth, casting real-time shadows, and reflecting across both solar panels
     const sunLight = new THREE.DirectionalLight(0xfffaee, 5.2);

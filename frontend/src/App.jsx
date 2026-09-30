@@ -10,6 +10,8 @@ import HeroBanner from './components/HeroBanner';
 import { OneClickDatasets, AdditionalDatasets } from './components/DatasetShowcase';
 import ProcessingBar from './components/ProcessingBar';
 import SettingsPage from './components/Settings';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsConditions from './components/TermsConditions';
 import UploadForm from './UploadForm';
 import ResultsPanel from './ResultsPanel';
 import MoonGlobe from './MoonGlobe';
@@ -58,7 +60,7 @@ export default function App() {
     playNotificationSound();
   };
 
-  // Theme — persisted, applied to <html data-theme="...">; index.html sets an
+  // Theme - persisted, applied to <html data-theme="...">; index.html sets an
   // initial value before paint so there's no flash of the wrong theme.
   const [theme, setTheme] = useState(() => {
     if (typeof document !== 'undefined') {
@@ -324,8 +326,27 @@ export default function App() {
             <SettingsPage theme={theme} onToggleTheme={toggleTheme} apiOnline={apiOnline} />
           )}
 
+          {currentTab === 'privacy' && (
+            <PrivacyPolicy onBack={() => setCurrentTab('home')} />
+          )}
+
+          {currentTab === 'terms' && (
+            <TermsConditions onBack={() => setCurrentTab('home')} />
+          )}
+
           <footer className="footer-bar">
             <p>Pixel-Moon: Automated Multi-Modal Lunar Image Registration Pipeline · Chandrayaan-2 &amp; NASA LRO NAC</p>
+            <div className="footer-bar-links">
+              <button type="button" className="footer-link" onClick={() => setCurrentTab('privacy')}>
+                Privacy Policy
+              </button>
+              <button type="button" className="footer-link" onClick={() => setCurrentTab('terms')}>
+                Terms &amp; Conditions
+              </button>
+              <button type="button" className="footer-link" onClick={() => setCurrentTab('docs')}>
+                Architecture &amp; Docs
+              </button>
+            </div>
           </footer>
         </main>
 

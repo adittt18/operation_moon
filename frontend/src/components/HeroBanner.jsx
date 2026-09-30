@@ -1,12 +1,12 @@
 import React from 'react';
-import { Settings2, Layers, Star, ShieldCheck } from 'lucide-react';
+import { Settings2, Layers, Compass, ShieldCheck } from 'lucide-react';
 import HeroScene from './HeroScene';
 
 const PILLS = [
-  { icon: Settings2, label: 'High Precision' },
-  { icon: Layers, label: 'Multi-Modal' },
-  { icon: Star, label: 'AI Ready' },
-  { icon: ShieldCheck, label: 'Space Grade' },
+  { icon: Settings2, label: 'Sub-Pixel RMSE' },
+  { icon: Layers, label: 'Multi-Modal Sensors' },
+  { icon: Compass, label: 'SIFT + RANSAC' },
+  { icon: ShieldCheck, label: 'ISRO / NASA Baselines' },
 ];
 
 export default function HeroBanner() {

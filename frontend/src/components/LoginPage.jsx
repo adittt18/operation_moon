@@ -20,12 +20,15 @@ import {
   signUpWithEmail,
   resetPassword,
 } from '../auth';
+import PrivacyPolicy from './PrivacyPolicy';
+import TermsConditions from './TermsConditions';
 
 export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [legalModal, setLegalModal] = useState(null);
 
-  // Form fields — strictly empty. Never pre-fill or cache personal email.
+  // Form fields - strictly empty. Never pre-fill or cache personal email.
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -398,16 +401,27 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
               </span>
             </button>
           </div>
+
+          {/* Privacy Policy & Terms Links */}
+          <div className="login-legal-links">
+            <button
+              type="button"
+              className="login-legal-link"
+              onClick={() => setLegalModal('privacy')}
+            >
+              Privacy Policy
+            </button>
+            <span style={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: '11px' }}>·</span>
+            <button
+              type="button"
+              className="login-legal-link"
+              onClick={() => setLegalModal('terms')}
+            >
+              Terms &amp; Conditions
+            </button>
+          </div>
         </section>
       </main>
-
-      {/* ─────────────────────────────────────────────────────────────
-       * GOOGLE ACCOUNT CHOOSER & CONSENT MODAL (Matches user screenshots)
-       * ──────────────────────────────────────────────────────────── */}
-      {/* ─────────────────────────────────────────────────────────────
-       * REAL GOOGLE OAUTH 2.0 LAUNCH & CONFIGURATION MODAL
-       * Launches accounts.google.com (Official Google Identity Services)
-
 
       {/* ─────────────────────────────────────────────────────────────
        * PASSWORD RECOVERY MODAL
@@ -464,6 +478,34 @@ export default function LoginPage({ onLoginSuccess, onExploreAsGuest }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+       * PRIVACY POLICY & TERMS MODAL
+       * ──────────────────────────────────────────────────────────── */}
+      {legalModal && (
+        <div
+          className="login-modal-backdrop page-fade"
+          onClick={() => setLegalModal(null)}
+          style={{ zIndex: 1200, padding: '20px', boxSizing: 'border-box' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '920px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              borderRadius: '20px',
+            }}
+          >
+            {legalModal === 'privacy' ? (
+              <PrivacyPolicy onBack={() => setLegalModal(null)} />
+            ) : (
+              <TermsConditions onBack={() => setLegalModal(null)} />
+            )}
           </div>
         </div>
       )}

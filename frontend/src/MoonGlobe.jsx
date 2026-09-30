@@ -75,7 +75,7 @@ function makePhotorealisticSpace() {
     nebPos[i * 3 + 1] = y;
     nebPos[i * 3 + 2] = z;
 
-    // Cosmic interstellar dust tones (deep indigo, subtle violet, faint cyan-stardust)
+    // Cosmic interstellar dust tones (deep navy, subtle azure, faint cyan-stardust)
     const tint = Math.random();
     if (tint < 0.45) {
       nebColors[i * 3] = 0.18; nebColors[i * 3 + 1] = 0.32; nebColors[i * 3 + 2] = 0.65;

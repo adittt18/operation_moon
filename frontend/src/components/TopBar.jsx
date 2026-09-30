@@ -498,8 +498,8 @@ export function ToastBanner({ toast, onClose, onAction }) {
             {toast.actionLabel}
           </button>
         )}
-        <button type="button" className="toast-close" onClick={onClose}>
-          ✕
+        <button type="button" className="toast-close" onClick={onClose} aria-label="Dismiss notification">
+          <X size={14} />
         </button>
       </div>
     </div>
